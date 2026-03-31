@@ -5,7 +5,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import amuze from '../assets/amuze.png';
-import amuze1 from '../assets/amuze1.jpg';
+import amuze1 from '../assets/amuze2.png';
 export function TeamSwitcher({
   teams,
 }: {

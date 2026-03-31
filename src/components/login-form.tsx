@@ -8,7 +8,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import amuze from "../assets/amuze1.jpg";
+import amuze from "../assets/amuze2.png";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,9 +23,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useLoginCommand } from "@/composable/Command/auth/useLoginCommand";
+import { Spinner } from "./ui/spinner";
 
 const formSchema = z.object({
-  email: z.string().min(1, { message: "Email is required." }),
+  emailOrPhone: z.string().min(1, { message: "Email is required." }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters." }),
@@ -37,16 +39,17 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { emailOrPhone: "", password: "" },
   });
 
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
+  const { loginMutation, isPending} = useLoginCommand();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // await loginMutation(values);
+      await loginMutation(values);
       console.log("form values", values);
     } catch (error) {
       toast.error(`${error}`);
@@ -67,15 +70,15 @@ export function LoginForm({
                 </div>
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="emailOrPhone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <FormLabel htmlFor="emailOrPhone">Email</FormLabel>
                       <FormControl>
                         <Input
-                          id="email"
+                          id="emailOrPhone"
                           type="email"
-                          placeholder="name@example.com"
+                          placeholder="name@example.com or 09XXXXXXXXX"
                           {...field}
                         />
                       </FormControl>
@@ -117,7 +120,7 @@ export function LoginForm({
                   )}
                 />
                 <Field>
-                  <Button type="submit"> Login</Button>
+                  <Button type="submit" disabled={isPending}>{isPending && <Spinner />} Login</Button>
                 </Field>
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                   Or continue with
@@ -159,7 +162,7 @@ export function LoginForm({
           </Form>
 
           <div className="relative hidden  md:block">
-            <img
+            <img 
               src={amuze}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover"

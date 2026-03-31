@@ -1,53 +1,40 @@
-import { decryptAuthData, encryptAuthData } from '@/lib/helper';
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-
-export interface CreatorDetails {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  phone_no?: string;
-  status?: boolean;
-  token: string;
-  position: string;
-  address: string
-  type?: string
-  role?: string
-}
-
-export interface LoginData {
-    creator: CreatorDetails,
-    token: string
-}
+// authSlice.ts
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { encryptAuthData, decryptAuthData, type CreatorDetails, type Token, type AuthData } from '@/lib/helper';
 
 interface AuthState {
   isAuthenticated: boolean;
   creator: CreatorDetails | null;
-  token: string
+  token: Token | null;
 }
 
-const initialUserStr = decryptAuthData(localStorage.getItem('creator')!);
-const initialUser: AuthState | null = initialUserStr ? initialUserStr : null;
+// Load initial state from localStorage
+const stored = localStorage.getItem('creator');
+const initialUser: AuthData | null = stored ? decryptAuthData(stored) : null;
 
 const initialState: AuthState = {
   creator: initialUser?.creator || null,
-  token: initialUser?.token || '',
-  isAuthenticated: !!initialUser,
+  token: initialUser?.token || null,
+  isAuthenticated: !!initialUser?.token?.access,
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSuccess: (state, action: PayloadAction<AuthState>) => {
-      state.creator = action.payload?.creator;
-      state.token = action.payload?.token
-      state.isAuthenticated = action?.payload?.token ? true : false;
-      localStorage.setItem('creator', encryptAuthData(action.payload));
+    loginSuccess: (state, action: PayloadAction<{ creator: CreatorDetails; token: Token }>) => {
+      state.creator = action.payload.creator;
+      state.token = action.payload.token;
+      state.isAuthenticated = !!action.payload.token?.access;
+      localStorage.setItem('creator', encryptAuthData({
+        creator: action.payload.creator,
+        token: action.payload.token,
+        isAuthenticated: true,
+      }));
     },
     logoutAction: (state) => {
       state.creator = null;
+      state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('creator');
     },

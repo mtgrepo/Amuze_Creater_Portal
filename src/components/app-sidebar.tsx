@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
@@ -13,7 +12,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {  Layers, BriefcaseBusiness, Wallet, Newspaper, ChartNoAxesCombinedIcon, BellRing, UserCog, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
+import {  Layers,  Newspaper, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
 
 // This is sample data.
 const data = {

@@ -1,10 +1,10 @@
-import { LayoutDashboard, ChevronRight, type LucideIcon, Map } from "lucide-react"
+import { LayoutDashboard, ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarMenu,
@@ -14,24 +14,24 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { cn } from "../lib/utils"
-import { Link, useLocation } from "react-router-dom"
+} from "@/components/ui/sidebar";
+import { cn } from "../lib/utils";
+import { Link, useLocation } from "react-router-dom";
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-      icon?: LucideIcon
-    }[]
-  }[]
+      title: string;
+      url: string;
+      icon?: LucideIcon;
+    }[];
+  }[];
 }) {
   const location = useLocation();
   const currentPath = location?.pathname;
@@ -49,7 +49,7 @@ export function NavMain({
               className={cn(
                 currentPath === "/"
                   ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  : ""
+                  : "",
               )}
             >
               <Link to={"/"}>
@@ -61,8 +61,8 @@ export function NavMain({
 
           {/* Navigation Items with Dropdowns */}
           {items.map((item) => {
-            const isAnySubItemActive = item.items?.some(subItem =>
-              currentPath.startsWith(subItem.url)
+            const isAnySubItemActive = item.items?.some((subItem) =>
+              currentPath.startsWith(subItem.url),
             );
 
             return (
@@ -78,7 +78,7 @@ export function NavMain({
                       tooltip={state === "collapsed" ? item.title : undefined}
                       className={cn(
                         "group/menu-button",
-                        isAnySubItemActive ? "bg-primary/10" : ""
+                        isAnySubItemActive ? "bg-primary/10" : "",
                       )}
                     >
                       {item.icon && <item.icon />}
@@ -94,12 +94,20 @@ export function NavMain({
                             asChild
                             className={cn(
                               currentPath.startsWith(subItem.url)
-                                ? "bg-primary text-white hover:bg-primary/90 hover:text-white"
-                                : "hover:bg-slate-200 dark:hover:bg-slate-800"
+                                ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                                : "hover:bg-slate-200 dark:hover:bg-slate-800",
                             )}
                           >
                             <Link to={subItem.url}>
-                              {subItem.icon && <subItem.icon />}
+                              <span
+                                className={
+                                  currentPath.startsWith(subItem.url)
+                                    ? "text-primary-foreground"
+                                    : " hover:text-slate-200 dark:hover:text-slate-800"
+                                }
+                              >
+                                {subItem.icon && <subItem.icon className="w-4 h-4"/>}
+                              </span>
                               <span>{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>
@@ -114,5 +122,5 @@ export function NavMain({
         </SidebarMenu>
       </SidebarGroup>
     </>
-  )
+  );
 }

@@ -13,7 +13,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {  Layers, BriefcaseBusiness, Wallet, Newspaper, ChartNoAxesCombinedIcon, BellRing, UserCog, Settings } from "lucide-react"
+import {  Layers, BriefcaseBusiness, Wallet, Newspaper, ChartNoAxesCombinedIcon, BellRing, UserCog, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
 
 // This is sample data.
 const data = {
@@ -31,83 +31,90 @@ const data = {
   ],
   navMain: [
     {
-      title: "Advertisers",
-      url: "#",
-      icon: BriefcaseBusiness,
+      title: "Reports",
+      url: "/report/purchase",
+      icon: FileChartColumnIncreasing,
       isActive: true,
       items: [
         {
-          title: "Advertisers",
-          url: "/advertisers",
+          title: "Purchase",
+          url: "/report/purchase",
+          icon: CreditCard,
         },
         {
-          title: "Advertiser Profiles",
-          url: "/advertiser-profiles",
+          title: "View",
+          url: "/report/view",
+          icon: Eye,
+        }, 
+        {
+          title: "Likes",
+          url: "/report/likes",
+          icon: ThumbsUp
         }
       ],
     },
     {
-        title: "Financial",
+        title: "Entertainment",
         url: "#",
-        icon: Wallet,
+        icon: BookOpen,
         items: [
             {
-                title: "Transactions",
-                url: "/transactions",
+                title: "Novel",
+                url: "/entertainment/novel",
+                icon: BookText
+            }, 
+            {
+              title: "Comics",
+              url: "/entertainment/comics",
+              icon: BookImage
+            },
+            {
+              title: "Story Telling",
+              url: "/entertainment/story-telling",
+              icon: BookHeadphones
+            },
+            {
+              title: "Journal",
+              url: "/entertainment/journal",
+              icon: Newspaper
+            },
+            {
+              title: "Gallary",
+              url: "/entertainment/gallary",
+              icon: Image
+            },
+            {
+              title: "Muze Box",
+              url: "/entertainment/muze-box",
+              icon: TvMinimalPlay
+            }, 
+            {
+              title: "Education",
+              url: "/entertainment/education",
+              icon: GraduationCap
+            },
+            {
+              title: "Museum",
+              url: "/entertainment/museum",
+              icon: Landmark
+            },
+            {
+              title: "Posts",
+              url: "/entertainment/posts",
+              icon: SquareParking
             }
         ]
     },
-    {
-      title: "Content",
-      url: "#",
-      icon: Newspaper,
-      items: [
-        {
-          title: "Posts",
-          url: "/content/posts",
-        },
-        {
-          title: "Campaigns",
-          url: "/campaigns",
-        },
-        {
-          title: "Ads",
-          url: "/ads",
-        },        
-      ],
-    },
-    {
-      title: "Performance",
-      url: "#",
-      icon: ChartNoAxesCombinedIcon,
-      items: [
-        {
-          title: "Daily ads status",
-          url: "/daily-ads-status",
-        },
-      ],
-    },
-    {
-        title: "Notifications",
-        url: "#",
-        icon: BellRing,
-        items: [
-            {
-                title: "Notifications",
-                url: "/notifications",
-            }
-        ]
-    }
   ],
   projects: [
     {
-      name: "Admin Users",
-      url: "/admin-users",
-      icon: UserCog,
+      name: "Notifications",
+      url: "/notifications",
+      icon: BellRing,
     },
     {
-      name: "System Configs",
-      url: "/system-configs",
+      name: "Setting",
+      url: "/setting",
       icon: Settings,
     },
   ],

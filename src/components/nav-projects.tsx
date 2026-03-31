@@ -26,7 +26,7 @@ export function NavProjects({
   const location = useLocation();
   const currentPath = location?.pathname;
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup className="group-data-[collapsible=icon]">
       <SidebarGroupLabel>System</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (

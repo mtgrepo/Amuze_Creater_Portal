@@ -1,4 +1,4 @@
-import { LayoutDashboard, ChevronRight, type LucideIcon } from "lucide-react"
+import { LayoutDashboard, ChevronRight, type LucideIcon, Map } from "lucide-react"
 
 import {
   Collapsible,
@@ -29,6 +29,7 @@ export function NavMain({
     items?: {
       title: string
       url: string
+      icon?: LucideIcon
     }[]
   }[]
 }) {
@@ -93,11 +94,12 @@ export function NavMain({
                             asChild
                             className={cn(
                               currentPath.startsWith(subItem.url)
-                                ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                                ? "bg-primary text-white hover:bg-primary/90 hover:text-white"
                                 : "hover:bg-slate-200 dark:hover:bg-slate-800"
                             )}
                           >
                             <Link to={subItem.url}>
+                              {subItem.icon && <subItem.icon />}
                               <span>{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>

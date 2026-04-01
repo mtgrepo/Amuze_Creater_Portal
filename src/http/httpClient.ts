@@ -16,8 +16,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // e.g., Add token to headers
-    const user = decryptAuthData(localStorage.getItem('user')!);
-    const token = user?.token;
+    const user = decryptAuthData(localStorage.getItem('creator')!);
+    const token = user?.token?.access
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

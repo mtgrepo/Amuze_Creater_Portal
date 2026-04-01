@@ -3,11 +3,13 @@ import { StatCard } from "./status_card";
 import { BookOpen, DollarSign, Eye, ThumbsUp } from "lucide-react";
 import { useEffect } from "react";
 import { decryptAuthData } from "@/lib/helper";
+import RecentlyUpload from "./recently_upload";
 
 export default function DashboardComponent() {
     useEffect(() => {
     const raw = decryptAuthData(localStorage.getItem('creator')!);
     console.log("localStorage raw →", raw?.creator);
+    console.log("permission", raw?.creator?.permissions)
   }, []);
 
   return (
@@ -54,8 +56,10 @@ export default function DashboardComponent() {
                   accent="bg-primary/50"
                 />
               </div>
-              <div className="px-4 lg:px-6"></div>
+              <div className="px-4 lg:px-6">
               {/* <DataTable data={data} /> */}
+              <RecentlyUpload />
+              </div>
             </div>
           </div>
         </div>

@@ -5,6 +5,8 @@ import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
 import Novel from "@/features/Entertainment/Novel/novel";
+import  MainCategory from "@/features/Genre/MainCategory/main_category";
+import Comics from "@/features/Entertainment/Comics/comics";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,17 @@ const router = createBrowserRouter([
         element: <Novel />,
         handle: { crumb: ["Entertainment", "Novel"] },
       },
+      {
+        path: "/entertainment/comics",
+        element: <Comics />,
+        handle: { crumb: ['Entertainment', "Comics"]}
+      },
+      // Genres
+      {
+        path: "/features/main-category",
+        element: <MainCategory />,
+        handle: { crumb: ["Genres", "Main Category"] },
+      }
     ],
   },
   {

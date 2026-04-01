@@ -5,8 +5,9 @@ import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
 import Novel from "@/features/Entertainment/Novel/novel";
-import  MainCategory from "@/features/Genre/MainCategory/main_category";
+import MainCategory from "@/features/Genre/MainCategory/main_category";
 import Comics from "@/features/Entertainment/Comics/comics";
+import TitleCreate from "@/features/Entertainment/Comics/comic_title_create";
 
 const router = createBrowserRouter([
   {
@@ -36,14 +37,24 @@ const router = createBrowserRouter([
       {
         path: "/entertainment/comics",
         element: <Comics />,
-        handle: { crumb: ['Entertainment', "Comics"]}
+        handle: { crumb: ["Entertainment", "Comics"] },
+      },
+      {
+        path: "/entertainment/comics/title",
+        element: <TitleCreate />,
+        handle: {
+          crumb: [
+            { label: ["Comics"], href: "/entertainment/comics" },
+            { label: "Title Create" },
+          ],
+        },
       },
       // Genres
       {
         path: "/features/main-category",
         element: <MainCategory />,
         handle: { crumb: ["Genres", "Main Category"] },
-      }
+      },
     ],
   },
   {

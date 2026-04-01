@@ -6,6 +6,7 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
+import router from "@/router/routes";
 
 export default function Comics() {
   const [page, setPage] = React.useState(1);
@@ -54,7 +55,7 @@ export default function Comics() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
-            <Button size={'sm'}>
+            <Button size={'sm'} onClick={() => router.navigate('/entertainment/comics/title')}>
                 <CirclePlus className="w-4 h-4"/>
                 Add New Title
             </Button>

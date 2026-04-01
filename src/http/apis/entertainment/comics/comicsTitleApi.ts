@@ -2,6 +2,7 @@ import type { ComicsTitleParams } from "@/composable/Query/Entertainment/Comics/
 import axiosInstance from "@/http/httpClient"
 import { AxiosError } from "axios"
 
+
 export const getAllComicsTitles = async (creatorId: string, params: ComicsTitleParams) => {
     try {
         const response = await axiosInstance.get(`comic/get-all-comic-titles?authorId=${creatorId}`, {params});
@@ -12,5 +13,21 @@ export const getAllComicsTitles = async (creatorId: string, params: ComicsTitleP
             throw new Error(error.response?.data.message || "API failed")
         }
         throw new Error(error as string || "Something went wrong")
+    }
+}
+
+export const createComicsTitle = async (titleData: FormData) => {
+    try {
+        const response = await axiosInstance.post(`comic/store-comic-title`, titleData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "Error occurred while creating comics title")
+        }
+        throw new Error ("Something went wrong!")
     }
 }

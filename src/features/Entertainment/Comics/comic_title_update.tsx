@@ -13,7 +13,7 @@ export default function EditTitlePage() {
   const title = titleDetails || state;
 
   if (isLoading && !title) return <p>Loading...</p>;
-
+console.log("edit data", title?.generes)
   return (
     <div className="p-6">
       <ComicTitleForm
@@ -24,7 +24,7 @@ export default function EditTitlePage() {
           description: title?.description,
           price: title?.price,
           // Ensure genres is an array of strings
-          genres: title?.genres?.map((g: any) => g.id.toString()) || [],
+          genres: title?.generes?.map((g: any) => g.id.toString()) || [],
           thumbnail: title?.thumbnail,
           horizontal_thumbnail: title?.horizontal_thumbnail,
         }}

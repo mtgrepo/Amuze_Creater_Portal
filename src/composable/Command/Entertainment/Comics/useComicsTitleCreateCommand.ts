@@ -1,4 +1,5 @@
 import { createComicsTitle } from "@/http/apis/entertainment/comics/comicsTitleApi";
+import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -11,6 +12,7 @@ export const useComicsTitleCreateCommand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comicsTitleList"] });
       toast.success(`Added new comics title successfully`);
+      router.navigate("/entertainment/comics");
     },
   });
 

@@ -26,6 +26,8 @@ import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { useComicsTitleCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
+import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
+import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -73,67 +75,125 @@ export default function ComicTitleForm({
       created_by: "",
     },
   });
-// Inside ComicTitleForm...
+  // Inside ComicTitleForm...
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: defaultValues.name || "",
+        description: defaultValues.description || "",
+        price: defaultValues.price ?? 0,
+        genres: defaultValues.genres || [],
 
-useEffect(() => {
-  if (defaultValues) {
-    // reset() is the key to filling the form with async data
-    form.reset({
-      name: defaultValues.name || "",
-      description: defaultValues.description || "",
-      genres: defaultValues.genres || [],
-      price: defaultValues.price ?? 0,
-      thumbnail: defaultValues.thumbnail,
-      horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-      created_by: form.getValues("created_by") // preserve the ID from the other effect
-    });
-  }
-}, [defaultValues, form]);
-useEffect(() => {
-  try {
-    const storedData = localStorage.getItem("creator");
-    if (storedData) {
-      // const loginCreator = JSON.parse(storedData);
-      // const id = loginCreator?.creator?.id;
-      const loginCreator = decryptAuthData(storedData);
-      const id = loginCreator?.creator?.id;
-      if (id) form.setValue("created_by", id);
+        thumbnail: defaultValues.thumbnail,
+        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
+        created_by: form.getValues("created_by"),
+      });
     }
-  } catch (error) {
-    console.error("Failed to read auth data from localStorage", error);
-  }
-}, [form]);
+  }, [defaultValues, form]);
 
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("creator");
+      if (storedData) {
+        const loginCreator = decryptAuthData(storedData);
+        const id = loginCreator?.creator?.id;
+        if (id) form.setValue("created_by", id);
+      }
+    } catch (error) {
+      console.error("Failed to read auth data from localStorage", error);
+    }
+  }, [form]);
+
+  // const onSubmit = async (values: TitleFormValues) => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     Object.entries(values).forEach(([key, value]) => {
+  //       if (value === null || value === undefined) return;
+
+  //       if (key === "genres" && Array.isArray(value)) {
+  //         if (mode === "add") {
+  //           value.forEach((g) => {
+  //             formData.append("genres", g);
+  //           });
+  //         } else {
+  //           formData.append("generes", JSON.stringify(value.map(Number)));
+  //         }
+  //       } else if (value instanceof File) {
+  //         formData.append(key, value);
+  //       } else {
+  //         formData.append(key, String(value));
+  //       }
+  //     });
+
+  //     if (mode === "add") {
+  //       await titleMutation(formData);
+  //     } else {
+  //       if (!defaultValues?.id) throw new Error("ID missing");
+  //       // await updateMutation(formData);
+  //     }
+  //   } catch (err: any) {
+  //     toast.error(err.message);
+  //   }
+  // };
+
+  const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
+  const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
   const onSubmit = async (values: TitleFormValues) => {
     try {
-      const formData = new FormData();
-
-      Object.entries(values).forEach(([key, value]) => {
-        if (value === null || value === undefined) return;
-
-        if (key === "genres" && Array.isArray(value)) {
-          value.forEach((g) => {
-            formData.append("genres", g);
-          });
-        } else if (value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, String(value));
-        }
-      });
       if (mode === "add") {
+        // --- HANDLE CREATE (Existing logic) ---
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, value]) => {
+          if (value === null || value === undefined) return;
+          if (key === "genres" && Array.isArray(value)) {
+            value.forEach((g) => formData.append("genres", g));
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
+        });
         await titleMutation(formData);
-        onSuccess?.();
-        form?.reset();
       } else {
-        if (!defaultValues?.id) throw new Error("ID missing for update");
-        toast.success("Comic Title Updated!");
-      }
+        // --- HANDLE EDIT ---
+        if (!defaultValues?.id) throw new Error("ID missing");
 
-      form.reset();
-      onSuccess?.();
+        const isThumbnailUpdated =
+          values.thumbnail instanceof File ||
+          values.horizontal_thumbnail instanceof File;
+
+        if (isThumbnailUpdated) {
+          // SCENARIO 1: Update Thumbnails (Multipart/FormData)
+          const thumbData = new FormData();
+          if (values.thumbnail instanceof File) {
+            thumbData.append("thumbnail", values.thumbnail);
+          }
+          if (values.horizontal_thumbnail instanceof File) {
+            thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+          }
+
+          // await updateThumbnailsApi(defaultValues.id, thumbData);
+          await updateThumbnailMutation({ id: Number(defaultValues?.id), data: thumbData });
+          toast.success("Thumbnails updating...");
+        }
+
+        // SCENARIO 2: Update Text Data (JSON)
+        const textPayload = {
+          name: values.name,
+          description: values.description,
+          genres: values.genres.map(Number), // Convert strings back to numbers
+          price: values.price,
+        };
+
+        // await updateTextApi(defaultValues.id, textPayload);
+        await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
+        toast.success("Details updating...");
+      }
+      
+      if (onSuccess) onSuccess();
     } catch (err: any) {
-      toast.error(err.message || "An error occurred during submission.");
+      toast.error(err.message);
     }
   };
 

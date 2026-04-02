@@ -76,7 +76,7 @@ export default function Comics() {
             }
             className="w-full my-5"
           >
-            <TabsList className="w-full grid grid-cols-3">
+            <TabsList className="w-full grid grid-cols-3" variant={'line'}>
               <TabsTrigger value="all" className="w-full text-center">
                 All
               </TabsTrigger>

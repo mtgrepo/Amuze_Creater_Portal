@@ -2,6 +2,11 @@ import type { ComicsTitleParams } from "@/composable/Query/Entertainment/Comics/
 import axiosInstance from "@/http/httpClient"
 import { AxiosError } from "axios"
 
+export interface TitleProps {
+    name: string,
+    description: string,
+    genres: number[],
+}
 
 export const getAllComicsTitles = async (creatorId: number, params: ComicsTitleParams) => {
     try {
@@ -40,6 +45,34 @@ export const comicsTitleById = async (id: string) => {
     } catch (error) {
         if (error instanceof AxiosError) {
             throw new Error (error?.response?.data?.message || "Error occurred while fetching comics title details")
+        }
+        throw new Error ("Something went wrong!")
+    }
+}
+
+export const updateTitle = async (data: TitleProps, id: number) => {
+    try {
+        const res = await axiosInstance.put(`comic/update-comic-title/${id}`, data);
+        return res?.data
+    } catch (error) {
+        if  (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "Error occurred while updating title")
+        }
+        throw new Error ("Something went wrong!")
+    }
+}
+
+export const updateThumbnail = async (data: FormData, id: number) => {
+    try {
+        const res = await axiosInstance.put(`comic/update-thumbnail/vertical/${id}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        return res?.data
+    } catch (error) {
+        if  (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "Error occurred while updating thumbnail")
         }
         throw new Error ("Something went wrong!")
     }

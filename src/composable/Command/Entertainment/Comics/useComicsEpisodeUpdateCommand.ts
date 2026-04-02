@@ -15,6 +15,7 @@ export const useComicEpisodeUpdateCommand = () => {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["comicsEpisodesList"] });
+      qc.invalidateQueries({ queryKey: ["comicsTitleDetails"] });
       toast.success("Comics episode update successfully");
       router.navigate(-1);
     },

@@ -23,7 +23,7 @@ export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps
 
   const handleEditEpisode = () => {
     // We add titleId to the state object here
-    navigate(`/entertainment/comics/episode/edit/${episode?.id}`, {
+    navigate(`/entertainment/comics/${titleId}/episode/edit/${episode?.id}`, {
       state: { 
         episode, 
         titleId // Now the EditPage can access location.state.titleId
@@ -32,7 +32,7 @@ export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps
   };
 
   const handleViewDetails = () => {
-        navigate(`/entertainment/comics/episode/details/${episode?.id}`, {
+        navigate(`/entertainment/comics/${titleId}/episode/details/${episode?.id}`, {
       state: { 
         episode, 
         titleId // Now the EditPage can access location.state.titleId

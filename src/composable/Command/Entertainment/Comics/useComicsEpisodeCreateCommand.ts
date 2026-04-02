@@ -11,6 +11,7 @@ export const useComicsEpisodeCreateCommand = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comicsEpisodesList"] });
+      queryClient.invalidateQueries({ queryKey: ["comicsTitleDetails"] });
       toast.success(`Added new comics episode successfully`);
       router.navigate(-1);
     },

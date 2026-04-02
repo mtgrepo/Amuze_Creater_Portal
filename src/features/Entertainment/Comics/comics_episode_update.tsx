@@ -1,22 +1,19 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import ComicEpisodeForm from "@/components/Entertainment/Comics/Episodes/episode_form";
 import { useComicEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsEpisodeDetailsQuery";
-import { decryptAuthData } from "@/lib/helper";
 
 export default function EditEpisodePage() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 1. Get user data
-  const storedCreator = localStorage.getItem("creator");
-  const loginCreator = storedCreator ? decryptAuthData(storedCreator) : null;
+//   const storedCreator = localStorage.getItem("creator");
+//   const loginCreator = storedCreator ? decryptAuthData(storedCreator) : null;
   
   // Access the titleId from navigation state
   const titleId = location.state?.titleId;
 
-  // 2. Fetch Episode Details
-  // Note: We use episodeDetails from the query to ensure data is fresh
+  // Fetch Episode Details
   const { episodeDetails, isLoading } = useComicEpisodeDetailsQuery(
     Number(titleId),
     Number(id),
@@ -39,15 +36,13 @@ export default function EditEpisodePage() {
     );
   }
 
-  // 3. Prepare defaultValues
-  // We map 'files_path' (API) to 'images' (Form)
+
   const formDefaults = {
     id: episodeDetails.id,
     name: episodeDetails.name,
     price: episodeDetails.price,
     thumbnail: episodeDetails.thumbnail,
-    // CRITICAL: Map the API array of objects to an array of URL strings
-    images: episodeDetails.files_path?.map((file: any) => file.url) || [],
+    images: episodeDetails.files_path || [],
     created_by: episodeDetails.created_by
   };
 

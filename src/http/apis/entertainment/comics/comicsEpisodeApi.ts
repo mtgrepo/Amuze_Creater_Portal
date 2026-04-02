@@ -64,3 +64,31 @@ export const updateComicEpisode = async (id: number, data: FormData) => {
     throw new Error((error as string) || "Something  went wrong");
   }
 };
+
+export const updateEpisodeThumbnail = async (id: number,data: FormData) => {
+    try {
+        const response = await axiosInstance.put(`comic/update-episode-thumbnail/${id}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.message || "Error occurred while update thumbnail")
+        }
+        throw new Error (error as string || "Something went wrong")
+    }
+}
+
+export const deleteEpisodeImage = async (episodeId: number, imageId: number) => {
+    try {
+        const response = await axiosInstance.delete(`comic/delete-episode-image/${episodeId}/${imageId}`);
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.message || "Error occurred while deleting episode image");
+        }
+        throw new Error (error as string || "Something went wrong")
+    }
+}

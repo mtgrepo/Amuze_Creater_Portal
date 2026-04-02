@@ -1,3 +1,4 @@
+import type { DetailsParams } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
 import type { ComicsTitleParams } from "@/composable/Query/Entertainment/Comics/useComicsTitleQuery";
 import axiosInstance from "@/http/httpClient"
 import { AxiosError } from "axios"
@@ -7,6 +8,7 @@ export interface TitleProps {
     description: string,
     genres: number[],
 }
+
 
 export const getAllComicsTitles = async (creatorId: number, params: ComicsTitleParams) => {
     try {
@@ -37,9 +39,9 @@ export const createComicsTitle = async (titleData: FormData) => {
     }
 }
 
-export const comicsTitleById = async (id: string) => {
+export const comicsTitleById = async (data: DetailsParams) => {
     try {
-        const response = await axiosInstance.get(`comic/get-comic-title/${String(id)}`);
+        const response = await axiosInstance.get(`comic/get-comic-title/${data?.id}?isRefresh=true&roleId=${data?.roleId}&userId=${data?.userId}`);
         console.log("details", response?.data)
         return response?.data;
     } catch (error) {
@@ -73,6 +75,24 @@ export const updateThumbnail = async (data: FormData, id: number) => {
     } catch (error) {
         if  (error instanceof AxiosError) {
             throw new Error (error?.response?.data?.message || "Error occurred while updating thumbnail")
+        }
+        throw new Error ("Something went wrong!")
+    }
+}
+
+export const getAllComments = async (id: number) => {
+    try {
+        const response = await axiosInstance.get(`comic/get-comments/${id}`, {
+            params: {
+                page: 1,
+                pageSize: 1000
+            }
+        });
+        console.log("comment res", response?.data)
+        return response?.data
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "Error occurred while fetching comments")
         }
         throw new Error ("Something went wrong!")
     }

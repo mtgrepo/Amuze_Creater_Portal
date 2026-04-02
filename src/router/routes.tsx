@@ -9,6 +9,7 @@ import MainCategory from "@/features/Genre/MainCategory/main_category";
 import Comics from "@/features/Entertainment/Comics/comics";
 import TitleCreate from "@/features/Entertainment/Comics/comic_title_create";
 import EditTitlePage from "@/features/Entertainment/Comics/comic_title_update";
+import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_details";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,16 @@ const router = createBrowserRouter([
             { label: "Title Edit" },
           ],
         },
+      },
+      {
+        path: "/entertainment/comics/details/:id",
+        element: <ComicsTitleDetails />,
+        handle: {
+          crumb: [
+            { label: ["Comics"], href: "/entertainment/comics" },
+            { label: "Title Details" },
+          ],
+        }
       },
       // Genres
       {

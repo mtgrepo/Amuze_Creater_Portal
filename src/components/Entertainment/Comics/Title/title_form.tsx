@@ -175,7 +175,6 @@ export default function ComicTitleForm({
 
           // await updateThumbnailsApi(defaultValues.id, thumbData);
           await updateThumbnailMutation({ id: Number(defaultValues?.id), data: thumbData });
-          toast.success("Thumbnails updating...");
         }
 
         // SCENARIO 2: Update Text Data (JSON)
@@ -188,7 +187,6 @@ export default function ComicTitleForm({
 
         // await updateTextApi(defaultValues.id, textPayload);
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
-        toast.success("Details updating...");
       }
       
       if (onSuccess) onSuccess();
@@ -286,7 +284,7 @@ export default function ComicTitleForm({
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
-                        className="min-h-[120px] resize-none"
+                        className="min-h-30 resize-none"
                         {...field}
                       />
                     </FormControl>
@@ -389,8 +387,8 @@ export default function ComicTitleForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isPending}>
-              {isPending && <Spinner />}
+            <Button type="submit" className="flex-1 " disabled={isPending || isThumbnailPending || isUpdatePending}>
+              {(isPending || isThumbnailPending || isUpdatePending) && <Spinner />}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>
           </div>

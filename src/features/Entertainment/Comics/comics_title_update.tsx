@@ -24,7 +24,7 @@ export default function EditTitlePage() {
   const title = titleDetails || state;
 
   if (isLoading && !title) return <p>Loading...</p>;
-  console.log("edit data", title?.generes);
+  // console.log("edit data", title?.generes);
   return (
     <div className="p-6">
       <ComicTitleForm

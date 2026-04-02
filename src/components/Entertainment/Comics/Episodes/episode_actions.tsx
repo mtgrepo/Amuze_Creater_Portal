@@ -31,6 +31,15 @@ export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps
     });
   };
 
+  const handleViewDetails = () => {
+        navigate(`/entertainment/comics/episode/details/${episode?.id}`, {
+      state: { 
+        episode, 
+        titleId // Now the EditPage can access location.state.titleId
+      },
+    });
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +53,7 @@ export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onSelect={() => console.log("View details")}>
+        <DropdownMenuItem onSelect={handleViewDetails}>
           <Info className="mr-2 h-4 w-4" /> View Details
         </DropdownMenuItem>
 

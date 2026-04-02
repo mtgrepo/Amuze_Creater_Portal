@@ -7,9 +7,6 @@ export default function EditEpisodePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-//   const storedCreator = localStorage.getItem("creator");
-//   const loginCreator = storedCreator ? decryptAuthData(storedCreator) : null;
-  
   // Access the titleId from navigation state
   const titleId = location.state?.titleId;
 

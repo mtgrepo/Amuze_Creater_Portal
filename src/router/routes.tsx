@@ -7,12 +7,13 @@ import LoginPage from "@/features/Auth/login";
 import Novel from "@/features/Entertainment/Novel/novel";
 import MainCategory from "@/features/Genre/MainCategory/main_category";
 import Comics from "@/features/Entertainment/Comics/comics";
-import TitleCreate from "@/features/Entertainment/Comics/comic_title_create";
-import EditTitlePage from "@/features/Entertainment/Comics/comic_title_update";
+import TitleCreate from "@/features/Entertainment/Comics/comics_title_create";
+import EditTitlePage from "@/features/Entertainment/Comics/comics_title_update";
 import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_details";
 import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_create";
 import { Label } from "radix-ui";
 import EditEpisodePage from "@/features/Entertainment/Comics/comics_episode_update";
+import ComicEpisodeDetails from "@/features/Entertainment/Comics/comics_episode_details";
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,16 @@ const router = createBrowserRouter([
           crumb: [
             { label: ["Comics"], href: "/entertainment/comics" },
             { label: "Episode Edit" },
+          ],
+        },
+      },
+            {
+        path: "/entertainment/comics/episode/details/:id",
+        element: <ComicEpisodeDetails />,
+        handle: {
+          crumb: [
+            { label: ["Comics"], href: "/entertainment/comics/:id" },
+            { label: "Episode Details" },
           ],
         },
       },

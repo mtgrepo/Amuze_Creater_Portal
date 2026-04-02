@@ -29,7 +29,7 @@ export default function ComicsTitleDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
         <p className="text-gray-400">Loading comic details...</p>
       </div>
@@ -38,7 +38,7 @@ export default function ComicsTitleDetails() {
 
   if (error || !comic) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-500 mb-2">Oops!</h2>
           <p className="text-gray-400">Failed to load comic details. Please refresh or try again.</p>

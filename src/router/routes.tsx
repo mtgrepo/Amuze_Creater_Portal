@@ -1,6 +1,6 @@
 import Dashboard from "@/features/Dashboard/dashboard";
 import App from "../App";
-import { createBrowserRouter, href } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
@@ -11,7 +11,6 @@ import TitleCreate from "@/features/Entertainment/Comics/comics_title_create";
 import EditTitlePage from "@/features/Entertainment/Comics/comics_title_update";
 import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_details";
 import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_create";
-import { Label } from "radix-ui";
 import EditEpisodePage from "@/features/Entertainment/Comics/comics_episode_update";
 import ComicEpisodeDetails from "@/features/Entertainment/Comics/comics_episode_details";
 
@@ -59,9 +58,9 @@ const router = createBrowserRouter([
         path: "/entertainment/comics/edit/:id",
         element: <EditTitlePage />,
         handle: {
-          crumb: [
+          crumb: ({ params }: any) => [
             { label: ["Comics"], href: "/entertainment/comics" },
-            { label: "Title Edit" },
+            { label: `Edit Title ${params?.id}` },
           ],
         },
       },
@@ -69,9 +68,9 @@ const router = createBrowserRouter([
         path: "/entertainment/comics/details/:id",
         element: <ComicsTitleDetails />,
         handle: {
-          crumb: [
+          crumb: ({ params }: any) => [
             { label: ["Comics"], href: "/entertainment/comics" },
-            { label: "Title Details" },
+            { label: `Title Details ${params?.id}` },
           ],
         },
       },
@@ -79,9 +78,11 @@ const router = createBrowserRouter([
         path: "/entertainment/comics/episode/create/:id",
         element: <ComicsEpisodeCreate />,
         handle: {
-          crumb: [
+          crumb: ({ params }: any) => [
+            { label: ["Entertainment"] },
             { label: ["Comics"], href: "/entertainment/comics" },
-            { Label: "Episode Create" },
+            { label: `Title ${params?.id}`, href: `/entertainment/comics/details/${params?.id}` },
+            { label: "Episode Create" },
           ],
         },
       },
@@ -89,8 +90,10 @@ const router = createBrowserRouter([
         path: "/entertainment/comics/episode/edit/:id",
         element: <EditEpisodePage />,
         handle: {
-          crumb: [
+          crumb: ({ params }: any) => [
+            { label: ["Entertainment"] },
             { label: ["Comics"], href: "/entertainment/comics" },
+            { label: `Title ${params?.id}`, href: `/entertainment/comics/details/${params?.id}` },
             { label: "Episode Edit" },
           ],
         },
@@ -99,10 +102,13 @@ const router = createBrowserRouter([
         path: "/entertainment/comics/episode/details/:id",
         element: <ComicEpisodeDetails />,
         handle: {
-          crumb: [
-            { label: ["Entertainment"] },
-            { label: ["Comics"], href: "/entertainment/comics/:id" },
-            { label: "Episode" },
+          crumb: ({ params }: any) => [
+            { label: "Entertainment" },
+            { label: "Comics", href: "/entertainment/comics" },
+            {
+              label: `Episode ${params?.id}`,
+              href: `/entertainment/comics/details/${params?.id}`,
+            },
             { label: "Details" },
           ],
         },

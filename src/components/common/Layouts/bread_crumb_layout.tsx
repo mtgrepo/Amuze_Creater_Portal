@@ -12,6 +12,7 @@ import React from "react";
 type MatchType = {
   pathname: string
   data?: any
+    params?: Record<string, string>  
   handle?: {
     crumb: string | string[] | ((data: any) => string | string[])
   }
@@ -42,9 +43,16 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
           // Get label(s) as array
           let labels: Array<{ label: string; href?: string }> = []
 
+          // const raw = typeof match.handle!.crumb === "function"
+          //   ? match.handle!.crumb(match.data)
+          //   : match.handle!.crumb
+
           const raw = typeof match.handle!.crumb === "function"
-            ? match.handle!.crumb(match.data)
-            : match.handle!.crumb
+  ? match.handle!.crumb({
+      data: match.data,
+      params: match.params   
+    })
+  : match.handle!.crumb
 
           if (Array.isArray(raw)) {
             labels = raw.map(l => typeof l === "string" ? { label: l } : l)

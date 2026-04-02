@@ -1,6 +1,7 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import ComicEpisodeForm from "@/components/Entertainment/Comics/Episodes/episode_form";
 import { useComicEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsEpisodeDetailsQuery";
+import { Loader2 } from "lucide-react";
 
 export default function EditEpisodePage() {
   const { id } = useParams();
@@ -18,8 +19,9 @@ export default function EditEpisodePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <p className="text-white animate-pulse">Loading Episode Details...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        <p className="text-gray-400">Loading comic details...</p>
       </div>
     );
   }
@@ -44,7 +46,7 @@ export default function EditEpisodePage() {
   };
 
   return (
-    <div className="p-6 bg-black min-h-screen">
+    <div className="p-6 min-h-screen">
       <ComicEpisodeForm
         mode="edit"
         comicTitleId={String(titleId)}

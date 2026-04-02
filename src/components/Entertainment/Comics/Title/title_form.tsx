@@ -197,7 +197,7 @@ export default function ComicTitleForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
+    <div className="max-w-4xl mx-auto p-6 border rounded-xl  shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           {/* HEADER SECTION */}
@@ -311,7 +311,7 @@ export default function ComicTitleForm({
                   return (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-base">Genres</FormLabel>
-                      <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-25">
+                      <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
                             const isSelected = field.value.includes(
@@ -350,7 +350,7 @@ export default function ComicTitleForm({
           {/* HORIZONTAL ASSETS SECTION */}
           <div className="pt-6 border-t">
             <h3 className="text-lg font-semibold mb-4">Marketing Assets</h3>
-            <div className="p-6 border rounded-xl bg-muted/20 border-dashed">
+            <div className="p-6 border rounded-xl  border-dashed">
               <FormField
                 control={form.control}
                 name="horizontal_thumbnail"

@@ -177,7 +177,7 @@ export default function ComicEpisodeForm({
             <FolderPlus className="text-primary" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight uppercase italic text-white">
+            <h1 className="text-xl font-bold tracking-tight uppercase italic ">
               {mode === "add" ? "New Episode" : "Edit Episode"}
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -219,12 +219,11 @@ export default function ComicEpisodeForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-white">Episode Name</FormLabel>
+                  <FormLabel className="font-bold ">Episode Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g. Chapter 05: The Storm"
                       {...field}
-                      className="bg-zinc-900 border-zinc-800 text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -237,13 +236,12 @@ export default function ComicEpisodeForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-white">Price (Coins)</FormLabel>
+                  <FormLabel className="font-bold ">Price (Coins)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
                       placeholder="Enter price"
-                      className="bg-zinc-900 border-zinc-800 text-white"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
@@ -256,7 +254,7 @@ export default function ComicEpisodeForm({
           {/* PAGES SECTION */}
           <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-2 text-white">
+              <div className="flex items-center gap-2 ">
                 <ImageIcon size={20} className="text-primary" />
                 <h3 className="text-lg font-bold">Comic Pages</h3>
                 <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-bold border border-primary/20">
@@ -295,7 +293,7 @@ export default function ComicEpisodeForm({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-[1.5rem] p-4">
+                    <div className="border border-border rounded-[1.5rem] p-4">
                       {field.value && field.value.length > 0 ? (
                         <ScrollArea className="h-[50vh] pr-4">
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -309,28 +307,28 @@ export default function ComicEpisodeForm({
                               return (
                                 <div
                                   key={img?.id || index}
-                                  className="group relative aspect-2/3 rounded-xl overflow-hidden border-2 border-zinc-800 shadow-md hover:border-primary/40 transition-all"
+                                  className="group relative aspect-2/3 rounded-xl overflow-hidden border-2 border-border shadow-md hover:border-primary transition-all"
                                 >
                                   <img
                                     src={url}
                                     alt={`Page ${index + 1}`}
                                     className="object-cover w-full h-full"
                                   />
-                                  <div className="absolute inset-0 bg-black/40 flex justify-end p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                    <button
+                                  <div className="absolute inset-0 flex justify-end p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                                    <Button
                                       type="button"
                                       disabled={deletePending}
                                       onClick={() => removeImage(index)}
-                                      className="h-8 w-8 bg-destructive text-white rounded-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
+                                      className="h-8 w-8 bg-destructive  rounded-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
                                     >
                                       {deletePending && isExisting ? (
                                         <Spinner className="w-4 h-4" />
                                       ) : (
                                         <X size={16} />
                                       )}
-                                    </button>
+                                    </Button>
                                   </div>
-                                  <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md text-[10px] text-white px-2 py-0.5 rounded-md font-bold">
+                                  <div className="absolute bottom-2 left-2 bg-primary-foreground backdrop-blur-md text-[10px] px-2 py-0.5 rounded-md font-bold">
                                     {String(index + 1).padStart(2, "0")}
                                   </div>
                                 </div>
@@ -340,8 +338,8 @@ export default function ComicEpisodeForm({
                         </ScrollArea>
                       ) : (
                         <div className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-zinc-800 rounded-[1.5rem]">
-                          <ImageIcon className="text-zinc-600 mb-2" size={32} />
-                          <p className="text-sm text-zinc-500">No pages uploaded yet</p>
+                          <ImageIcon className=" mb-2" size={32} />
+                          <p className="text-sm">No pages uploaded yet</p>
                         </div>
                       )}
                     </div>
@@ -353,18 +351,19 @@ export default function ComicEpisodeForm({
           </div>
 
           {/* FOOTER ACTIONS */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-zinc-800">
+          <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-border">
             <Button
               type="button"
               variant="outline"
-              className="flex-1 border-zinc-700 text-white"
+              className="flex-1 cursor-pointer"
               onClick={() => router.navigate(-1)}
+              disabled={createPending || updatePending || thumbnailPending}
             >
               Back to Series
             </Button>
             <Button 
               type="submit" 
-              className="flex-1" 
+              className="flex-1 cursor-pointer" 
               disabled={createPending || updatePending || thumbnailPending}
             >
               {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2" />}

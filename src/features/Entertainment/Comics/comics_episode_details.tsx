@@ -8,9 +8,9 @@ import {
   Eye,
   ArrowLeft,
   ChevronLeft,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -31,15 +31,16 @@ export default function ComicEpisodeDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <Spinner className="text-white" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        <p className="text-gray-400">Loading comic details...</p>
       </div>
     );
   }
 
   if (!episodeDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center ">
         <p>Episode details not found.</p>
       </div>
     );

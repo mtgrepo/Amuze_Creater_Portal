@@ -14,7 +14,7 @@ export const useComicsThumbnailUpdateCommand = () => {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["comicsTitleList"] });
-      router.navigate("/entertainment/comics");
+      router.navigate(-1);
       toast.success(`Updated thumbnail successfully`);
     },
   });

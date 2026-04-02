@@ -12,7 +12,7 @@ export const useComicsEpisodeCreateCommand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comicsEpisodesList"] });
       toast.success(`Added new comics episode successfully`);
-      router.navigate("/entertainment/comics");
+      router.navigate(-1);
     },
   });
 

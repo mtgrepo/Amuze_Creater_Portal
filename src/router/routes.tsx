@@ -95,13 +95,15 @@ const router = createBrowserRouter([
           ],
         },
       },
-            {
+      {
         path: "/entertainment/comics/episode/details/:id",
         element: <ComicEpisodeDetails />,
         handle: {
           crumb: [
+            { label: ["Entertainment"] },
             { label: ["Comics"], href: "/entertainment/comics/:id" },
-            { label: "Episode Details" },
+            { label: "Episode" },
+            { label: "Details" },
           ],
         },
       },

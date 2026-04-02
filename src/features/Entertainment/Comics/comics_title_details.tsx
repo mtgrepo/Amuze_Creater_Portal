@@ -71,7 +71,7 @@ export default function ComicsTitleDetails() {
             <h1 className="text-3xl md:text-5xl font-bold mb-2">
               {comic?.name}
             </h1>
-            {/* <p className="text-gray-400 mb-4">By {comic?.?.name || "Unknown Creator"}</p> */}
+            {/* <p className="text-gray-400 mb-4">By {comic?. || "Unknown Creator"}</p> */}
 
             {/* Genre Tags */}
             <div className="flex flex-wrap gap-2 mb-6">

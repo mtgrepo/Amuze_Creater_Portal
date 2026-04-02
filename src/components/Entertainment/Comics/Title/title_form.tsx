@@ -28,6 +28,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
 import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
 import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
+import router from "@/router/routes";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -379,15 +380,15 @@ export default function ComicTitleForm({
             <Button
               type="button"
               variant="outline"
-              className="flex-1 text-muted-foreground hover:text-destructive"
+              className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                router.navigate("/entertainment/comics");
               }}
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isPending || isThumbnailPending || isUpdatePending}>
+            <Button type="submit" className="flex-1 cursor-pointer" disabled={isPending || isThumbnailPending || isUpdatePending}>
               {(isPending || isThumbnailPending || isUpdatePending) && <Spinner />}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>

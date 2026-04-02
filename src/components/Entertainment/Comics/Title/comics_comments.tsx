@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useComicsTitleCommentQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useState } from "react";
@@ -5,11 +6,9 @@ import { useState } from "react";
 const CommentsSection = () => {
   const [replyToId, setReplyToId] = useState(null);
 
-  // 1. Fetch Auth Data
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
 
-  // 2. Fetch Actual API Data
   const { commentsList, isLoading } = useComicsTitleCommentQuery(creatorId!);
 
   // Helper to get initials for avatar
@@ -87,14 +86,14 @@ const CommentsSection = () => {
                       {comment.comment_text || comment.text}
                     </p>
 
-                    {/* --- ACTION BUTTONS --- */}
+                    {/*  ACTION BUTTONS  */}
                     <div className="flex items-center gap-6">
-                      <button
+                      <Button
                         onClick={() => setReplyToId(comment.id)}
                         className="text-[10px] font-black text-gray-500 hover:text-blue-500 tracking-widest uppercase transition"
                       >
                         Reply
-                      </button>
+                      </Button>
 
                       {/* Only Author of the comic OR the comment creator can delete */}
                       {isCommentAuthor && (
@@ -107,7 +106,7 @@ const CommentsSection = () => {
                       )}
                     </div>
 
-                    {/* --- NESTED REPLIES --- */}
+                    {/*  NESTED REPLIES  */}
                     {comment.replies && comment.replies.length > 0 && (
                       <div className="mt-6 ml-2 pl-6 border-l-2 border-gray-900 space-y-6">
                         {comment.replies.map((reply: any) => (
@@ -143,7 +142,7 @@ const CommentsSection = () => {
                       </div>
                     )}
 
-                    {/* --- REPLY INPUT BOX --- */}
+                    {/*  REPLY INPUT BOX  */}
                     {replyToId === comment.id && (
                       <div className="mt-4 flex flex-col gap-2 animate-in slide-in-from-top-2 duration-300">
                         <input

@@ -6,7 +6,7 @@ export const useComicsTitleCommentQuery = (id: number) => {
         queryKey: ['titleComments'],
         queryFn: async () => {
             const res = await getAllComments(id);
-            console.log("cmt in query", res);
+            // console.log("cmt in query", res);
             return res?.data 
         }
     })

@@ -9,7 +9,7 @@ export const useComicsThumbnailUpdateCommand = () => {
     mutationKey: ["updateThumbnail"],
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
       const res = await updateThumbnail(data, id);
-      console.log("update res", res);
+      // console.log("update res", res);
       return res?.data;
     },
     onSuccess: () => {

@@ -7,7 +7,6 @@ import { DollarSign, Star, Eye, ThumbsUp, Loader2 } from "lucide-react";
 export default function ComicsTitleDetails() {
   const { id } = useParams();
 
-  // Extract and decrypt user data safely
   const authData = localStorage.getItem("creator");
   const loginCreator = authData ? decryptAuthData(authData) : null;
   const creator = loginCreator?.creator;
@@ -21,10 +20,8 @@ export default function ComicsTitleDetails() {
     userId: userId,
   };
 
-  // Fetch details using your custom hook
   const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
 
-  // --- 1. LOADING STATE ---
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4">
@@ -34,7 +31,6 @@ export default function ComicsTitleDetails() {
     );
   }
 
-  // --- 2. ERROR OR EMPTY STATE ---
   if (error || !comic) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -46,7 +42,6 @@ export default function ComicsTitleDetails() {
     );
   }
 
-  // --- 3. SUCCESS STATE (Data is now guaranteed to exist) ---
   return (
     <div className="min-h-screen bg-black text-white font-sans">
       {/* Banner / Header Area */}
@@ -56,7 +51,7 @@ export default function ComicsTitleDetails() {
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${comic?.horizontal_thumbnail})` }}
         ></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
 
         {/* Content Overlay */}
         <div className="relative flex p-6 max-w-6xl mx-auto h-full items-end gap-6">

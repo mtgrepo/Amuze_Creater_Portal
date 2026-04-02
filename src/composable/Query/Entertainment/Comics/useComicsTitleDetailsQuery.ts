@@ -11,7 +11,7 @@ export const useComicsTitleDetailsQuery = (data: DetailsParams) => {
     queryKey: ["comicsTitleDetails", data?.id],
     queryFn: async () => {
       const res = await comicsTitleById(data);
-      console.log("data in qu", res);
+    //   console.log("data in qu", res);
       return res?.data;
     },
     enabled: !!data?.id,

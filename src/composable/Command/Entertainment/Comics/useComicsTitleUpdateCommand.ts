@@ -9,7 +9,7 @@ export const useComicsTitleUpdateCommand = () => {
         mutationKey: ['updateTitle'],
         mutationFn: async ({id, data}: {id: string, data: TitleProps}) => {
             const res = await updateTitle(data, Number(id));
-            console.log("update res", res);
+            // console.log("update res", res);
             return res?.data;
         },
         onSuccess: () => {

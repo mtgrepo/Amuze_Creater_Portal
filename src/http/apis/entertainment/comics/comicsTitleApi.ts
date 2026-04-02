@@ -42,7 +42,7 @@ export const createComicsTitle = async (titleData: FormData) => {
 export const comicsTitleById = async (data: DetailsParams) => {
     try {
         const response = await axiosInstance.get(`comic/get-comic-title/${data?.id}?isRefresh=true&roleId=${data?.roleId}&userId=${data?.userId}`);
-        console.log("details", response?.data)
+        // console.log("details", response?.data)
         return response?.data;
     } catch (error) {
         if (error instanceof AxiosError) {

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
+import { Badge } from "@/components/ui/badge";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -47,7 +48,7 @@ export default function ComicsTitleDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen">
       {/* Banner / Header Area */}
       <div className="relative w-full h-80 md:h-96">
         {/* Background Overlay */}
@@ -55,7 +56,7 @@ export default function ComicsTitleDetails() {
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${comic?.horizontal_thumbnail})` }}
         ></div>
-        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
+        <div className="absolute inset-0 "></div>
 
         {/* Content Overlay */}
         <div className="relative flex p-6 max-w-6xl mx-auto h-full items-end gap-6">
@@ -75,17 +76,14 @@ export default function ComicsTitleDetails() {
             {/* Genre Tags */}
             <div className="flex flex-wrap gap-2 mb-6">
               {comic?.generes?.map((genre: any) => (
-                <span
-                  key={genre.id}
-                  className="bg-gray-800/80 px-3 py-1 rounded-full text-xs border border-gray-600"
-                >
+                <Badge key={genre?.id}>
                   {genre.name}
-                </span>
+                </Badge>
               ))}
             </div>
 
             {/* Stats Bar */}
-            <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-gray-300">
+            <div className="flex flex-wrap items-center gap-6 text-sm font-medium ">
               <div className="flex items-center gap-2">
                 <div className="bg-blue-500/20 p-1.5 rounded-lg">
                   <DollarSign className="w-4 h-4 text-blue-500" />
@@ -121,12 +119,12 @@ export default function ComicsTitleDetails() {
       {/* Episode List Section */}
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-100">
+          <h2 className="text-2xl font-semibold">
             Episode Lists
           </h2>
           <Button 
             onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`)}
-            className="bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors">
+            className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors">
             Add
           </Button>
         </div>
@@ -136,7 +134,7 @@ export default function ComicsTitleDetails() {
             comic.comic_episodes.map((ep: any, index: number) => (
               <div
                 key={ep.id}
-                className="flex items-center bg-[#121212] border border-gray-800 p-3 rounded-xl hover:bg-gray-900 transition-colors"
+                className="flex items-center  border border-border p-3 rounded-xl  transition-colors"
               >
                 <span className="w-8 text-gray-500 text-center">
                   {index + 1}

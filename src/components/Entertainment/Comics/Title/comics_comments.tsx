@@ -31,7 +31,7 @@ const CommentsSection = () => {
   const comments = commentsList || [];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-black text-white font-sans">
+    <div className="max-w-6xl mx-auto p-6 ">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-xl font-bold">
           Comments{" "}

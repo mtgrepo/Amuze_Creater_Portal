@@ -14,7 +14,7 @@ export default function Comics() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  const creatorId = loginCreator?.creator?.uuid;
+  const creatorId = loginCreator?.creator?.id;
 
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {

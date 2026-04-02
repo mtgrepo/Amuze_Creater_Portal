@@ -3,7 +3,7 @@ import axiosInstance from "@/http/httpClient"
 import { AxiosError } from "axios"
 
 
-export const getAllComicsTitles = async (creatorId: string, params: ComicsTitleParams) => {
+export const getAllComicsTitles = async (creatorId: number, params: ComicsTitleParams) => {
     try {
         const response = await axiosInstance.get(`comic/get-all-comic-titles?authorId=${creatorId}`, {params});
         // console.log("comics title response", response?.data?.data);
@@ -27,6 +27,19 @@ export const createComicsTitle = async (titleData: FormData) => {
     } catch (error) {
         if (error instanceof AxiosError) {
             throw new Error (error?.response?.data?.message || "Error occurred while creating comics title")
+        }
+        throw new Error ("Something went wrong!")
+    }
+}
+
+export const comicsTitleById = async (id: string) => {
+    try {
+        const response = await axiosInstance.get(`comic/get-comic-title/${String(id)}`);
+        console.log("details", response?.data)
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "Error occurred while fetching comics title details")
         }
         throw new Error ("Something went wrong!")
     }

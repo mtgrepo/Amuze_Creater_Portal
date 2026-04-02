@@ -7,7 +7,7 @@ export interface ComicsTitleParams {
     approve_status?: number,
     is_published?: boolean
 }
-export const useComicsTitleQuery = (creatorId: string, params: ComicsTitleParams) => {
+export const useComicsTitleQuery = (creatorId: number, params: ComicsTitleParams) => {
     const comicsTitleList = useQuery({
         queryKey: ['comicsTitleList', params?.page, params?.pageSize, params?.approve_status, params?.is_published],
         queryFn: async () => {

@@ -28,12 +28,16 @@ export interface AuthData {
   creator: CreatorDetails | null;
   token: Token | null;
 }
-
 /**
  * Encrypt AuthData to string for localStorage
  */
 export function encryptAuthData(data: AuthData): string {
-  return btoa(JSON.stringify(data));
+  const jsonString = JSON.stringify(data);
+  // Convert string to UTF-8 bytes
+  const bytes = new TextEncoder().encode(jsonString);
+  // Convert bytes to a binary string that btoa can handle
+  const binaryString = String.fromCharCode(...bytes);
+  return btoa(binaryString);
 }
 
 /**
@@ -41,15 +45,21 @@ export function encryptAuthData(data: AuthData): string {
  */
 export function decryptAuthData(dataStr: string): AuthData | null {
   try {
-    const data = JSON.parse(atob(dataStr));
+    const binaryString = atob(dataStr);
+    // Convert binary string back to bytes
+    const bytes = Uint8Array.from(binaryString, (c) => c.charCodeAt(0));
+    // Decode bytes back to UTF-8 string
+    const jsonString = new TextDecoder().decode(bytes);
+    
+    const data = JSON.parse(jsonString);
 
-    // Ensure permissions exists
     if (data.creator && !data.creator.permissions) {
       data.creator.permissions = [];
     }
 
     return data;
   } catch (error) {
+    console.error("Decryption failed:", error);
     return null;
   }
 }

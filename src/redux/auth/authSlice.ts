@@ -1,6 +1,6 @@
-// authSlice.ts
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { encryptAuthData, decryptAuthData, type CreatorDetails, type Token, type AuthData } from '@/lib/helper';
+import { toast } from 'sonner';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -8,7 +8,6 @@ interface AuthState {
   token: Token | null;
 }
 
-// Load initial state from localStorage
 const stored = localStorage.getItem('creator');
 const initialUser: AuthData | null = stored ? decryptAuthData(stored) : null;
 
@@ -23,9 +22,22 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action: PayloadAction<{ creator: CreatorDetails; token: Token }>) => {
+      // 1. Check if the role_id is exactly 4
+      if (action.payload.creator.role_id !== 4) {
+        toast.error("Unauthorized: Access restricted to specific roles.");
+        
+        // Ensure state remains empty/unauthenticated
+        state.creator = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        return; 
+      }
+
+      // 2. Proceed with login if role_id is 4
       state.creator = action.payload.creator;
       state.token = action.payload.token;
       state.isAuthenticated = !!action.payload.token?.access;
+      
       localStorage.setItem('creator', encryptAuthData({
         creator: action.payload.creator,
         token: action.payload.token,

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {  CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +22,10 @@ import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/common/image_upload";
 
 // Custom Helpers
-import { decryptAuthData } from "@/lib/helper";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { useComicsTitleCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
-
+import { decryptAuthData } from "@/lib/helper";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -74,19 +73,36 @@ export default function ComicTitleForm({
       created_by: "",
     },
   });
+// Inside ComicTitleForm...
 
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth decryption failed", error);
+useEffect(() => {
+  if (defaultValues) {
+    // reset() is the key to filling the form with async data
+    form.reset({
+      name: defaultValues.name || "",
+      description: defaultValues.description || "",
+      genres: defaultValues.genres || [],
+      price: defaultValues.price ?? 0,
+      thumbnail: defaultValues.thumbnail,
+      horizontal_thumbnail: defaultValues.horizontal_thumbnail,
+      created_by: form.getValues("created_by") // preserve the ID from the other effect
+    });
+  }
+}, [defaultValues, form]);
+useEffect(() => {
+  try {
+    const storedData = localStorage.getItem("creator");
+    if (storedData) {
+      // const loginCreator = JSON.parse(storedData);
+      // const id = loginCreator?.creator?.id;
+      const loginCreator = decryptAuthData(storedData);
+      const id = loginCreator?.creator?.id;
+      if (id) form.setValue("created_by", id);
     }
-  }, [form]);
+  } catch (error) {
+    console.error("Failed to read auth data from localStorage", error);
+  }
+}, [form]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -95,19 +111,17 @@ export default function ComicTitleForm({
       Object.entries(values).forEach(([key, value]) => {
         if (value === null || value === undefined) return;
 
-if (key === "genres" && Array.isArray(value)) {
-        // Change: Stringify the array instead of looping
-        formData.append(key, JSON.stringify(value));
-      } else if (value instanceof File) {
-        formData.append(key, value);
-      } else {
-        formData.append(key, String(value));
-      }
+        if (key === "genres" && Array.isArray(value)) {
+          value.forEach((g) => {
+            formData.append("genres", g);
+          });
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
+        }
       });
-
-      // API CALLS (Mocked)
       if (mode === "add") {
-        console.log("values", values)
         await titleMutation(formData);
         onSuccess?.();
         form?.reset();
@@ -238,7 +252,7 @@ if (key === "genres" && Array.isArray(value)) {
                   return (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-base">Genres</FormLabel>
-                      <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-[100px]">
+                      <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
                             const isSelected = field.value.includes(
@@ -316,7 +330,7 @@ if (key === "genres" && Array.isArray(value)) {
               Cancel & Reset
             </Button>
             <Button type="submit" className="flex-1 " disabled={isPending}>
-                {isPending && <Spinner />}
+              {isPending && <Spinner />}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>
           </div>

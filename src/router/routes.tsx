@@ -12,6 +12,7 @@ import EditTitlePage from "@/features/Entertainment/Comics/comic_title_update";
 import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_details";
 import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_create";
 import { Label } from "radix-ui";
+import EditEpisodePage from "@/features/Entertainment/Comics/comics_episode_update";
 
 const router = createBrowserRouter([
   {
@@ -71,17 +72,27 @@ const router = createBrowserRouter([
             { label: ["Comics"], href: "/entertainment/comics" },
             { label: "Title Details" },
           ],
-        }
+        },
       },
       {
         path: "/entertainment/comics/episode/create/:id",
         element: <ComicsEpisodeCreate />,
         handle: {
           crumb: [
-            { label: ['Comics'], href: "/entertainment/comics"},
-            { Label: "Episode Create"}
-          ]
-        }
+            { label: ["Comics"], href: "/entertainment/comics" },
+            { Label: "Episode Create" },
+          ],
+        },
+      },
+      {
+        path: "/entertainment/comics/episode/edit/:id",
+        element: <EditEpisodePage />,
+        handle: {
+          crumb: [
+            { label: ["Comics"], href: "/entertainment/comics" },
+            { label: "Episode Edit" },
+          ],
+        },
       },
       // Genres
       {

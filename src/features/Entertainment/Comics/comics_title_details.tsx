@@ -2,11 +2,10 @@ import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comm
 import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useParams } from "react-router-dom";
-import { DollarSign, Star, Eye, ThumbsUp, Loader2, ThumbsUpIcon, XCircle, CircleCheckBig } from "lucide-react";
+import { DollarSign, Star, Eye, ThumbsUp, Loader2, XCircle, CircleCheckBig } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
-import TitleActions from "@/components/Entertainment/Comics/Title/title_actions";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 
 export default function ComicsTitleDetails() {
@@ -149,7 +148,7 @@ export default function ComicsTitleDetails() {
                 />
                 <div className="flex-1">
                   <h4 className="font-medium">
-                    {ep.title || `Episode ${index + 1}`}
+                    {ep.name || `Episode ${index + 1}`}
                   </h4>
                   <p className="text-xs text-gray-500">
                     {new Date(comic.created_at).toLocaleDateString()}
@@ -174,7 +173,7 @@ export default function ComicsTitleDetails() {
                     )}
                   </div>
                   <button className="text-gray-500 hover:text-white">
-                    <EpisodeActions {...ep}/>
+                    <EpisodeActions episode={ep} titleId={comic?.id}/>
                   </button>
                 </div>
               </div>

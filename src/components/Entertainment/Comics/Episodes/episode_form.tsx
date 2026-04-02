@@ -22,12 +22,15 @@ import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useComicsEpisodeCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeCreateCommand";
+import { Spinner } from "@/components/ui/spinner";
+import { useComicEpisodeUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeUpdateCommand";
 
 // --- SCHEMA ---
 function createEpisodeSchema(mode: "add" | "edit") {
-  const fileSchema = mode === "add" 
-    ? z.custom<File>((val) => val instanceof File, "Required") 
-    : z.union([z.instanceof(File), z.string()]).optional();
+  const fileSchema =
+    mode === "add"
+      ? z.custom<File>((val) => val instanceof File, "Required")
+      : z.union([z.instanceof(File), z.string()]).optional();
 
   return z.object({
     name: z.string().min(1, "Episode name is required."),
@@ -91,7 +94,11 @@ export default function ComicEpisodeForm({
   }, [form]);
 
   const { episodeMutation, isPending } = useComicsEpisodeCreateCommand();
-  // 4. SUBMIT LOGIC
+
+  //without thumbnail
+  const { episodeMutation: updateMutation, isPending: updatePending } =
+    useComicEpisodeUpdateCommand();
+
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
       const formData = new FormData();
@@ -106,16 +113,34 @@ export default function ComicEpisodeForm({
 
       values.images.forEach((file) => {
         if (file instanceof File) {
-          formData.append("images[]", file);
+          formData.append("images", file);
         }
       });
 
       // API Call would go here
       console.log("Submitting Payload:", values);
-      if(mode === "add") {
-        await episodeMutation(formData)
+      if (mode === "add") {
+        await episodeMutation(formData);
+      } else {
+        // Condition A: Update WITH new thumbnail file
+        if (values.thumbnail instanceof File) {
+          formData.append("thumbnail", values.thumbnail);
+          // Pass the ID to your update mutation if required by your hook
+          await updateMutation({
+            id: Number(defaultValues?.id),
+            data: formData,
+          });
+        }
+        // Condition B: Update WITHOUT changing thumbnail (keeping existing string URL)
+        else {
+          // If your updateMutation hook handles both, just call it.
+          // If they are strictly different endpoints, trigger the specific one here.
+          await updateMutation({
+            id: Number(defaultValues?.id),
+            data: formData,
+          });
+        }
       }
-      toast.success(`Episode ${mode === "add" ? "published" : "updated"} successfully!`);
       if (onSuccess) onSuccess();
     } catch (err: any) {
       toast.error(err.message || "An error occurred during submission");
@@ -134,14 +159,15 @@ export default function ComicEpisodeForm({
             <h1 className="text-2xl font-bold tracking-tight uppercase italic">
               {mode === "add" ? "New Episode" : "Edit Episode"}
             </h1>
-            <p className="text-muted-foreground text-sm">Upload pages and manage episode details.</p>
+            <p className="text-muted-foreground text-sm">
+              Upload pages and manage episode details.
+            </p>
           </div>
         </div>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-          
           {/* COVER SECTION */}
           <section className="flex flex-col items-center justify-center shadow-inner">
             <FormField
@@ -174,7 +200,9 @@ export default function ComicEpisodeForm({
                 <FormItem>
                   <FormLabel className="font-bold">Episode Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Chapter 05: The Storm" {...field} 
+                    <Input
+                      placeholder="e.g. Chapter 05: The Storm"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -190,11 +218,11 @@ export default function ComicEpisodeForm({
                   <FormLabel className="font-bold">Price (Coins)</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         placeholder="Enter price"
-                        onChange={(e) => field.onChange(Number(e.target.value))} 
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                         // className="h-12 bg-background pl-10 border-muted-foreground/20"
                       />
                     </div>
@@ -217,7 +245,12 @@ export default function ComicEpisodeForm({
               </div>
 
               <div className="relative">
-                <Button type="button" size="sm" variant="outline" className="gap-2 border-primary/50 text-primary hover:bg-primary/5 transition-all">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="gap-2 border-primary/50 text-primary hover:bg-primary/5 transition-all"
+                >
                   <Plus size={16} /> Add Pages
                 </Button>
                 <Input
@@ -228,7 +261,9 @@ export default function ComicEpisodeForm({
                   onChange={(e) => {
                     const files = Array.from(e.target.files || []);
                     const current = form.getValues("images") || [];
-                    form.setValue("images", [...current, ...files], { shouldValidate: true });
+                    form.setValue("images", [...current, ...files], {
+                      shouldValidate: true,
+                    });
                   }}
                 />
               </div>
@@ -245,12 +280,18 @@ export default function ComicEpisodeForm({
                         <ScrollArea className="h-[50vh] pr-4">
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             {field.value.map((img: any, index: number) => {
-                              const url = img instanceof File ? URL.createObjectURL(img) : img;
+                              const url =
+                                img instanceof File
+                                  ? URL.createObjectURL(img)
+                                  : img;
                               return (
-                                <div key={index} className="group relative aspect-2/3 rounded-xl overflow-hidden border-2 border-background shadow-md hover:border-primary/40 transition-all">
-                                  <img 
-                                    src={url} 
-                                    alt={`Page ${index + 1}`} 
+                                <div
+                                  key={index}
+                                  className="group relative aspect-2/3 rounded-xl overflow-hidden border-2 border-background shadow-md hover:border-primary/40 transition-all"
+                                >
+                                  <img
+                                    src={url}
+                                    alt={`Page ${index + 1}`}
                                     className="object-cover w-full h-full"
                                   />
                                   {/* DELETE OVERLAY */}
@@ -265,7 +306,7 @@ export default function ComicEpisodeForm({
                                   </div>
                                   {/* PAGE BADGE */}
                                   <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md text-[10px] text-white px-2 py-0.5 rounded-md font-bold">
-                                    {String(index + 1).padStart(2, '0')}
+                                    {String(index + 1).padStart(2, "0")}
                                   </div>
                                 </div>
                               );
@@ -274,21 +315,28 @@ export default function ComicEpisodeForm({
                         </ScrollArea>
                       ) : (
                         <div className="relative group flex flex-col items-center justify-center h-50 border-2 border-dashed rounded-[1.5rem] bg-background/50 hover:bg-background transition-colors cursor-pointer">
-                           <Input
-                              type="file"
-                              multiple
-                              accept="image/*"
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={(e) => {
-                                const files = Array.from(e.target.files || []);
-                                field.onChange([...field.value, ...files]);
-                              }}
+                          <Input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              field.onChange([...field.value, ...files]);
+                            }}
+                          />
+                          <div className="bg-muted p-4 rounded-full mb-3 group-hover:scale-110 transition-transform">
+                            <ImageIcon
+                              className="text-muted-foreground"
+                              size={32}
                             />
-                            <div className="bg-muted p-4 rounded-full mb-3 group-hover:scale-110 transition-transform">
-                              <ImageIcon className="text-muted-foreground" size={32} />
-                            </div>
-                            <p className="text-sm font-medium text-muted-foreground">Select your comic pages</p>
-                            <p className="text-[11px] text-muted-foreground/60 mt-1 uppercase tracking-wider">Drag & Drop supported</p>
+                          </div>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            Select your comic pages
+                          </p>
+                          <p className="text-[11px] text-muted-foreground/60 mt-1 uppercase tracking-wider">
+                            Drag & Drop supported
+                          </p>
                         </div>
                       )}
                     </div>
@@ -309,7 +357,8 @@ export default function ComicEpisodeForm({
             >
               Back to Series
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" className="flex-1" disabled={isPending}>
+              {isPending && <Spinner />}
               {mode === "add" ? "Publish Episode" : "Update Episode"}
             </Button>
           </div>

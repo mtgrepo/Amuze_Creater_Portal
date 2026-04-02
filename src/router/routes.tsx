@@ -1,6 +1,6 @@
 import Dashboard from "@/features/Dashboard/dashboard";
 import App from "../App";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, href } from "react-router-dom";
 import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
@@ -10,6 +10,8 @@ import Comics from "@/features/Entertainment/Comics/comics";
 import TitleCreate from "@/features/Entertainment/Comics/comic_title_create";
 import EditTitlePage from "@/features/Entertainment/Comics/comic_title_update";
 import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_details";
+import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_create";
+import { Label } from "radix-ui";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +71,16 @@ const router = createBrowserRouter([
             { label: ["Comics"], href: "/entertainment/comics" },
             { label: "Title Details" },
           ],
+        }
+      },
+      {
+        path: "/entertainment/comics/episode/create/:id",
+        element: <ComicsEpisodeCreate />,
+        handle: {
+          crumb: [
+            { label: ['Comics'], href: "/entertainment/comics"},
+            { Label: "Episode Create"}
+          ]
         }
       },
       // Genres

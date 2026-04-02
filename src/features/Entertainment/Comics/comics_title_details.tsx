@@ -2,7 +2,12 @@ import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comm
 import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useParams } from "react-router-dom";
-import { DollarSign, Star, Eye, ThumbsUp, Loader2 } from "lucide-react";
+import { DollarSign, Star, Eye, ThumbsUp, Loader2, ThumbsUpIcon, XCircle, CircleCheckBig } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import router from "@/router/routes";
+import IconWithTooltip from "@/components/common/IconWithTooltip";
+import TitleActions from "@/components/Entertainment/Comics/Title/title_actions";
+import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -66,7 +71,7 @@ export default function ComicsTitleDetails() {
             <h1 className="text-3xl md:text-5xl font-bold mb-2">
               {comic?.name}
             </h1>
-            <p className="text-gray-400 mb-4">By {comic?.createdByUser?.name || "Unknown Creator"}</p>
+            {/* <p className="text-gray-400 mb-4">By {comic?.?.name || "Unknown Creator"}</p> */}
 
             {/* Genre Tags */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -120,9 +125,11 @@ export default function ComicsTitleDetails() {
           <h2 className="text-2xl font-semibold text-gray-100">
             Episode Lists
           </h2>
-          <button className="bg-blue-600 hover:bg-blue-700 px-6 py-1.5 rounded-full text-sm font-medium transition-colors">
+          <Button 
+            onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`)}
+            className="bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors">
             Add
-          </button>
+          </Button>
         </div>
 
         <div className="space-y-3">
@@ -136,7 +143,7 @@ export default function ComicsTitleDetails() {
                   {index + 1}
                 </span>
                 <img
-                  src={comic.thumbnail}
+                  src={ep.thumbnail}
                   alt=""
                   className="w-12 h-12 rounded object-cover mx-4"
                 />
@@ -149,12 +156,26 @@ export default function ComicsTitleDetails() {
                   </p>
                 </div>
                 <div className="flex items-center gap-4 px-4">
-                  <span className="text-yellow-500 text-sm">🪙 0</span>
-                  <div className="bg-gray-800 px-2 py-1 rounded text-xs">
+                  <span className="text-yellow-500 text-sm">🪙 {ep?.price}</span>
+                  {/* <div className="bg-gray-800 px-2 py-1 rounded text-xs">
                     1 ⌄
+                  </div> */}
+                  <div className="text-green-500 text-xl">
+                    {ep?.approve_status === 0 ? (
+                      <IconWithTooltip 
+                        tooltip="Unapproved"
+                        icon={<XCircle className="w-4 h-4 text-red-500" />}
+                        />
+                    ) : (
+                      <IconWithTooltip 
+                        tooltip="Approved" 
+                        icon={<CircleCheckBig className="w-4 h-4 text-green-500" />}
+                        />
+                    )}
                   </div>
-                  <div className="text-green-500 text-xl">✔️</div>
-                  <button className="text-gray-500 hover:text-white">⋮</button>
+                  <button className="text-gray-500 hover:text-white">
+                    <EpisodeActions {...ep}/>
+                  </button>
                 </div>
               </div>
             ))

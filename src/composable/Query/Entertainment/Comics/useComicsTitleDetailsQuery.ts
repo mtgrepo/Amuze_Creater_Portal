@@ -1,4 +1,5 @@
 import { comicsTitleById } from "@/http/apis/entertainment/comics/comicsTitleApi";
+import type { ComicsTitleDetailsResponse } from "@/types/response/entertainment/comics/comicsTitleDetailsResponse";
 import { useQuery } from "@tanstack/react-query";
 
 export interface DetailsParams {
@@ -7,7 +8,7 @@ export interface DetailsParams {
   userId: number;
 }
 export const useComicsTitleDetailsQuery = (data: DetailsParams) => {
-  const titleDetails = useQuery({
+  const titleDetails = useQuery<ComicsTitleDetailsResponse>({
     queryKey: ["comicsTitleDetails", data?.id],
     queryFn: async () => {
       const res = await comicsTitleById(data);

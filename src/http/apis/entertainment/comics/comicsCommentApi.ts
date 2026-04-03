@@ -12,3 +12,19 @@ export const deleteComment = async (commentId: number) => {
         throw new Error("An unexpected error occurred while deleting the comment")
     }
 }
+
+export const replyComment = async (comicId: number, parentId: number, comment: string) => {
+    try {
+        const response = await axiosInstance.post(`comic/store-comment`, {
+            comicId,
+            parentId,
+            comment
+        })
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data?.message || "Failed to reply to comment")
+        }
+        throw new Error("An unexpected error occurred while replying to the comment")
+    }
+}

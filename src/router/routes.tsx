@@ -161,6 +161,6 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-]);
+], { basename: "/creator-portal" });
 
 export default router;

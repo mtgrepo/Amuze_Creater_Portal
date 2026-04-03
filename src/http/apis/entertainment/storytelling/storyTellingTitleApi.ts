@@ -1,5 +1,6 @@
 import type { StoryTellingTitleParams } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleQuery";
 import axiosInstance from "@/http/httpClient";
+import type { UpdateStoryTitlePayload } from "@/types/response/entertainment/storytelling/storytellingResponse";
 import { AxiosError } from "axios";
 
 export const getAllStoryTellingTitles = async (
@@ -55,3 +56,27 @@ export const getStoryTellingTitleById = async (storyId: number) => {
     throw new Error((error as string) || "Something went wrong");
   }
 };
+
+export const updateStoryTellingTitle = async (titleId: number, data: UpdateStoryTitlePayload) => {
+  try{
+    const response = await axiosInstance.put(`/story/update-story-title/${titleId}`, data);
+    return response.data;
+  }catch(error){
+ if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "API failed");
+    }
+    throw new Error((error as string) || "Something went wrong");
+  }
+}
+
+export const updateStoryTellingThumbnail = async(titleId: number, type: string, thumbnail: string) => {
+  try{
+    const response = await axiosInstance.put(`/story/story/update-story-title-thumbnail/${type}/${titleId}`, {thumbnail});
+    return response.data;
+  }catch(error){
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "API failed");
+    }
+    throw new Error((error as string) || "Something went wrong");
+  }
+}

@@ -1,3 +1,4 @@
+//responses
 export interface StoryTellingTitleResponse {
     id?: number;
     uuid: string;
@@ -32,4 +33,11 @@ export interface StoryEpisodeResponse {
 export interface Generes {
     id: number;
     name: string;
+}
+
+//payload
+export interface UpdateStoryTitlePayload {
+  name: string,
+  description: string,
+  genres: number[]
 }

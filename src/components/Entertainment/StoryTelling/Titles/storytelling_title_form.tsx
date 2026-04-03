@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useStoryTellingTitleCreateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleCreateCommand";
+import { useStoryTellingTitleUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleUpdateCommand";
 import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,7 +56,9 @@ export default function StoryTellingTitleForm({
     const formSchema = createFormSchema(mode);
     const [subcategory_id] = React.useState<number>(3);
     const {genresList} = useGenresBySubCategoryQuery(subcategory_id);
-    const {titleMutation, isPending} = useStoryTellingTitleCreateCommand();
+    const {createTitleMutation, isStoryCreatePending} = useStoryTellingTitleCreateCommand();
+    const {updateTitleMutation, isStoryTitleUpdatePending} = useStoryTellingTitleUpdateCommand();
+    // const {updateStoryTitleThumbnail, isStoryTitleThumbnail} = 
 
     const form = useForm<TitleFormValues>({
          resolver: zodResolver(formSchema),
@@ -95,38 +98,38 @@ export default function StoryTellingTitleForm({
       }
     }, [form]);
 
-    const onSubmit = async (values: TitleFormValues) => {
-        try {
-          const formData = new FormData();
-    
-          Object.entries(values).forEach(([key, value]) => {
-            if (value === null || value === undefined) return;
-    
-            if (key === "genres" && Array.isArray(value)) {
-              value.forEach((g) => {
-                formData.append("genres", g);
-              });
-            } else if (value instanceof File) {
-              formData.append(key, value);
-            } else {
-              formData.append(key, String(value));
-            }
-          });
-          if (mode === "add") {
-            await titleMutation(formData);
-            onSuccess?.();
-            form?.reset();
-          } else {
-            if (!defaultValues?.id) throw new Error("ID missing for update");
-            toast.success("Storytelling Title Updated!");
+   const onSubmit = async(values: TitleFormValues) => {
+    try{
+     
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, value]) => {
+          if(value === null  || value === undefined) return;
+          if(key === "genres" && Array.isArray(value)){
+            value.forEach((g) => formData.append("genres", g))
           }
-    
-          form.reset();
-          onSuccess?.();
-        } catch (err: any) {
-          toast.error(err.message || "An error occurred during submission.");
+          else if(value instanceof File) {
+            formData.append(key, value)
+          }
+          else{
+            formData.append(key, String(value))
+          }
+        });
+         if(mode === "add"){
+          await createTitleMutation(formData);
+          toast.success("Title created successfully.")
+      }else{
+        const updateStoryTitlePayload = {
+          name: values.name,
+          description: values.description,
+          genres: values.genres.map(Number)
         }
-      };
+        if(!defaultValues?.id) throw new Error("Id is required for update");
+        await updateTitleMutation({id: Number(defaultValues.id), data: updateStoryTitlePayload});
+      }
+    }catch(error){
+
+    }
+   }
 
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
@@ -300,8 +303,8 @@ export default function StoryTellingTitleForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isPending}>
-              {isPending && <Spinner />}
+            <Button type="submit" className="flex-1 " disabled={isStoryCreatePending}>
+              {isStoryCreatePending && <Spinner />}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>
           </div>

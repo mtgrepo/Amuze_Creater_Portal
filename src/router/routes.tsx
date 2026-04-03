@@ -13,6 +13,9 @@ import ComicsTitleDetails from "@/features/Entertainment/Comics/comics_title_det
 import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_create";
 import EditEpisodePage from "@/features/Entertainment/Comics/comics_episode_update";
 import ComicEpisodeDetails from "@/features/Entertainment/Comics/comics_episode_details";
+import StoryTellingLayout from "@/features/Entertainment/StoryTelling/storytellinglayout";
+import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
+import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/storytelling_title_update";
 
 const router = createBrowserRouter([
   {
@@ -117,6 +120,31 @@ const router = createBrowserRouter([
           ],
         },
       },
+      {
+        path: "/entertainment/storytelling",
+        element: <StoryTellingLayout />,
+        handle: { crumb: ["Entertainment", "StoryTelling"] },
+      },
+       {
+        path: "/entertainment/storytelling/title",
+        element: <StoryTellingTitleCreate />,
+        handle: {
+          crumb: [
+            { label: ["StoryTelling"], href: "/entertainment/storytelling" },
+            { label: "Title Create" },
+          ],
+        },
+      },
+     {
+        path: "/entertainment/storytelling/edit/:id",
+        element: <EditStoryTellingTitlePage />,
+        handle: {
+          crumb: [
+            { label: ["StoryTelling"], href: "/entertainment/storytelling" },
+            { label: "Title Edit" },
+          ],
+        },
+      },
       // Genres
       {
         path: "/features/main-category",
@@ -133,6 +161,6 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-]);
+], { basename: "/creator-portal" });
 
 export default router;

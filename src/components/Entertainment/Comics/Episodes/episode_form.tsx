@@ -28,6 +28,17 @@ import { useComicsEpisodeCreateCommand } from "@/composable/Command/Entertainmen
 import { useComicEpisodeUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeUpdateCommand";
 import { useComicEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useEpisodeThumbnailUpdateCommand";
 import { useEpisodeDeleteCommand } from "@/composable/Command/Entertainment/Comics/useEpisodeImageDeleteCommand";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 // --- SCHEMA ---
 function createEpisodeSchema(mode: "add" | "edit") {
@@ -91,8 +102,6 @@ export default function ComicEpisodeForm({
     const isExistingOnServer = imageToRemove?.id && !(imageToRemove instanceof File);
 
     if (mode === "edit" && isExistingOnServer) {
-      const confirmDelete = window.confirm("Are you sure? This page will be permanently deleted from the server.");
-      if (!confirmDelete) return;
 
       try {
         await deleteImageMutation({
@@ -101,7 +110,7 @@ export default function ComicEpisodeForm({
         });
       } catch (error: any) {
         toast.error(error.message || "Failed to delete image");
-        return; 
+        return;
       }
     }
 
@@ -296,10 +305,10 @@ export default function ComicEpisodeForm({
                         <ScrollArea className="h-[50vh] pr-4">
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             {field.value.map((img: any, index: number) => {
-                              const url = img instanceof File 
-                                ? URL.createObjectURL(img) 
+                              const url = img instanceof File
+                                ? URL.createObjectURL(img)
                                 : (img?.url || img);
-                              
+
                               const isExisting = img?.id && !(img instanceof File);
 
                               return (
@@ -313,18 +322,36 @@ export default function ComicEpisodeForm({
                                     className="object-cover w-full h-full"
                                   />
                                   <div className="absolute inset-0 flex justify-end p-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                      type="button"
-                                      disabled={deletePending}
-                                      onClick={() => removeImage(index)}
-                                      className="h-8 w-8 bg-destructive  rounded-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
-                                    >
-                                      {deletePending && isExisting ? (
-                                        <Spinner className="w-4 h-4" />
-                                      ) : (
-                                        <X size={16} />
-                                      )}
-                                    </Button>
+
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          type="button"
+                                          disabled={deletePending}
+
+                                          className="h-8 w-8 bg-destructive  rounded-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
+                                        >
+                                          {deletePending && isExisting ? (
+                                            <Spinner className="w-4 h-4" />
+                                          ) : (
+                                            <X size={16} />
+                                          )}
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete your account
+                                            from our servers.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => removeImage(index)}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
                                   </div>
                                   <div className="absolute bottom-2 left-2 bg-primary-foreground backdrop-blur-md text-[10px] px-2 py-0.5 rounded-md font-bold">
                                     {String(index + 1).padStart(2, "0")}
@@ -359,9 +386,9 @@ export default function ComicEpisodeForm({
             >
               Back to Series
             </Button>
-            <Button 
-              type="submit" 
-              className="flex-1 cursor-pointer" 
+            <Button
+              type="submit"
+              className="flex-1 cursor-pointer"
               disabled={createPending || updatePending || thumbnailPending}
             >
               {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2" />}

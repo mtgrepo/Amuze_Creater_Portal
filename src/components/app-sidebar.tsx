@@ -70,7 +70,7 @@ const data = {
             },
             {
               title: "Story Telling",
-              url: "/entertainment/story-telling",
+              url: "/entertainment/storytelling",
               icon: BookHeadphones
             },
             {

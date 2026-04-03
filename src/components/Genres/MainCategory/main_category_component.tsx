@@ -26,22 +26,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, FolderPlus, PlusCircle } from "lucide-react";
+import { ChevronDown} from "lucide-react";
 import columns from "./column";
 import type { MainCategoryResponse } from "@/types/response/genres/mainCategoryResponse";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 import { Input } from "@/components/ui/input";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
+
 
 interface MainCategoryComponentProps {
   data: MainCategoryResponse[];

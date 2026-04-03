@@ -1,19 +1,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/button";
-import { CheckCircle, FolderPlus, X } from "lucide-react";
+import { CheckCircle, X } from "lucide-react";
 import type { MainCategoryResponse } from "@/types/response/genres/mainCategoryResponse";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
+
 const columns: ColumnDef<MainCategoryResponse>[] = [
   {
     id: "select",

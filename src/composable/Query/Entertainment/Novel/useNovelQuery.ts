@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { getAllNovels } from "../../../../http/apis/entertainment/novel/novelApi"
 
-export const useNovelQuery = (params: { authorId: number, page: number, pageSize: number }) => {
+export const useNovelQuery = (params: { authorId: number, page: number, pageSize: number, name: string }) => {
     const novelData = useQuery({
         queryKey: ["novels"],
         queryFn: async () => {

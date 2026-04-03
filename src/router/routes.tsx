@@ -16,6 +16,7 @@ import ComicEpisodeDetails from "@/features/Entertainment/Comics/comics_episode_
 import StoryTellingLayout from "@/features/Entertainment/StoryTelling/storytellinglayout";
 import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/storytelling_title_update";
+import NovelCreate from "../features/Entertainment/Novel/novel_create";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,16 @@ const router = createBrowserRouter([
         element: <Novel />,
         handle: { crumb: ["Entertainment", "Novel"] },
       },
+      {
+        path: "/entertainment/novel/create",
+        element: <NovelCreate />,
+        handle: {
+          crumb: [
+            { label: ["Novel"], href: "/entertainment/novel" },
+            { label: "Create" },
+          ], },
+      },
+      // Comics
       {
         path: "/entertainment/comics",
         element: <Comics />,

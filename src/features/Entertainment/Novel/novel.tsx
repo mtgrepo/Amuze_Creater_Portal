@@ -17,18 +17,8 @@ export default function Novel() {
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
+  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
 
-  // Determine filter params based on active tab
-  // const queryParams = React.useMemo(() => {
-  //   switch (tab) {
-  //     case "approved":
-  //       return { approve_status: 1 };
-  //     case "published":
-  //       return { is_published: true };
-  //     default:
-  //       return {};
-  //   }
-  // }, [tab]);
 
   // Reset page when tab changes
   React.useEffect(() => {
@@ -40,9 +30,20 @@ export default function Novel() {
     authorId: creatorId!,
     page,
     pageSize: limit,
+    name: debouncedSearch,
   })
 
-  console.log("api data", apiData)
+  React.useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(handler);
+  }, [search]);
 
   const handlePaginationChange = (newPage: number, newLimit: number) => {
     setPage(newPage);
@@ -85,10 +86,10 @@ export default function Novel() {
             />
             <Button
               size={"sm"}
-              onClick={() => router.navigate("/entertainment/comics/title")}
+              onClick={() => router.navigate("/entertainment/novel/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Title
+              Add New Novel
             </Button>
             <Button
               variant="outline"
@@ -102,41 +103,41 @@ export default function Novel() {
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
-          <Tabs
-            value={tab}
-            onValueChange={(val) =>
-              setTab(val as "all" | "approved" | "published")
-            }
-            className="w-full my-5"
-          >
-            <TabsList className="w-full grid grid-cols-3" variant={"line"}>
-              <TabsTrigger value="all" className="w-full text-center">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="approved" className="w-full text-center">
-                Approved
-              </TabsTrigger>
-              <TabsTrigger value="published" className="w-full text-center">
-                Published
-              </TabsTrigger>
-            </TabsList>
+            <Tabs
+              value={tab}
+              onValueChange={(val) =>
+                setTab(val as "all" | "approved" | "published")
+              }
+              className="w-full my-5"
+            >
+              <TabsList className="w-full grid grid-cols-3" variant={"line"}>
+                <TabsTrigger value="all" className="w-full text-center">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="approved" className="w-full text-center">
+                  Approved
+                </TabsTrigger>
+                <TabsTrigger value="published" className="w-full text-center">
+                  Published
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="all"></TabsContent>
-            <TabsContent value="approved" />
-            <TabsContent value="published" />
-          </Tabs>
+              <TabsContent value="all"></TabsContent>
+              <TabsContent value="approved" />
+              <TabsContent value="published" />
+            </Tabs>
 
-          <NovelComponent
-            data={apiData?.novels ?? []}
-            total={total ?? 0}
-            totalPages={totalPages ?? 0}
-            page={page}
-            limit={limit}
-            onPaginationChange={handlePaginationChange}
-            isFetching={isLoading}
-            search={search}
-            onSearchChange={setSearch}
-          />
+            <NovelComponent
+              data={apiData?.novels ?? []}
+              total={total ?? 0}
+              totalPages={totalPages ?? 0}
+              page={page}
+              limit={limit}
+              onPaginationChange={handlePaginationChange}
+              isFetching={isLoading}
+              search={search}
+              onSearchChange={setSearch}
+            />
           </div>
         </div>
       </div>

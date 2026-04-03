@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import axiosInstance from "../../../httpClient";
 
-export const getAllNovels = async ( params: { authorId: number, page: number; pageSize: number }) => {
+export const getAllNovels = async ( params: { authorId: number, page: number; pageSize: number, name: string }) => {
     try {
         const response = await axiosInstance.get(`novel/get-all-novel`, { params})
         return response?.data;

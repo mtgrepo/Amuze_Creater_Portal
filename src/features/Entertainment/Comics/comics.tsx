@@ -17,6 +17,7 @@ export default function Comics() {
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
+  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
 
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
@@ -44,6 +45,7 @@ export default function Comics() {
   } = useComicsTitleQuery(creatorId!, {
     page,
     pageSize: limit,
+    name: debouncedSearch,
     ...queryParams,
   });
 
@@ -51,6 +53,17 @@ export default function Comics() {
     setPage(newPage);
     setLimit(newLimit);
   };
+  React.useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(handler);
+  }, [search]);
 
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();
@@ -105,41 +118,41 @@ export default function Comics() {
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
-          <Tabs
-            value={tab}
-            onValueChange={(val) =>
-              setTab(val as "all" | "approved" | "published")
-            }
-            className="w-full my-5"
-          >
-            <TabsList className="w-full grid grid-cols-3" variant={"line"}>
-              <TabsTrigger value="all" className="w-full text-center">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="approved" className="w-full text-center">
-                Approved
-              </TabsTrigger>
-              <TabsTrigger value="published" className="w-full text-center">
-                Published
-              </TabsTrigger>
-            </TabsList>
+            <Tabs
+              value={tab}
+              onValueChange={(val) =>
+                setTab(val as "all" | "approved" | "published")
+              }
+              className="w-full my-5"
+            >
+              <TabsList className="w-full grid grid-cols-3" variant={"line"}>
+                <TabsTrigger value="all" className="w-full text-center">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="approved" className="w-full text-center">
+                  Approved
+                </TabsTrigger>
+                <TabsTrigger value="published" className="w-full text-center">
+                  Published
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="all"></TabsContent>
-            <TabsContent value="approved" />
-            <TabsContent value="published" />
-          </Tabs>
+              <TabsContent value="all"></TabsContent>
+              <TabsContent value="approved" />
+              <TabsContent value="published" />
+            </Tabs>
 
-          <ComicsTitleComponents
-            data={apiData ?? []}
-            total={total ?? 0}
-            totalPages={totalPages ?? 0}
-            page={page}
-            limit={limit}
-            onPaginationChange={handlePaginationChange}
-            isFetching={isLoading}
-            search={search}
-            onSearchChange={setSearch}
-          />
+            <ComicsTitleComponents
+              data={apiData ?? []}
+              total={total ?? 0}
+              totalPages={totalPages ?? 0}
+              page={page}
+              limit={limit}
+              onPaginationChange={handlePaginationChange}
+              isFetching={isLoading}
+              search={search}
+              onSearchChange={setSearch}
+            />
           </div>
         </div>
       </div>

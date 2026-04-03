@@ -5,11 +5,12 @@ export interface ComicsTitleParams {
     page: number,
     pageSize: number,
     approve_status?: number,
-    is_published?: boolean
+    is_published?: boolean,
+    name?: string
 }
 export const useComicsTitleQuery = (creatorId: number, params: ComicsTitleParams) => {
     const comicsTitleList = useQuery({
-        queryKey: ['comicsTitleList', params?.page, params?.pageSize, params?.approve_status, params?.is_published],
+        queryKey: ['comicsTitleList', params?.page, params?.pageSize, params?.approve_status, params?.is_published, params?.name],
         queryFn: async () => {
             const res = await getAllComicsTitles(creatorId, params);
             // console.log("res in query", res?.data);

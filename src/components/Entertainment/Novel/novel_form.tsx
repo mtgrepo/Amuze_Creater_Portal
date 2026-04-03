@@ -26,6 +26,9 @@ import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
 import { useNovelCreateCommand } from "../../../composable/Command/Entertainment/Novel/useCreateCommand";
 import { Spinner } from "../../ui/spinner";
+import { useNovelUpdateTextCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateCommand";
+import { useNovelUpdateThumbnailCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateThumbnailCommand";
+import { useNovelUpdatePdfCommand } from "../../../composable/Command/Entertainment/Novel/useUpdatePdfCommand";
 
 function createFormSchema(mode: "add" | "edit") {
     const imageSchema =
@@ -62,7 +65,6 @@ interface NovelFormProps {
 export default function NovelForm({
     mode,
     defaultValues,
-    onSuccess,
 }: NovelFormProps) {
     const formSchema = createFormSchema(mode);
     const { genresList } = useGenresQuery();
@@ -119,6 +121,9 @@ export default function NovelForm({
 
 
     const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
+    const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
+    const { updateThumbnailMutation, isUpdatingThumbnail } = useNovelUpdateThumbnailCommand();
+    const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
     const onSubmit = async (values: NovelFormValues) => {
         try {
             if (mode === "add") {
@@ -133,12 +138,48 @@ export default function NovelForm({
                         formData.append(key, String(value));
                     }
                 });
-                console.log("values", values)
-                console.log("form data", formData)
                 await novelCreateMutation(formData);
                 form.reset();
+            } else {
+                if (!defaultValues?.id) throw new Error("ID missing");
+                const isThumbnailUpdated =
+                    values.thumbnail instanceof File ||
+                    values.horizontal_thumbnail instanceof File;
+                    const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
+
+                const isPdfUpdated = values.file_path instanceof File;
+
+                if (isThumbnailUpdated) {
+                    // SCENARIO 1: Update Thumbnails (Multipart/FormData)
+                    const thumbData = new FormData();
+                    if (values.thumbnail instanceof File) {
+                        thumbData.append("thumbnail", values.thumbnail);
+                    }
+                    if (values.horizontal_thumbnail instanceof File) {
+                        thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+                    }
+
+                    await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, thumbnail: thumbData });
+                    form.reset();
+                }
+
+                if( isPdfUpdated) {
+                    // SCENARIO 2: Update PDF (Multipart/FormData)
+                    const pdfData = new FormData();
+                    pdfData.append("file_path", values.file_path as File);
+                    await updatePdfMutation({ id: Number(defaultValues?.id), pdf: pdfData });
+                    form.reset();
+                }
+
+                const textPayload = {
+                    name: values.name,
+                    description: values.description,
+                    genres: values.generes.map(Number), // Convert strings back to numbers
+                    price: values.price,
+
+                };
+                await updateTextMutation({ id: Number(defaultValues?.id), data: textPayload });
             }
-            if (onSuccess) onSuccess();
         } catch (err: any) {
             toast.error(err.message);
         }
@@ -239,17 +280,28 @@ export default function NovelForm({
                                         </FormItem>
                                     )}
                                 />
-
-                                {/* FILE UPLOAD */}
                                 <FormField
                                     control={form.control}
                                     name="file_path"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
                                             <FormLabel>File Upload</FormLabel>
+
+                                            {/* Show existing file if editing */}
+                                            {typeof field.value === "string" && mode === "edit" && (
+                                                <div className="">
+                                                    <a
+                                                        href={field.value}
+                                                        target="_blank"
+                                                        className="text-primary underline"
+                                                    >
+                                                        View existing file
+                                                    </a>
+                                                </div>
+                                            )}
+
                                             <FormControl>
                                                 <Input
-                                                    className="w-full"
                                                     type="file"
                                                     onChange={(e) =>
                                                         field.onChange(e.target.files?.[0])
@@ -340,13 +392,13 @@ export default function NovelForm({
                             className="w-full flex-1 cursor-pointer"
                             type="button"
                             variant="outline"
-                            onClick={() => router.navigate("/entertainment/comics")}
+                            onClick={() => router.navigate("/entertainment/novel")}
                         >
                             Cancel
                         </Button>
 
-                        <Button type="submit" className="w-full flex-1 cursor-pointer" disabled={isNovelCreating}>
-                            {(isNovelCreating) && <Spinner />}
+                        <Button type="submit" className="w-full flex-1 cursor-pointer" disabled={isNovelCreating || isUpdatingText || isUpdatingThumbnail || isUpdatingPdf}>
+                            {(isNovelCreating || isUpdatingText || isUpdatingThumbnail || isUpdatingPdf) && <Spinner />}
                             Submit
                         </Button>
                     </div>

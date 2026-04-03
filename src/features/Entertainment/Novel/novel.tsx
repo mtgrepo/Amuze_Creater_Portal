@@ -19,6 +19,16 @@ export default function Novel() {
   const creatorId = loginCreator?.creator?.id;
   const [debouncedSearch, setDebouncedSearch] = React.useState(search);
 
+    const queryParams = React.useMemo(() => {
+      switch (tab) {
+        case "approved":
+          return { approve_status: 1 };
+        case "published":
+          return { is_published: true };
+        default:
+          return {};
+      }
+    }, [tab]);
 
   // Reset page when tab changes
   React.useEffect(() => {
@@ -31,11 +41,12 @@ export default function Novel() {
     page,
     pageSize: limit,
     name: debouncedSearch,
+    ...queryParams,
   })
 
   React.useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, tab]);
 
   React.useEffect(() => {
     const handler = setTimeout(() => {

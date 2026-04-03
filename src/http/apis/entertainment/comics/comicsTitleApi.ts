@@ -80,10 +80,10 @@ export const updateTitle = async (data: TitleProps, id: number) => {
   }
 };
 
-export const updateThumbnail = async (data: FormData, id: number) => {
+export const updateThumbnail = async (id: number, type: string, data: FormData) => {
   try {
     const res = await axiosInstance.put(
-      `comic/update-thumbnail/vertical/${id}`,
+      `comic/update-thumbnail/${type}/${id}`,
       data,
       {
         headers: {

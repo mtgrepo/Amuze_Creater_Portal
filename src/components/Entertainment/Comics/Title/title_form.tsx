@@ -163,6 +163,8 @@ export default function ComicTitleForm({
         const isThumbnailUpdated =
           values.thumbnail instanceof File ||
           values.horizontal_thumbnail instanceof File;
+        
+          const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
 
         if (isThumbnailUpdated) {
           // SCENARIO 1: Update Thumbnails (Multipart/FormData)
@@ -175,7 +177,7 @@ export default function ComicTitleForm({
           }
 
           // await updateThumbnailsApi(defaultValues.id, thumbData);
-          await updateThumbnailMutation({ id: Number(defaultValues?.id), data: thumbData });
+          await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, data: thumbData });
         }
 
         // SCENARIO 2: Update Text Data (JSON)

@@ -18,6 +18,7 @@ import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/story
 import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/storytelling_title_update";
 import NovelCreate from "../features/Entertainment/Novel/novel_create";
 import UpdateNovel from "../features/Entertainment/Novel/novel_update";
+import NovelDetails from "../features/Entertainment/Novel/novel_details";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,16 @@ const router = createBrowserRouter([
           crumb: ({ params }: any) => [
             { label: ["Novel"], href: "/entertainment/novel" },
             { label: `Edit Novel ${params?.id}` },
+          ],
+        },
+      },
+      {
+        path: "/entertainment/novel/details/:id",
+        element: <NovelDetails />,
+        handle: {
+          crumb: ({ params }: any) => [
+            { label: ["Novel"], href: "/entertainment/novel" },
+            { label: ` Details ${params?.id}` },
           ],
         },
       },

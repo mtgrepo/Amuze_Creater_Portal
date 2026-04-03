@@ -7,8 +7,8 @@ export const useComicsThumbnailUpdateCommand = () => {
   const qc = useQueryClient();
   const updateThumbnailMutation = useMutation({
     mutationKey: ["updateThumbnail"],
-    mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
-      const res = await updateThumbnail(data, id);
+    mutationFn: async ({ id, type, data }: { id: number; type: string; data: FormData }) => {
+      const res = await updateThumbnail(id, type, data);
       // console.log("update res", res);
       return res?.data;
     },

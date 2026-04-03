@@ -21,7 +21,6 @@ import {
 import type { StoryTellingTitleResponse } from "@/types/response/entertainment/storytelling/storytellingResponse"
 import { columns } from "./columns";
 import React from "react";
-import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 
 interface StoryTellingTableProps {

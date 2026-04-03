@@ -62,7 +62,7 @@ export default function ComicEpisodeDetails() {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75">
           <div
@@ -114,7 +114,7 @@ export default function ComicEpisodeDetails() {
               Show Image
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w- h-[90vh] p-0 border-border flex flex-col overflow-hidden">
+          <DialogContent className="w-full h-[90vh] p-0 border-border flex flex-col overflow-hidden">
             {/* Viewer Header */}
             <div className="flex items-center justify-between p-4  border-b border-border shrink-0">
               <div className="flex items-center gap-4">

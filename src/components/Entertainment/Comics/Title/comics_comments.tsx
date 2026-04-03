@@ -2,23 +2,35 @@ import { Button } from "@/components/ui/button";
 import { useComicsTitleCommentQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useComicsCommentDelCommand } from "../../../../composable/Command/Entertainment/Comics/useComicsCommentDelCommand";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const CommentsSection = () => {
+  const { id } = useParams();
   const [replyToId, setReplyToId] = useState(null);
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
 
-  const { commentsList, isLoading } = useComicsTitleCommentQuery(creatorId!);
-
+  const { commentsList, isLoading } = useComicsTitleCommentQuery(Number(id!));
+  const { deleteCommentMutation, isPending } = useComicsCommentDelCommand();
   // Helper to get initials for avatar
   const getAvatar = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
-  const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this comment?")) {
-      // Trigger your delete mutation here
-      console.log("Deleting comment:", id);
-    }
+  const handleDelete = async (id: number) => {
+    await deleteCommentMutation(id);
+    console.log("Deleting comment:", id);
   };
 
   if (isLoading) {
@@ -31,7 +43,7 @@ const CommentsSection = () => {
   const comments = commentsList || [];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 ">
+    <div className="max-w-7xl mx-auto p-6 ">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-xl font-bold">
           Comments{" "}
@@ -41,34 +53,33 @@ const CommentsSection = () => {
         </h2>
       </div>
 
-      <div className="space-y-10 border border-border p-4 rounded-lg">
+      <div className="space-y-5 border border-border p-4 rounded-lg">
         {comments.length === 0 ? (
           <p className="text-center text-gray-600 py-4">No comments yet.</p>
         ) : (
           comments.map((comment: any) => {
             // Check if the comment belongs to the logged-in creator
-            const isCommentAuthor = comment.user_id === creatorId;
+            const isCommentAuthor = comment.user?.id === creatorId;
 
             return (
-              <div key={comment.id} className="relative">
+              <div key={comment.id} className="relative border border-border rounded-lg p-4">
                 <div className="flex gap-4">
                   {/* User Avatar */}
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ${
-                      isCommentAuthor
-                        ? "bg-yellow-500 text-black"
-                        : "bg-gray-800 text-gray-400"
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ${isCommentAuthor
+                      ? "bg-yellow-500 text-black"
+                      : "bg-gray-800 text-gray-400"
+                      }`}
                   >
-                    {getAvatar(comment.user_name || comment.user?.name)}
+                    {getAvatar(comment.user?.name)}
                   </div>
 
-                  <div className="flex-1">
+                  <div className="flex- ">
                     <div className="flex items-center gap-2 mb-1">
                       <span
                         className={`text-sm font-bold ${isCommentAuthor ? "text-yellow-500" : "text-white"}`}
                       >
-                        {comment.user_name ||
+                        {
                           comment.user?.name ||
                           "Unknown User"}
                       </span>
@@ -78,32 +89,55 @@ const CommentsSection = () => {
                         </span>
                       )}
                       <span className="text-[10px] text-gray-600 font-medium ml-2">
-                        {new Date(comment.created_at).toLocaleDateString()}
+                        {new Date(comment.created_date).toLocaleDateString()}
                       </span>
                     </div>
 
                     <p className="text-gray-300 text-sm leading-relaxed mb-3">
-                      {comment.comment_text || comment.text}
+                      {comment.comment}
                     </p>
 
                     {/*  ACTION BUTTONS  */}
                     <div className="flex items-center gap-6">
                       <Button
                         onClick={() => setReplyToId(comment.id)}
-                        className="text-[10px] font-black text-gray-500 hover:text-blue-500 tracking-widest uppercase transition"
+                        variant={'link'}
+                        className="cursor-pointer"
                       >
                         Reply
                       </Button>
 
                       {/* Only Author of the comic OR the comment creator can delete */}
+
                       {isCommentAuthor && (
-                        <button
-                          onClick={() => handleDelete(comment.id)}
-                          className="text-[10px] font-black text-red-900/60 hover:text-red-500 tracking-widest uppercase transition"
-                        >
-                          Delete
-                        </button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+
+                              variant={'link'}
+                              className="cursor-pointer text-destructive"
+                              disabled={isPending}
+                            >
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your account
+                                from our servers.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(comment.id)} variant={'destructive'}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       )}
+
                     </div>
 
                     {/*  NESTED REPLIES  */}
@@ -112,11 +146,10 @@ const CommentsSection = () => {
                         {comment.replies.map((reply: any) => (
                           <div key={reply.id} className="flex gap-3">
                             <div
-                              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                                reply.user_id === creatorId
-                                  ? "bg-yellow-500 text-black"
-                                  : "bg-gray-800"
-                              }`}
+                              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${reply.user_id === creatorId
+                                ? "bg-yellow-500 text-black"
+                                : "bg-gray-800"
+                                }`}
                             >
                               {getAvatar(reply.user_name)}
                             </div>
@@ -151,15 +184,15 @@ const CommentsSection = () => {
                           placeholder="Write a reply..."
                         />
                         <div className="flex gap-3 justify-end">
-                          <button
+                          <Button
                             onClick={() => setReplyToId(null)}
                             className="text-[10px] text-gray-500 font-bold uppercase"
                           >
                             Cancel
-                          </button>
-                          <button className="text-[10px] text-blue-500 font-bold uppercase">
+                          </Button>
+                          <Button className="text-[10px] text-primary font-bold uppercase">
                             Send Reply
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -170,6 +203,7 @@ const CommentsSection = () => {
           })
         )}
       </div>
+
     </div>
   );
 };

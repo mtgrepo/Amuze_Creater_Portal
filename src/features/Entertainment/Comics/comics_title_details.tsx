@@ -63,18 +63,18 @@ export default function ComicsTitleDetails() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Banner / Header Area */}
-        <div className="relative w-full max-w-6xl mx-auto h-80 md:h-96 overflow-hidden">
+        <div className="relative w-full max-w-7xl mx-auto h-80 md:h-96 overflow-hidden">
           {" "}
           {/* Background Overlay */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-30"
+            className="absolute inset-0 bg-cover bg-center dark:opacity-30 opacity-50"
             style={{ backgroundImage: `url(${comic?.horizontal_thumbnail})` }}
           ></div>
           <div className="absolute inset-0 "></div>
           {/* Content Overlay */}
-          <div className="relative flex p-6 max-w-6xl mx-auto h-full items-end gap-6">
+          <div className="relative flex p-6 max-w-7xl mx-auto h-full items-end gap-6">
             {/* Vertical Poster */}
             <img
               src={comic?.thumbnail}
@@ -130,7 +130,7 @@ export default function ComicsTitleDetails() {
         </div>
 
         {/* Episode List Section */}
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Episode Lists</h2>
             <Button

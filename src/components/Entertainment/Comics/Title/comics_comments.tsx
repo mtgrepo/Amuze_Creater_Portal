@@ -18,6 +18,7 @@ import {
 import { useComicStoreCommentCommand } from "../../../../composable/Command/Entertainment/Comics/useComicStoreCommentCommand";
 import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
+import { ScrollArea } from "../../../ui/scroll-area";
 
 const CommentsSection = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ const CommentsSection = () => {
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
   const [newComment, setNewComment] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Record<number, boolean>>({});
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
@@ -53,7 +55,6 @@ const CommentsSection = () => {
     setNewComment("");
   };
 
-
   const handleReply = async (parentId: number) => {
     const text = replyTexts[parentId];
     if (!text?.trim()) return;
@@ -68,10 +69,13 @@ const CommentsSection = () => {
     setReplyToId(null);
   };
 
-  const renderReplies = (replies: any[]) => {
+  const renderReplies = (replies: any[], parentId: number) => {
+    const isExpanded = expandedReplies[parentId];
+    const visibleReplies = isExpanded ? replies : replies.slice(0, 1);
+
     return (
       <div className="mt-4 ml-6 border-l pl-4 space-y-3">
-        {replies.map((reply: any) => {
+        {visibleReplies.map((reply: any) => {
           const isAuthor = reply.user?.id === creatorId;
 
           return (
@@ -80,6 +84,7 @@ const CommentsSection = () => {
                 <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs">
                   {getAvatar(reply.user?.name)}
                 </div>
+
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className={`text-xs font-bold ${isAuthor ? "text-yellow-500" : "text-white"}`}>
@@ -116,27 +121,25 @@ const CommentsSection = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete your account
-                              from our servers.
+                              This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel variant={'outline'}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(reply.id)}
-
-                            >Continue</AlertDialogAction>
+                            <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(reply.id)}>
+                              Continue
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     )}
                   </div>
 
-                  {/* nested replies recursively */}
-                  {reply.reply?.length > 0 && renderReplies(reply.reply)}
+                  {reply.reply?.length > 0 && renderReplies(reply.reply, reply.id)}
 
                   {replyToId === reply.id && (
                     <div className="mt-2 flex flex-col gap-2">
-                      <input
+                      <Input
                         autoFocus
                         value={replyTexts[reply.id] || ""}
                         onChange={(e) =>
@@ -168,6 +171,36 @@ const CommentsSection = () => {
             </div>
           );
         })}
+
+        {replies.length > 1 && !isExpanded && (
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() =>
+              setExpandedReplies((prev) => ({
+                ...prev,
+                [parentId]: true,
+              }))
+            }
+          >
+            Show more ({replies.length - 1})
+          </Button>
+        )}
+
+        {replies.length > 2 && isExpanded && (
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() =>
+              setExpandedReplies((prev) => ({
+                ...prev,
+                [parentId]: false,
+              }))
+            }
+          >
+            Show less
+          </Button>
+        )}
       </div>
     );
   };
@@ -182,10 +215,9 @@ const CommentsSection = () => {
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-xl font-bold mb-4">Comments ({comments.length})</h2>
 
-      {/* CREATE COMMENT BOX */}
       <div className="mb-6 border rounded-lg p-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 text-sm text-gray-400">
-          Comment as
+          Comment as{" "}
           <span className="text-yellow-500 font-bold">
             {creatorName || "You"}
           </span>
@@ -193,7 +225,6 @@ const CommentsSection = () => {
 
         <Textarea
           value={newComment}
-          cols={20}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder={`Write a comment as ${creatorName || "you"}...`}
           className="border-b bg-transparent text-sm outline-none py-2"
@@ -209,7 +240,14 @@ const CommentsSection = () => {
         </div>
       </div>
 
-      <div className="space-y-5 border p-4 rounded-lg">
+      <ScrollArea className="h-100">
+        <div className="space-y-5 border p-4 rounded-lg">
+        {comments.length === 0 && (
+          <div className="text-center text-gray-500 py-10">
+            No comments yet. Be the first to comment!
+          </div>
+        )}
+
         {comments.map((comment: any) => {
           const isAuthor = comment.user?.id === creatorId;
 
@@ -237,10 +275,7 @@ const CommentsSection = () => {
                     {isAuthor && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button
-                            variant="link"
-                            className="text-destructive cursor-pointer"
-                          >
+                          <Button variant="link" className="text-destructive cursor-pointer">
                             Delete
                           </Button>
                         </AlertDialogTrigger>
@@ -248,21 +283,21 @@ const CommentsSection = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete your account
-                              from our servers.
+                              This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel variant={'outline'}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(comment.id)}
-                            >Continue</AlertDialogAction>
+                            <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(comment.id)}>
+                              Continue
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     )}
                   </div>
 
-                  {comment.reply?.length > 0 && renderReplies(comment.reply)}
+                  {comment.reply?.length > 0 && renderReplies(comment.reply, comment.id)}
 
                   {replyToId === comment.id && (
                     <div className="mt-3 flex flex-col gap-2">
@@ -280,7 +315,9 @@ const CommentsSection = () => {
                       />
 
                       <div className="flex gap-2 justify-end">
-                        <Button onClick={() => setReplyToId(null)} variant={'outline'}>Cancel</Button>
+                        <Button onClick={() => setReplyToId(null)} variant={"outline"}>
+                          Cancel
+                        </Button>
                         <Button
                           onClick={() => handleReply(comment.id)}
                           disabled={isStorePending}
@@ -296,6 +333,7 @@ const CommentsSection = () => {
           );
         })}
       </div>
+      </ScrollArea>
     </div>
   );
 };

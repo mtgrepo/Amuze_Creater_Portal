@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useComicsTitleCommentQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -20,7 +19,7 @@ import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
 import { ScrollArea } from "../../../ui/scroll-area";
 
-const CommentsSection = () => {
+const CommentsSection = ({commentsList} : any) => {
   const { id } = useParams();
   const comicId = Number(id!);
 
@@ -33,7 +32,7 @@ const CommentsSection = () => {
   const creatorId = loginCreator?.creator?.id;
   const creatorName = loginCreator?.creator?.name;
 
-  const { commentsList, isLoading } = useComicsTitleCommentQuery(comicId);
+  // const { commentsList, isLoading } = useComicsTitleCommentQuery(comicId);
   const { deleteCommentMutation, isPending } = useComicsCommentDelCommand();
   const { storeCommentMutation, isPending: isStorePending } = useComicStoreCommentCommand();
 
@@ -205,9 +204,9 @@ const CommentsSection = () => {
     );
   };
 
-  if (isLoading) {
-    return <div className="text-center p-10 text-gray-500">Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className="text-center p-10 text-gray-500">Loading...</div>;
+  // }
 
   const comments = commentsList || [];
 

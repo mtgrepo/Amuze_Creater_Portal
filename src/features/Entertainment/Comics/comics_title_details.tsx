@@ -16,6 +16,7 @@ import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
+import { useComicsTitleCommentQuery } from "../../../composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -33,6 +34,8 @@ export default function ComicsTitleDetails() {
     userId: userId,
   };
 
+    const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
+  
   const {
     titleDetails: comic,
     isLoading,
@@ -57,6 +60,15 @@ export default function ComicsTitleDetails() {
             Failed to load comic details. Please refresh or try again.
           </p>
         </div>
+      </div>
+    );
+  }
+
+  if (isCommentsLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" /> 
+        <p className="text-gray-400">Loading comments...</p>
       </div>
     );
   }
@@ -204,7 +216,7 @@ export default function ComicsTitleDetails() {
           </div>
         </div>
       </div>
-      <CommentsSection />
+      <CommentsSection commentsList={commentsList}/>
     </div>
   );
 }

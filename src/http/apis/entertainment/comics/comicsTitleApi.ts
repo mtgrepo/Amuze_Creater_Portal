@@ -9,10 +9,7 @@ export interface TitleProps {
   genres: number[];
 }
 
-export const getAllComicsTitles = async (
-  creatorId: number,
-  params: ComicsTitleParams,
-) => {
+export const getAllComicsTitles = async ( creatorId: number, params: ComicsTitleParams ) => {
   try {
     const response = await axiosInstance.get(
       `comic/get-all-comic-titles?authorId=${creatorId}`,

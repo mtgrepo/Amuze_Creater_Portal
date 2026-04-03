@@ -61,47 +61,47 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
       return <div>{price ? price.toLocaleString() : "0"}</div>;
     },
   },
-{
-  accessorFn: (row) => row?.generes,
-  id: "generes",
-  header: "Genres",
-  cell: ({ row }) => {
-    const genres = row.getValue("generes") as {
-      id: number;
-      name: string;
-    }[];
-
-    // Show at most 2
-    const visibleGenres = genres.slice(0, 2);
-    const hasMore = genres.length > 2;
-
-    return (
-      <div className="flex flex-wrap gap-2">
-        {visibleGenres?.length === 0 && "N/A"}
-        {visibleGenres.map((genre) => (
-          <Badge id={String(genre?.id)}>{genre?.name}</Badge>
-        ))}
-        {hasMore && <div>...</div>}
-      </div>
-    );
-  },
-},
   {
-    accessorFn: (row) => row?.createdByUser,
-    id: "createdByUser",
-    header: "Author",
+    accessorFn: (row) => row?.generes,
+    id: "generes",
+    header: "Genres",
     cell: ({ row }) => {
-      const createdByUser = row.getValue("createdByUser") as {
+      const genres = row.getValue("generes") as {
         id: number;
         name: string;
-      };
+      }[];
+
+      // Show at most 2
+      const visibleGenres = genres.slice(0, 2);
+      const hasMore = genres.length > 2;
+
       return (
         <div className="flex flex-wrap gap-2">
-          <div>{createdByUser.name}</div>
+          {visibleGenres?.length === 0 && "N/A"}
+          {visibleGenres.map((genre) => (
+            <Badge id={String(genre?.id)}>{genre?.name}</Badge>
+          ))}
+          {hasMore && <div>...</div>}
         </div>
       );
     },
   },
+  // {
+  //   accessorFn: (row) => row?.createdByUser,
+  //   id: "createdByUser",
+  //   header: "Author",
+  //   cell: ({ row }) => {
+  //     const createdByUser = row.getValue("createdByUser") as {
+  //       id: number;
+  //       name: string;
+  //     };
+  //     return (
+  //       <div className="flex flex-wrap gap-2">
+  //         <div>{createdByUser.name}</div>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "views",
     header: "Viwes",
@@ -133,9 +133,9 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
       const published = row.getValue("is_publish") as boolean;
 
       return published ? (
-        <IconWithTooltip tooltip="Published" icon={<CircleCheckBig className="text-green-500 w-4 h-4"/>} />
+        <IconWithTooltip tooltip="Published" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
       ) : (
-        <IconWithTooltip tooltip="Unpublished" icon={<XCircle className="text-red-500 w-4 h-4"/>} />
+        <IconWithTooltip tooltip="Unpublished" icon={<XCircle className="text-red-500 w-4 h-4" />} />
       );
     },
   },
@@ -144,7 +144,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
     header: "Date",
     cell: ({ row }) => {
       const val = row.getValue("created_at") as string | null;
-      return <div>{val ? new Date(val).toLocaleString() : "-"}</div>;
+      return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
     },
   },
   {

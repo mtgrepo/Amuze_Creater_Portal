@@ -14,19 +14,19 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { ComicsTitleResponse } from "@/types/response/entertainment/comics/comicsTitleResponse";
 import { Button } from "@/components/ui/button";
+import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
 
-export default function TitleActions(title: ComicsTitleResponse) {
+export default function NovelActions(novel: NovelResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/comics/details/${title.id}`);
+    navigate(`/entertainment/novel/details/${novel.id}`);
   };
 
   const handleEditTitle = () => {
-    navigate(`/entertainment/comics/edit/${title.id}`, {
-      state: title,
+    navigate(`/entertainment/novel/edit/${novel.id}`, {
+      state: novel,
     });
   };
 
@@ -41,7 +41,7 @@ export default function TitleActions(title: ComicsTitleResponse) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Title Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>Novel Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleViewDetails}>
             <Info /> View Details

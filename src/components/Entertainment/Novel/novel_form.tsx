@@ -24,6 +24,8 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
+import { useNovelCreateCommand } from "../../../composable/Command/Entertainment/Novel/useCreateCommand";
+import { Spinner } from "../../ui/spinner";
 
 function createFormSchema(mode: "add" | "edit") {
     const imageSchema =
@@ -38,7 +40,7 @@ function createFormSchema(mode: "add" | "edit") {
 
         age_rating: z.number().min(0).optional(),
         preview: z.number().min(0).optional(),
-        genres: z.array(z.string()).min(1, "Select at least one genre"),
+        generes: z.array(z.string()).min(1, "Select at least one genre"),
 
         thumbnail: imageSchema,
         horizontal_thumbnail: imageSchema,
@@ -70,7 +72,7 @@ export default function NovelForm({
         defaultValues: {
             name: defaultValues?.name || "",
             description: defaultValues?.description || "",
-            genres: defaultValues?.genres || [],
+            generes: defaultValues?.generes || [],
             price: defaultValues?.price || 0,
             age_rating: defaultValues?.age_rating || 0,
             preview: defaultValues?.preview || 0,
@@ -91,7 +93,7 @@ export default function NovelForm({
                 description: defaultValues.description || "",
                 price: defaultValues.price ?? 0,
                 age_rating: defaultValues.age_rating ?? 0,
-                genres: defaultValues.genres || [],
+                generes: defaultValues.generes || [],
                 preview: defaultValues.preview ?? 0,
                 thumbnail: defaultValues.thumbnail,
                 horizontal_thumbnail: defaultValues.horizontal_thumbnail,
@@ -116,26 +118,25 @@ export default function NovelForm({
     }, [form]);
 
 
+    const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
     const onSubmit = async (values: NovelFormValues) => {
         try {
-            const formData = new FormData();
-
-            Object.entries(values).forEach(([key, value]) => {
-                if (value === null || value === undefined) return;
-
-                if (key === "genres" && Array.isArray(value)) {
-                    value.forEach((g) => formData.append("genres", g));
-                } else if (value instanceof File) {
-                    formData.append(key, value);
-                } else {
-                    formData.append(key, String(value));
-                }
-            });
-
-            // await titleMutation(formData);
             if (mode === "add") {
+                const formData = new FormData();
+                Object.entries(values).forEach(([key, value]) => {
+                    if (value === null || value === undefined) return;
+                    if (key === "generes" && Array.isArray(value)) {
+                        value.forEach((g) => formData.append("generes", g));
+                    } else if (value instanceof File) {
+                        formData.append(key, value);
+                    } else {
+                        formData.append(key, String(value));
+                    }
+                });
                 console.log("values", values)
                 console.log("form data", formData)
+                await novelCreateMutation(formData);
+                form.reset();
             }
             if (onSuccess) onSuccess();
         } catch (err: any) {
@@ -275,7 +276,7 @@ export default function NovelForm({
                             {/* GENRES */}
                             <FormField
                                 control={form.control}
-                                name="genres"
+                                name="generes"
                                 render={({ field }) => {
                                     const toggleGenre = (id: string) => {
                                         const exists = field.value.includes(id);
@@ -344,8 +345,8 @@ export default function NovelForm({
                             Cancel
                         </Button>
 
-                        <Button type="submit" className="w-full flex-1 cursor-pointer">
-                            {/* {(isPending || isUpdatePending || isThumbnailPending) && <Spinner />} */}
+                        <Button type="submit" className="w-full flex-1 cursor-pointer" disabled={isNovelCreating}>
+                            {(isNovelCreating) && <Spinner />}
                             Submit
                         </Button>
                     </div>

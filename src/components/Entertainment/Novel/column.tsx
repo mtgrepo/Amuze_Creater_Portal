@@ -1,9 +1,10 @@
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
-import { CircleCheckBig, XCircle } from "lucide-react";
+import { CircleCheckBig, MoreHorizontal, XCircle } from "lucide-react";
 import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
 import NovelActions from "./novel_actions";
+import { Tooltip } from "../../ui/tooltip-card";
 
 const columns: ColumnDef<NovelResponse>[] = [
     {
@@ -71,17 +72,38 @@ const columns: ColumnDef<NovelResponse>[] = [
                 name: string;
             }[];
 
-            // Show at most 2
             const visibleGenres = genres.slice(0, 2);
-            const hasMore = genres.length > 2;
+            const hiddenGenres = genres.slice(2);
+            const hasMore = hiddenGenres.length > 0;
 
             return (
                 <div className="flex flex-wrap gap-2">
-                    {visibleGenres?.length === 0 && "N/A"}
+                    {visibleGenres.length === 0 && "N/A"}
+
                     {visibleGenres.map((genre) => (
-                        <Badge id={String(genre?.id)}>{genre?.name}</Badge>
+                        <Badge key={genre.id}>
+                            {genre.name}
+                        </Badge>
                     ))}
-                    {hasMore && <div>...</div>}
+
+                    {hasMore && (
+                        <Tooltip
+                            containerClassName="text-neutral-600 dark:text-neutral-400"
+                            content={
+                                <div className="flex flex-wrap gap-2 max-w-xs">
+                                    {hiddenGenres.map((genre) => (
+                                        <Badge key={genre.id}>
+                                            {genre.name}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            }
+                        >
+                            <span className="text-sm font-bold cursor-pointer">
+                                <MoreHorizontal className="w-4 h-4" />
+                            </span>
+                        </Tooltip>
+                    )}
                 </div>
             );
         },
@@ -94,22 +116,6 @@ const columns: ColumnDef<NovelResponse>[] = [
             return <div>{ageRating ? ageRating.toLocaleString() : "0"}</div>;
         }
     },
-    // {
-    //     accessorFn: (row) => row?.createdByUser,
-    //     id: "createdByUser",
-    //     header: "Author",
-    //     cell: ({ row }) => {
-    //         const createdByUser = row.getValue("createdByUser") as {
-    //             id: number;
-    //             name: string;
-    //         };
-    //         return (
-    //             <div className="flex flex-wrap gap-2">
-    //                 <div>{createdByUser.name}</div>
-    //             </div>
-    //         );
-    //     },
-    // },
     {
         accessorKey: "views",
         header: "Viwes",

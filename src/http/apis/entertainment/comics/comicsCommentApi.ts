@@ -13,7 +13,7 @@ export const deleteComment = async (commentId: number) => {
     }
 }
 
-export const replyComment = async (comicId: number, parentId: number, comment: string) => {
+export const replyComment = async (comicId: number, parentId: number | null, comment: string) => {
     try {
         const response = await axiosInstance.post(`comic/store-comment`, {
             comicId,

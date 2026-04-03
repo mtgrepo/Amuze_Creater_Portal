@@ -16,6 +16,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useComicStoreCommentCommand } from "../../../../composable/Command/Entertainment/Comics/useComicStoreCommentCommand";
+import { Input } from "../../../ui/input";
+import { Textarea } from "../../../ui/textarea";
 
 const CommentsSection = () => {
   const { id } = useParams();
@@ -23,9 +25,11 @@ const CommentsSection = () => {
 
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
+  const [newComment, setNewComment] = useState("");
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
+  const creatorName = loginCreator?.creator?.name;
 
   const { commentsList, isLoading } = useComicsTitleCommentQuery(comicId);
   const { deleteCommentMutation, isPending } = useComicsCommentDelCommand();
@@ -36,6 +40,19 @@ const CommentsSection = () => {
   const handleDelete = async (id: number) => {
     await deleteCommentMutation(id);
   };
+
+  const handleCreateComment = async () => {
+    if (!newComment.trim()) return;
+
+    await storeCommentMutation({
+      comicId,
+      parentId: null,
+      comment: newComment,
+    });
+
+    setNewComment("");
+  };
+
 
   const handleReply = async (parentId: number) => {
     const text = replyTexts[parentId];
@@ -71,7 +88,7 @@ const CommentsSection = () => {
 
                     {isAuthor && (
                       <span className="text-[9px] text-yellow-500 border px-1 rounded">
-                        You
+                        Author
                       </span>
                     )}
                   </div>
@@ -84,7 +101,6 @@ const CommentsSection = () => {
                     </Button>
 
                     {isAuthor && (
-
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -112,7 +128,6 @@ const CommentsSection = () => {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-
                     )}
                   </div>
 
@@ -165,7 +180,34 @@ const CommentsSection = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h2 className="text-xl font-bold mb-6">Comments ({comments.length})</h2>
+      <h2 className="text-xl font-bold mb-4">Comments ({comments.length})</h2>
+
+      {/* CREATE COMMENT BOX */}
+      <div className="mb-6 border rounded-lg p-4 flex flex-col gap-3">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          Comment as
+          <span className="text-yellow-500 font-bold">
+            {creatorName || "You"}
+          </span>
+        </div>
+
+        <Textarea
+          value={newComment}
+          cols={20}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder={`Write a comment as ${creatorName || "you"}...`}
+          className="border-b bg-transparent text-sm outline-none py-2"
+        />
+
+        <div className="flex justify-end">
+          <Button
+            onClick={handleCreateComment}
+            disabled={isStorePending || !newComment.trim()}
+          >
+            Post Comment
+          </Button>
+        </div>
+      </div>
 
       <div className="space-y-5 border p-4 rounded-lg">
         {comments.map((comment: any) => {
@@ -217,7 +259,6 @@ const CommentsSection = () => {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-
                     )}
                   </div>
 
@@ -225,7 +266,7 @@ const CommentsSection = () => {
 
                   {replyToId === comment.id && (
                     <div className="mt-3 flex flex-col gap-2">
-                      <input
+                      <Input
                         autoFocus
                         value={replyTexts[comment.id] || ""}
                         onChange={(e) =>
@@ -239,7 +280,7 @@ const CommentsSection = () => {
                       />
 
                       <div className="flex gap-2 justify-end">
-                        <Button onClick={() => setReplyToId(null)}>Cancel</Button>
+                        <Button onClick={() => setReplyToId(null)} variant={'outline'}>Cancel</Button>
                         <Button
                           onClick={() => handleReply(comment.id)}
                           disabled={isStorePending}

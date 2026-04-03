@@ -7,8 +7,8 @@ export const useComicStoreCommentCommand = () => {
 
     const storeCommentMutation = useMutation({
         mutationKey: ["storeComment"],
-        mutationFn: async ({ comicId, parentId, comment }: { comicId: number, parentId: number, comment: string }) => {
-            const res = await replyComment(comicId, parentId, comment);
+        mutationFn: async ({ comicId, parentId, comment }: { comicId: number, parentId: number | null, comment: string }) => {
+            const res = await replyComment(comicId, parentId!, comment);
             return res?.data;
         },
         onSuccess: () => {

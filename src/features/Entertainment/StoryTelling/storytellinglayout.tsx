@@ -3,6 +3,7 @@ import { StoryTellingTable } from "@/components/Entertainment/StoryTelling/Title
 import { Button } from "@/components/ui/button";
 import { useStoryTellingTitleQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleQuery";
 import { decryptAuthData } from "@/lib/helper";
+import router from "@/router/routes";
 import { CirclePlus } from "lucide-react";
 import React from "react";
 
@@ -36,7 +37,7 @@ export default function StoryTellingLayout() {
                         Manage and organize your storytelling titles
                     </h3>
                 </div>
-                <Button>
+                <Button onClick={() => router.navigate('/entertainment/storytelling/title')}>
                     <CirclePlus className="mr-2 h-4 w-4" />Add New Title
                 </Button>
             </div>

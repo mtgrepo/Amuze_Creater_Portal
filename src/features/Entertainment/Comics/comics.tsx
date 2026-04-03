@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
 import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
+import { Input } from "../../../components/ui/input";
 
 export default function Comics() {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(5);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
-
+  const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
 
@@ -79,6 +80,12 @@ export default function Comics() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
+            <Input
+              placeholder="Filter name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="max-w-sm"
+            />
             <Button
               size={"sm"}
               onClick={() => router.navigate("/entertainment/comics/title")}
@@ -97,6 +104,7 @@ export default function Comics() {
               Export Data
             </Button>
           </div>
+          <div className="border border-border p-3 rounded-lg my-3">
           <Tabs
             value={tab}
             onValueChange={(val) =>
@@ -129,7 +137,10 @@ export default function Comics() {
             limit={limit}
             onPaginationChange={handlePaginationChange}
             isFetching={isLoading}
+            search={search}
+            onSearchChange={setSearch}
           />
+          </div>
         </div>
       </div>
     </SidebarInset>

@@ -2,11 +2,12 @@ import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { SortingState, VisibilityState } from "@tanstack/react-table"
+import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -20,7 +21,6 @@ import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 
-
 export type ComicsTitleProps = {
   data: ComicsTitleResponse[];
   total: number;
@@ -31,6 +31,8 @@ export type ComicsTitleProps = {
   isFetching?: boolean;
   onExport?: () => void;
   isExporting?: boolean;
+  search: string;
+  onSearchChange: (value: string) => void;
 };
 
 export function ComicsTitleComponents({
@@ -40,6 +42,7 @@ export function ComicsTitleComponents({
   total,
   page,
   limit,
+  search,
   onPaginationChange,
 }: ComicsTitleProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -47,20 +50,24 @@ export function ComicsTitleComponents({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   // console.log("data in table", data)
-
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const table = useReactTable({
     data,
     columns,
     manualPagination: true,
-    manualFiltering: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
+      columnFilters,
       columnVisibility,
       rowSelection,
       pagination: {
@@ -69,9 +76,20 @@ export function ComicsTitleComponents({
       },
     },
   });
+React.useEffect(() => {
+  table.getColumn("name")?.setFilterValue(search);
+}, [search, table]);
 
   return (
     <div className="w-full">
+      {/* <div className="flex items-center py-4">
+        <Input
+  placeholder="Filter name..."
+  value={search}
+  onChange={(e) => onSearchChange(e.target.value)}
+  className="max-w-sm"
+/>
+      </div> */}
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
           <TableHeader>
@@ -82,9 +100,9 @@ export function ComicsTitleComponents({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

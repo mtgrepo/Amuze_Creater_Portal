@@ -114,7 +114,7 @@ export const getAllComments = async (id: number) => {
         pageSize: 1000,
       },
     });
-    console.log("comment res", response?.data);
+    // console.log("comment res", response?.data);
     return response?.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -132,7 +132,7 @@ export const getTitleExcelExport = async () => {
     const response = await axiosInstance.get(`comic/get-title-export-excel`, {
       responseType: "blob", 
     });
-    console.log("excel", response)
+    // console.log("excel", response)
     return response?.data;
   } catch (error) {
     if (error instanceof AxiosError) {

@@ -8,7 +8,7 @@ export const useEpisodeDeleteCommand = () => {
         mutationKey: ['deleteImage'],
         mutationFn: async ({episodeId, imageId}: {episodeId: number, imageId: number}) => {
             const res = await deleteEpisodeImage(Number(episodeId), Number(imageId));
-            console.log("del res", res);
+            // console.log("del res", res);
             return res?.data;
         },
         onSuccess: () => {

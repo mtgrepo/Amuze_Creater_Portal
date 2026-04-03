@@ -10,7 +10,7 @@ export const useComicEpisodeUpdateCommand = () => {
     mutationKey: ["updateEpisode"],
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
       const res = await updateComicEpisode(id, data);
-      console.log("up ep", res);
+      // console.log("up ep", res);
       return res?.data;
     },
     onSuccess: () => {

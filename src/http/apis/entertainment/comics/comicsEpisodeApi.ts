@@ -31,7 +31,7 @@ export const getComicEpisodeById = async (
     const response = await axiosInstance.get(
       `comic/get-comic-episode?titleId=${titleId}&episodeId=${episodeId}`,
     );
-    console.log("e data", response?.data);
+    // console.log("e data", response?.data);
     return response?.data;
   } catch (error) {
     if (error instanceof AxiosError) {

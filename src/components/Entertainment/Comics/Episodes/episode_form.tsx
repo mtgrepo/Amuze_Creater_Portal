@@ -99,7 +99,6 @@ export default function ComicEpisodeForm({
           episodeId: Number(defaultValues?.id),
           imageId: imageToRemove.id,
         });
-        toast.success("Page removed from server");
       } catch (error: any) {
         toast.error(error.message || "Failed to delete image");
         return; 
@@ -161,7 +160,6 @@ export default function ComicEpisodeForm({
         }
       }
 
-      toast.success(mode === "add" ? "Created successfully" : "Updated successfully");
       if (onSuccess) onSuccess();
     } catch (err: any) {
       toast.error(err.message || "An error occurred during submission");
@@ -169,7 +167,7 @@ export default function ComicEpisodeForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-16">
+    <div className="max-w-7xl mx-auto space-y-8 p-6 border rounded-xl">
       {/* HEADER */}
       <div className="flex items-center justify-between border-b pb-6">
         <div className="flex items-center gap-4">

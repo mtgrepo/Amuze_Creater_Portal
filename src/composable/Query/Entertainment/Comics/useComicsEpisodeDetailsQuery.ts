@@ -6,7 +6,7 @@ export const useComicEpisodeDetailsQuery = (titleId: number, episodeId: number) 
         queryKey: ['episodeDetails', titleId, episodeId],
         queryFn: async () => {
             const res = await getComicEpisodeById(titleId, episodeId);
-            console.log("e data i q", res)
+            // console.log("e data i q", res)
             return res?.data
         },
         enabled: !!titleId

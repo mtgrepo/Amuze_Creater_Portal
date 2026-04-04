@@ -85,3 +85,20 @@ export const updateNovelPdf = async (novelId: number, pdf: FormData) => {
         throw new Error("Something went wrong!");
     }
 }
+
+export const getNovelComments = async (novelId: number) => {
+    try {
+        const response = await axiosInstance.get(`/novel/get-comments/${novelId}`, { 
+            params: {
+                page: 1,
+                pageSize: 1000,
+            },
+         });
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.message || "Error occurred while fetching novel comments");
+        }
+        throw new Error("Something went wrong!");
+    }
+}

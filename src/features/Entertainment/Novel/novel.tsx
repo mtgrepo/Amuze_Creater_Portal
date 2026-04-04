@@ -97,6 +97,7 @@ export default function Novel() {
             />
             <Button
               size={"sm"}
+              className="cursor-pointer"
               onClick={() => router.navigate("/entertainment/novel/create")}
             >
               <CirclePlus className="w-4 h-4" />

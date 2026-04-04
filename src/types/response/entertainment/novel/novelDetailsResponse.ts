@@ -16,6 +16,6 @@ export interface NovelDetailsResponse {
         id: number;
         name: string;
     };
-    genres: string[];
+    generes: string[];
     createdAt: string;
 }

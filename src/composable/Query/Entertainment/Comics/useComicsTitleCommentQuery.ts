@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 
 export const useComicsTitleCommentQuery = (id: number) => {
     const commentsList = useQuery({
-        queryKey: ['titleComments'],
+        queryKey: ['titleComments', id],
         queryFn: async () => {
             const res = await getAllComments(id);
             // console.log("cmt in query", res);

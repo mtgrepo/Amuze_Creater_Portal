@@ -101,6 +101,7 @@ export default function Comics() {
             />
             <Button
               size={"sm"}
+              className="cursor-pointer"
               onClick={() => router.navigate("/entertainment/comics/title")}
             >
               <CirclePlus className="w-4 h-4" />

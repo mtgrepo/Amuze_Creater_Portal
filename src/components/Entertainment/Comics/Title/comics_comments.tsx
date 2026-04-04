@@ -80,24 +80,24 @@ const CommentsSection = ({commentsList} : any) => {
           return (
             <div key={reply.id} className="flex flex-col gap-2">
               <div className="flex gap-2">
-                <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs">
+                <div className="w-6 h-6 rounded-full bg-gray-400 dark:bg-gray-800  flex items-center justify-center text-xs">
                   {getAvatar(reply.user?.name)}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className={`text-xs font-bold ${isAuthor ? "text-yellow-500" : "text-white"}`}>
+                    <p className={`text-xs font-bold ${isAuthor ? "text-primary" : "text-white"}`}>
                       {reply.user?.name}
                     </p>
 
                     {isAuthor && (
-                      <span className="text-[9px] text-yellow-500 border px-1 rounded">
+                      <span className="text-[9px] text-primary border px-1 rounded">
                         Author
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-gray-400">{reply.comment}</p>
+                  <p className="text-xs text-muted-foreground">{reply.comment}</p>
 
                   <div className="flex gap-3 mt-1">
                     <Button variant="link" size="sm" onClick={() => setReplyToId(reply.id)}>
@@ -217,7 +217,7 @@ const CommentsSection = ({commentsList} : any) => {
       <div className="mb-6 border rounded-lg p-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 text-sm text-gray-400">
           Comment as{" "}
-          <span className="text-yellow-500 font-bold">
+          <span className="text-primary font-bold">
             {creatorName || "You"}
           </span>
         </div>
@@ -253,18 +253,18 @@ const CommentsSection = ({commentsList} : any) => {
           return (
             <div key={comment.id} className="border rounded-lg p-4">
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-800 flex items-center justify-center">
                   {getAvatar(comment.user?.name)}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`font-bold ${isAuthor ? "text-yellow-500" : "text-white"}`}>
+                    <span className={`font-bold ${isAuthor && "text-primary" }`}>
                       {comment.user?.name}
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-300 mt-1">{comment.comment}</p>
+                  <p className="text-sm  mt-1">{comment.comment}</p>
 
                   <div className="flex gap-4 mt-2">
                     <Button variant="link" onClick={() => setReplyToId(comment.id)}>
@@ -287,7 +287,7 @@ const CommentsSection = ({commentsList} : any) => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(comment.id)}>
+                            <AlertDialogAction onClick={() => handleDelete(comment.id)} variant={'destructive'}>
                               Continue
                             </AlertDialogAction>
                           </AlertDialogFooter>

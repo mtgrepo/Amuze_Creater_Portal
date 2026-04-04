@@ -145,10 +145,10 @@ const router = createBrowserRouter([
               label: `Title ${params?.titleId}`,
               href: `/entertainment/comics/details/${params?.titleId}`,
             },
-            {
-              label: `Episode ${params?.id}`,
-              href: `/entertainment/comics/details/${params?.id}`,
-            },
+            // {
+            //   label: `Episode ${params?.id}`,
+            //   href: `/entertainment/comics/details/${params?.id}`,
+            // },
             { label: "Details" },
           ],
         },

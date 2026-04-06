@@ -13,6 +13,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import {  Layers,  Newspaper, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking, LayoutList, ListTree } from "lucide-react"
+import { useSelector } from "react-redux"
+import type { RootState } from "../redux/store/store"
 
 
 // This is sample data.
@@ -148,6 +150,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const creator = useSelector((state: RootState) => state.auth.creator);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -158,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        { creator && <NavUser creator={creator} /> }
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -26,24 +26,21 @@ import {
 import { useDispatch } from "react-redux";
 import { logoutAction } from "../redux/auth/authSlice";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { decryptAuthData, type CreatorDetails } from "@/lib/helper";
 
 export function NavUser({
+  creator
 }: {
-  user: {
+  creator: {
     name: string;
     email: string;
     avatar?: string;
   };
 }) {
   const { isMobile } = useSidebar();
-  const [creator, setCreator] = useState<CreatorDetails | null>(null);
-  useEffect(() => {
-    const raw = decryptAuthData(localStorage.getItem("creator")!);
-    setCreator(raw?.creator || null);
-  }, []);
+
+
   const dispatch = useDispatch();
+
   const handleLogout = () => {
     dispatch(logoutAction());
     toast.success("Logged out successfully");

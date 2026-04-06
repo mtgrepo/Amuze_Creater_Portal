@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useStoryTellingTitleCreateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleCreateCommand";
 import { useStoryTellingTitleUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleUpdateCommand";
+import { useStoryTellingTitleThumbnailUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTitleThumbnailUpdateCommand";
 import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,94 +43,129 @@ function createFormSchema(mode: "add" | "edit") {
 type TitleFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 interface TitleFormProps {
-    mode: "add" | "edit";
-    defaultValues?: Partial<TitleFormValues> & { id?: string };
+  mode: "add" | "edit";
+  defaultValues?: Partial<TitleFormValues> & { id?: string };
   onSuccess?: () => void;
 }
 
-
 export default function StoryTellingTitleForm({
-    mode,
-    defaultValues,
-    onSuccess,
+  mode,
+  defaultValues,
+  onSuccess,
 }: TitleFormProps) {
-    const formSchema = createFormSchema(mode);
-    const [subcategory_id] = React.useState<number>(3);
-    const {genresList} = useGenresBySubCategoryQuery(subcategory_id);
-    const {createTitleMutation, isStoryCreatePending} = useStoryTellingTitleCreateCommand();
-    const {updateTitleMutation, isStoryTitleUpdatePending} = useStoryTellingTitleUpdateCommand();
-    // const {updateStoryTitleThumbnail, isStoryTitleThumbnail} = 
+  const formSchema = createFormSchema(mode);
+  const [subcategory_id] = React.useState<number>(3);
+  const { genresList } = useGenresBySubCategoryQuery(subcategory_id);
+  const { createTitleMutation, isStoryCreatePending } =
+    useStoryTellingTitleCreateCommand();
+  const { updateTitleMutation, isStoryTitleUpdatePending } =
+    useStoryTellingTitleUpdateCommand();
+  const { updateThumbnailMutation, isThumbnailUpdatePending } =
+    useStoryTellingTitleThumbnailUpdateCommand();
 
-    const form = useForm<TitleFormValues>({
-         resolver: zodResolver(formSchema),
-            defaultValues: {
-              name: defaultValues?.name || "",
-              description: defaultValues?.description || "",
-              genres: defaultValues?.genres || [],
-              thumbnail: defaultValues?.thumbnail || undefined,
-              horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-              created_by: "",
-            },
-    });
+  const form = useForm<TitleFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      genres: defaultValues?.genres || [],
+      thumbnail: defaultValues?.thumbnail || undefined,
+      horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+      created_by: "",
+    },
+  });
 
-    useEffect(() => {
-      if (defaultValues) {
-        // reset() is the key to filling the form with async data
-        form.reset({
-          name: defaultValues.name || "",
-          description: defaultValues.description || "",
-          genres: defaultValues.genres || [],
-          thumbnail: defaultValues.thumbnail,
-          horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-          created_by: form.getValues("created_by") // preserve the ID from the other effect
-        });
+  useEffect(() => {
+    if (defaultValues) {
+      // reset() is the key to filling the form with async data
+      form.reset({
+        name: defaultValues.name || "",
+        description: defaultValues.description || "",
+        genres: defaultValues.genres || [],
+        thumbnail: defaultValues.thumbnail,
+        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
+        created_by: form.getValues("created_by"), // preserve the ID from the other effect
+      });
+    }
+  }, [defaultValues, form]);
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("creator");
+      if (storedData) {
+        const loginCreator = decryptAuthData(storedData);
+        const id = loginCreator?.creator?.id;
+        if (id) form.setValue("created_by", id);
       }
-    }, [defaultValues, form]);
-    useEffect(() => {
-      try {
-        const storedData = localStorage.getItem("creator");
-        if (storedData) {
-          const loginCreator = decryptAuthData(storedData);
-          const id = loginCreator?.creator?.id;
-          if (id) form.setValue("created_by", id);
+    } catch (error) {
+      console.error("Failed to read auth data from localStorage", error);
+    }
+  }, [form]);
+
+  const onSubmit = async (values: TitleFormValues) => {
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value === null || value === undefined) return;
+        if (key === "genres" && Array.isArray(value)) {
+          value.forEach((g) => formData.append("genres", g));
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
         }
-      } catch (error) {
-        console.error("Failed to read auth data from localStorage", error);
-      }
-    }, [form]);
+      });
+      if (mode === "add") {
+        await createTitleMutation(formData);
+      } else {
+        if (!defaultValues?.id) throw new Error("Id is required for update");
 
-   const onSubmit = async(values: TitleFormValues) => {
-    try{
-     
-        const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => {
-          if(value === null  || value === undefined) return;
-          if(key === "genres" && Array.isArray(value)){
-            value.forEach((g) => formData.append("genres", g))
-          }
-          else if(value instanceof File) {
-            formData.append(key, value)
-          }
-          else{
-            formData.append(key, String(value))
-          }
-        });
-         if(mode === "add"){
-          await createTitleMutation(formData);
-          toast.success("Title created successfully.")
-      }else{
         const updateStoryTitlePayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number)
-        }
-        if(!defaultValues?.id) throw new Error("Id is required for update");
-        await updateTitleMutation({id: Number(defaultValues.id), data: updateStoryTitlePayload});
-      }
-    }catch(error){
+          genres: values.genres.map(Number),
+        };
+        await updateTitleMutation({
+          id: Number(defaultValues.id),
+          data: updateStoryTitlePayload,
+        });
 
+        if (values.thumbnail) {
+          try {
+            const formData = new FormData();
+            formData.append("thumbnail", values.thumbnail);
+
+            await updateThumbnailMutation({
+              id: Number(defaultValues.id),
+              type: "vertical",
+              thumbnail: formData,
+            });
+          } catch (e) {
+            toast.error("Failed to update vertical thumbnail.");
+          }
+        }
+
+        // Update horizontal thumbnail if provided
+        if (values.horizontal_thumbnail) {
+          try {
+            const formData = new FormData();
+            formData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+
+            await updateThumbnailMutation({
+              id: Number(defaultValues.id),
+              type: "horizontal",
+              thumbnail: formData,
+            });
+          } catch (e) {
+            toast.error("Failed to update horizontal thumbnail.");
+          }
+        }
+      }
+      toast.success("Story updated successfully with thumbnails.");
+      if (onSuccess) onSuccess();
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred during submission.");
     }
-   }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
@@ -138,7 +174,9 @@ export default function StoryTellingTitleForm({
           {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Storytelling Title" : "Edit Storytelling Title Details"}
+              {mode === "add"
+                ? "Create New Storytelling Title"
+                : "Edit Storytelling Title Details"}
             </h2>
             <p className="text-muted-foreground text-sm">
               Fill in the information for your storytelling title.
@@ -180,10 +218,7 @@ export default function StoryTellingTitleForm({
                     <FormItem>
                       <FormLabel>Storytelling Title</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter Title Name"
-                          {...field}
-                        />
+                        <Input placeholder="Enter Title Name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -303,8 +338,18 @@ export default function StoryTellingTitleForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isStoryCreatePending}>
-              {isStoryCreatePending && <Spinner />}
+            <Button
+              type="submit"
+              className="flex-1 "
+              disabled={
+                isStoryCreatePending ||
+                isStoryTitleUpdatePending ||
+                isThumbnailUpdatePending
+              }
+            >
+              {(isStoryCreatePending ||
+                isStoryTitleUpdatePending ||
+                isThumbnailUpdatePending) && <Spinner />}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>
           </div>

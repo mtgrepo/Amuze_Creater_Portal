@@ -1,24 +1,31 @@
-import { updateStoryTellingTitle } from "@/http/apis/entertainment/storytelling/storyTellingTitleApi";
+import { updateStoryTellingTitleThumbnail } from "@/http/apis/entertainment/storytelling/storyTellingTitleApi";
 import router from "@/router/routes";
-import type { UpdateStoryTitlePayload } from "@/types/response/entertainment/storytelling/storytellingResponse";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+type UpdateThumbnailPayload = {
+  id: number;
+  type: 'vertical' | 'horizontal';
+  thumbnail: FormData;
+};
+
 export const useStoryTellingTitleThumbnailUpdateCommand = () => {
   const queryClient = useQueryClient();
-  const titleMutation = useMutation({
-    mutationFn: async ({id, data} : {id: number, data: UpdateStoryTitlePayload}) => {
-      await updateStoryTellingTitle(id, data);
+
+  const updateThumbnailMutation = useMutation({
+    mutationKey: ["storyTellingTitleThumbnail"],
+    mutationFn: async ({ id, type, thumbnail }: UpdateThumbnailPayload) => {
+      return await updateStoryTellingTitleThumbnail(id, type, thumbnail);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["storyTellingTitleList"] });
-      toast.success(`Added new storytelling title successfully`);
-      router.navigate('/entertainment/storytelling')
+      toast.success("Updated storytelling title thumbnail successfully");
+      router.navigate("/entertainment/storytelling");
     },
   });
 
   return {
-    updateTitleMutation: titleMutation.mutateAsync,
-    isStoryTitleUpdatePending: titleMutation?.isPending,
+    updateThumbnailMutation: updateThumbnailMutation.mutateAsync,
+    isThumbnailUpdatePending: updateThumbnailMutation.isPending,
   };
 };

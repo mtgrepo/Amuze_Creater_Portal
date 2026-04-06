@@ -7,6 +7,7 @@ import { toast } from "sonner";
 export const useStoryTellingTitleUpdateCommand = () => {
   const queryClient = useQueryClient();
   const titleMutation = useMutation({
+    mutationKey : ["storyTellingTitle"],
     mutationFn: async ({id, data} : {id: number, data: UpdateStoryTitlePayload}) => {
       await updateStoryTellingTitle(id, data);
     },

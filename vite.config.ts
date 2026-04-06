@@ -12,14 +12,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // server: {
-  //   proxy: {
-  //     // When the frontend calls "/api", Vite redirects it
-  //     '/api': {
-  //       target: 'https://uat.api.amuze.com.mm/api/', // Your real backend
-  //       changeOrigin: true,
-  //       rewrite: (path) => path.replace(/^\/api/, ''),
-  //     },
-  //   },
-  // },
+  server: {
+    proxy: {
+      // When the frontend calls "/api", Vite redirects it
+      '/api': {
+        target: 'https://uat.api.amuze.com.mm/api/', // Your real backend
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
 })

@@ -37,6 +37,11 @@ const data = {
       isActive: true,
       items: [
         {
+          title: "Author Report",
+          url: "/report/author",
+          icon: FileChartColumnIncreasing,
+        },
+        {
           title: "Purchase",
           url: "/report/purchase",
           icon: CreditCard,

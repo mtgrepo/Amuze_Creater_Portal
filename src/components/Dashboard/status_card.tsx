@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 export function StatCard({
   title,
   value,  icon: Icon,
+  sub,
   accent,
 }: {
   title: string;
@@ -25,7 +26,7 @@ export function StatCard({
         <span className="text-sm font-medium text-muted-foreground">
           {title}
         </span>
-        {/* {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>} */}
+        {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
       </CardContent>
     </Card>
   );

@@ -19,6 +19,7 @@ import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/sto
 import NovelCreate from "../features/Entertainment/Novel/novel_create";
 import UpdateNovel from "../features/Entertainment/Novel/novel_update";
 import NovelDetails from "../features/Entertainment/Novel/novel_details";
+import AuthorReport from "../features/Report/author_report";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,14 @@ const router = createBrowserRouter([
         path: "*",
         element: <NotFound />,
         handle: { crumb: "Not Found" },
+      },
+      // Report
+      {
+        path: "/report/author",
+        element: <AuthorReport />,
+        handle: {
+          crumb: ["Report", "Author Income Report"],
+        }
       },
       // Entertainment
       {

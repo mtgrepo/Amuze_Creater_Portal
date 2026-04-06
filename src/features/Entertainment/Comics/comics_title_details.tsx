@@ -139,7 +139,7 @@ export default function ComicsTitleDetails() {
                 >
                   <div className="flex items-center w-full sm:w-auto">
                     <span className="w-6 text-muted-foreground font-mono font-medium">{(index + 1).toString().padStart(2, '0')}</span>
-                    <img src={ep.thumbnail} alt="" className="w-14 h-14 rounded-xl object-cover mx-4 shadow-md" />
+                    <img src={ep.thumbnail} alt="" className="w-20 h-14  object-cover mx-4 shadow-md" />
                     <div className="flex-1 sm:hidden">
                       <h4 className="font-bold text-sm">{ep.name || `Episode ${index + 1}`}</h4>
                       <p className="text-[10px] text-muted-foreground">🪙 {ep?.price} Kyats</p>

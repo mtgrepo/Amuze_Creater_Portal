@@ -7,10 +7,10 @@ export const useAuthorReportQuery = (params: {authorId: number, startDate: strin
         queryKey: ["authorReport", params],
         queryFn: async () => {
             const res = await getAuthorReport(params)
-            console.log("report in query", res?.data?.reports)
+            // console.log("report in query", res?.data?.reports)
             return res;
         },
-        enabled: !!params.authorId, // Ensure all parameters are provided before enabling the query
+        enabled: !!params.authorId, 
     })
     return {
         authorReportList: authorReportList.data,

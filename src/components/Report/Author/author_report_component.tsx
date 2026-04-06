@@ -36,11 +36,7 @@ interface AuthorReportProps {
 
 export function AuthorReportComponent({ data, filters, onFiltersChange, isFetching }: AuthorReportProps) {
     const { subCategoryList } = useSubCategoryQuery();
-
-    // View States (Unselected by default)
-    // const [viewMonth, setViewMonth] = React.useState<string | undefined>(undefined);
-    // const [viewYear, setViewYear] = React.useState<string | undefined>(undefined);
-
+    
     // Table State
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -80,33 +76,6 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
         const d = parseISO(dateStr);
         return isValid(d) ? d : undefined;
     };
-
-    // const handleViewChange = (type: 'month' | 'year', value: string) => {
-    //     let currentMonth = type === 'month' ? value : viewMonth;
-    //     let currentYear = type === 'year' ? value : viewYear;
-
-    //     if (type === 'month') setViewMonth(value);
-    //     if (type === 'year') setViewYear(value);
-
-    //     // Update range only when both are present
-    //     if (currentMonth && currentYear) {
-    //         const date = new Date(parseInt(currentYear), parseInt(currentMonth));
-    //         onFiltersChange({
-    //             startDate: format(startOfMonth(date), "yyyy-MM-dd"),
-    //             endDate: format(endOfMonth(date), "yyyy-MM-dd"),
-    //         });
-    //     }
-    // };
-
-    // const handleReset = () => {
-    //     setViewMonth(undefined);
-    //     setViewYear(undefined);
-    //     onFiltersChange({
-    //         category: "All",
-    //         startDate: "",
-    //         endDate: ""
-    //     });
-    // };
 
     const totalRows = table.getFilteredRowModel().rows.length;
 

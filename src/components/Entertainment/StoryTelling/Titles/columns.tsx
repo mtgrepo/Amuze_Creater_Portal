@@ -140,7 +140,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
       const title = row.original;
 
       const handleViewDetails = () => {
-        router.navigate(`/storytelling/${title.id}`)
+        router.navigate(`/entertainment/storytelling/details/${title.id}`)
       }
       const handleEditTitle = () => {
         router.navigate(`/entertainment/storytelling/edit/${title.id}`)

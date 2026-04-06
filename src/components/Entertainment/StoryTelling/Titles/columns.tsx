@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Eye,  MoreHorizontal, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import router from "../../../../router/routes";
 
 export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
   {
@@ -137,14 +137,13 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({row}) => {
-      const navigate = useNavigate();
       const title = row.original;
 
       const handleViewDetails = () => {
-        navigate(`/entertainment/storytelling/details/${title.id}`)
+        router.navigate(`/entertainment/storytelling/details/${title.id}`)
       }
       const handleEditTitle = () => {
-        navigate(`/entertainment/storytelling/edit/${title.id}`)
+        router.navigate(`/entertainment/storytelling/edit/${title.id}`)
       }
       return (
         <DropdownMenu>

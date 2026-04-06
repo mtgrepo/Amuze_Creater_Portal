@@ -9,8 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Eye, Info, MoreHorizontal, Pencil } from "lucide-react";
-import { toast } from "sonner";
+import { Eye,  MoreHorizontal, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const columns: ColumnDef<StoryTellingTitleResponse>[] = [

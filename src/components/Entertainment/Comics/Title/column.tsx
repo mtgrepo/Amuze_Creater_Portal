@@ -1,17 +1,8 @@
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { ComicsTitleResponse } from "@/types/response/entertainment/comics/comicsTitleResponse";
 import type { ColumnDef } from "@tanstack/react-table";
-import { CircleCheckBig, Info, MoreHorizontal, XCircle } from "lucide-react";
-import { toast } from "sonner";
+import { CircleCheckBig, XCircle } from "lucide-react";
 import TitleActions from "./title_actions";
 
 const columns: ColumnDef<ComicsTitleResponse>[] = [
@@ -163,20 +154,6 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
       const titles = row.original;
 
       return (
-        // <DropdownMenu>
-        //   <DropdownMenuTrigger asChild>
-        //     <Button variant="ghost" className="h-8 w-8 p-0">
-        //       <span className="sr-only">Open menu</span>
-        //       <MoreHorizontal />
-        //     </Button>
-        //   </DropdownMenuTrigger>
-        //   <DropdownMenuContent align="end">
-        //     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        //     <DropdownMenuItem onClick={() => toast.success("View Details")}>
-        //       <Info /> View Details
-        //     </DropdownMenuItem>
-        //   </DropdownMenuContent>
-        // </DropdownMenu>
         <TitleActions {...titles} />
       );
     },

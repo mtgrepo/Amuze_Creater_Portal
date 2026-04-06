@@ -30,7 +30,6 @@ import { useEffect, useState } from "react";
 import { decryptAuthData, type CreatorDetails } from "@/lib/helper";
 
 export function NavUser({
-  user,
 }: {
   user: {
     name: string;

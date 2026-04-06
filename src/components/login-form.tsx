@@ -161,11 +161,11 @@ export function LoginForm({
             </form>
           </Form>
 
-          <div className="relative hidden  md:block">
+          <div className="relative hidden  md:block rounded-l-4xl">
             <img 
               src={amuze}
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover rounded-l-4xl"
             />
           </div>
         </CardContent>

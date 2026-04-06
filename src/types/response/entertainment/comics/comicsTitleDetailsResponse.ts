@@ -1,4 +1,4 @@
-export interface ComicsTitleResponse {
+export interface ComicsTitleDetailsResponse {
     id: number,
     uuid: string,
     name: string,
@@ -20,5 +20,10 @@ export interface ComicsTitleResponse {
     }[],
     comic_episodes: {
         id: number,
-    }
+        name: string,
+        price: number,
+        views: number,
+        thumbnail: string,
+        approve_status: number
+    }[]
 }

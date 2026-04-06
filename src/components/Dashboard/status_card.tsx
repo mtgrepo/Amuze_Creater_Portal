@@ -2,9 +2,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 
 export function StatCard({
   title,
-  value,
-  sub,
-  icon: Icon,
+  value,  icon: Icon,
   accent,
 }: {
   title: string;

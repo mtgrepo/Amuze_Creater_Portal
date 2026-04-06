@@ -3,6 +3,7 @@ import { decryptAuthData } from '@/lib/helper';
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
+console.log('base url', baseURL)
 const axiosInstance = axios.create({
   baseURL: baseURL, //  Set your API base URL
   timeout: 90000, // Optional: request timeout

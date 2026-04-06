@@ -110,7 +110,7 @@ export default function AuthorReport() {
             <div className="border border-dashed rounded-xl p-6 bg-card/50 hover:border-primary/50 transition-colors duration-300">
                 <div className='flex flex-row gap-3 items-center mb-3'>
                     <Wallet className='items-center text-primary ' />
-                    <h1 className="font-bold text-lg text-foreground">Income Summary</h1>
+                    <h1 className="font-bold text-lg text-foreground tracking-wider">Income Summary</h1>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <ReportCard

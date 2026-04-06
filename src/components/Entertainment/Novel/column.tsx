@@ -1,10 +1,14 @@
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
-import { CircleCheckBig, MoreHorizontal, XCircle } from "lucide-react";
+import { CircleCheckBig, XCircle } from "lucide-react";
 import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
 import NovelActions from "./novel_actions";
-import { Tooltip } from "../../ui/tooltip-card";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 const columns: ColumnDef<NovelResponse>[] = [
     {
@@ -87,9 +91,11 @@ const columns: ColumnDef<NovelResponse>[] = [
                     ))}
 
                     {hasMore && (
-                        <Tooltip
-                            containerClassName="text-neutral-600 dark:text-neutral-400"
-                            content={
+                        <HoverCard openDelay={100} closeDelay={200}>
+                             <HoverCardTrigger className="cursor-pointer">
+                                <span className="text-gray-800 dark:text-gray-400 font-semibold italic">+ {hiddenGenres.length} more</span>
+                            </HoverCardTrigger>
+                            <HoverCardContent side="right">
                                 <div className="flex flex-wrap gap-2 max-w-xs">
                                     {hiddenGenres.map((genre) => (
                                         <Badge key={genre.id}>
@@ -97,12 +103,8 @@ const columns: ColumnDef<NovelResponse>[] = [
                                         </Badge>
                                     ))}
                                 </div>
-                            }
-                        >
-                            <span className="text-sm font-bold cursor-pointer">
-                                <MoreHorizontal className="w-4 h-4" />
-                            </span>
-                        </Tooltip>
+                            </HoverCardContent>
+                        </HoverCard>
                     )}
                 </div>
             );

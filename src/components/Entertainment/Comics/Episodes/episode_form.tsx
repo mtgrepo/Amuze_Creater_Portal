@@ -347,13 +347,13 @@ export default function ComicEpisodeForm({
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => removeImage(index)}>Continue</AlertDialogAction>
+                                          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => removeImage(index)} variant={'destructive'} className="cursor-pointer">Continue</AlertDialogAction>
                                         </AlertDialogFooter>
                                       </AlertDialogContent>
                                     </AlertDialog>
                                   </div>
-                                  <div className="absolute bottom-2 left-2 bg-primary-foreground backdrop-blur-md text-[10px] px-2 py-0.5 rounded-md font-bold">
+                                  <div className="absolute bottom-2 left-2  text-black bg-primary-foreground backdrop-blur-md text-[10px] px-2 py-0.5 rounded-md font-bold">
                                     {String(index + 1).padStart(2, "0")}
                                   </div>
                                 </div>

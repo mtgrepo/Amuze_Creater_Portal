@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom"
 
 export default function StoryTellingTitleDetails () {
     const {id} = useParams();
-    const {storyTellingTitleDetails : story, isLoading, error} = useStoryTellingTitleDetailsQuery(Number(id))
+    const {storyTellingTitleDetails : story } = useStoryTellingTitleDetailsQuery(Number(id))
     return(
         <div className="min-h-screen">
         <div className="max-w-7xl mx-auto space-y-6">

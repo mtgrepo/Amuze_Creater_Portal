@@ -98,7 +98,7 @@ export default function NovelDetails() {
                 </div>
 
                 <Dialog>
-                  <DialogTrigger asChild className="my-3">
+                  <DialogTrigger asChild className="my-6">
                     <Button className="cursor-pointer py-3 ">
                       <BookOpen />
                       Read PDF

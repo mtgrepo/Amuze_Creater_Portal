@@ -25,203 +25,158 @@ export default function ComicsTitleDetails() {
   const loginCreator = authData ? decryptAuthData(authData) : null;
   const creator = loginCreator?.creator;
 
-  const userId = Number(creator?.id) || 0;
-  const roleId = Number(creator?.role_id) || 0;
-
   const payload = {
     id: id!,
-    roleId: roleId,
-    userId: userId,
+    roleId: Number(creator?.role_id) || 0,
+    userId: Number(creator?.id) || 0,
   };
 
   const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
+  const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
 
-  const {
-    titleDetails: comic,
-    isLoading,
-    error,
-  } = useComicsTitleDetailsQuery(payload);
-
-  if (isLoading) {
+  if (isLoading || isCommentsLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading comic details...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-muted-foreground animate-pulse font-medium">Loading details...</p>
       </div>
     );
   }
 
   if (error || !comic) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-500 mb-2">Oops!</h2>
-          <p className="text-gray-400">
-            Failed to load comic details. Please refresh or try again.
-          </p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <XCircle className="w-12 h-12 text-destructive mx-auto" />
+          <h2 className="text-2xl font-bold text-foreground">Oops!</h2>
+          <p className="text-muted-foreground">Failed to load comic details.</p>
         </div>
-      </div>
-    );
-  }
-
-  if (isCommentsLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading comments...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Banner / Header Area */}
-        <div className="relative overflow-hidden rounded-2xl border border-border h-80 md:h-96  bg-zinc-400 dark:bg-zinc-900">
-          {" "}
-          
-          {/* Background Overlay */}
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+        {/* --- HEADER / BANNER AREA --- */}
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
+          {/* Background Image Layer */}
           <div
-            className="absolute inset-0 opacity-50 dark:opacity-30  blur-xs bg-cover bg-center"
+            className="absolute inset-0 opacity-40 blur-md scale-105 bg-cover bg-center"
             style={{ backgroundImage: `url(${comic.horizontal_thumbnail})` }}
           />
+          {/* Gradient Overlay for Readability */}
+          <div className="absolute inset-0 bg-linear-to-t from-card via-card/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80" />
 
-          {/* Content Overlay */}
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center ">
-            {/* Vertical Poster */}
-            <div className="w-40 h-60 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
-              <img
-                src={comic?.thumbnail}
-                alt={comic?.name}
-                className="w-32 md:w-48 h-60 rounded-lg shadow-2xl border border-gray-700 object-cover"
-              />
+          {/* Content Wrapper: Changed from fixed height to min-height */}
+          <div className="relative flex flex-col md:flex-row gap-8 p-6 md:p-10 items-center md:items-end min-h-80">
+
+            <div className="shrink-0 group">
+              <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 transition-transform group-hover:scale-[1.02] duration-300">
+                <img
+                  src={comic?.thumbnail}
+                  alt={comic?.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <div className="flex-1 space-y-6 text-center md:text-left">
-              <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase text-white my-6">
+
+            {/* Info Section: Added better spacing and responsive text alignment */}
+            <div className="flex-1 space-y-4 text-center md:text-left w-full items-center">
+              <h1 className="text-xl lg:text-2xl font-black tracking-tight text-foreground drop-shadow-sm leading-tight">
                 {comic?.name}
               </h1>
-              {/* <p className="text-gray-400 mb-4">By {comic?. || "Unknown Creator"}</p> */}
 
-              {/* Genre Tags */}
-              <div className="flex flex-wrap gap-2 my-6">
+              <div className="flex flex-wrap justify-center md:justify-start gap-2">
                 {comic?.generes?.map((genre: any) => (
-                  <Badge key={genre?.id}>{genre.name}</Badge>
+                  <Badge key={genre?.id} className="bg-primary text-white border-none">
+                    {genre.name}
+                  </Badge>
                 ))}
               </div>
 
-              {/* Stats Bar */}
-              <div className="flex flex-wrap items-center gap-6 text-sm font-medium ">
-                <div className="flex items-center gap-2">
-                  <div className="bg-blue-500/20 p-1.5 rounded-lg">
-                    <DollarSign className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <span>{comic?.price ?? 0} Kyats</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="bg-yellow-500/20 p-1.5 rounded-lg">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                  </div>
-                  <span>{comic?.rating ?? 0} Rating</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="bg-blue-500/20 p-1.5 rounded-lg">
-                    <Eye className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <span>{comic?.views ?? 0} Views</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="bg-red-500/20 p-1.5 rounded-lg">
-                    <ThumbsUp className="w-4 h-4 text-red-500" />
-                  </div>
-                  <span>{comic?.likes ?? 0} Likes</span>
-                </div>
+              {/* Stats Bar: Styled as a floating card for better separation */}
+              <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
+                <Stat icon={<DollarSign className="text-blue-500" />} value={`${comic?.price ?? 0} Kyats`} />
+                <Stat icon={<Star className="text-yellow-500 fill-yellow-500" />} value={`${comic?.rating ?? 0} Rating`} />
+                <Stat icon={<Eye className="text-blue-500" />} value={`${comic?.views ?? 0} Views`} />
+                <Stat icon={<ThumbsUp className="text-red-500" />} value={`${comic?.likes ?? 0} Likes`} />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Episode List Section */}
-        <div className="max-w-7xl mx-auto bg-card border border-border p-8 rounded-3xl">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Episode Lists</h2>
+        {/* --- EPISODE LIST SECTION --- */}
+        <div className="bg-card border border-border p-5 md:p-8 rounded-3xl shadow-sm">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() =>
-                router.navigate(`/entertainment/comics/episode/create/${id}`)
-              }
-              className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors"
+              onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`)}
+              className="rounded-full shadow-lg"
             >
-              Add
+              Add Episode
             </Button>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid gap-3">
             {comic?.comic_episodes?.length > 0 ? (
               comic.comic_episodes.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
-                  className="flex items-center  border border-border p-3 rounded-xl  transition-colors"
+                  className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
                 >
-                  <span className="w-8 text-gray-500 text-center">
-                    {index + 1}
-                  </span>
-                  <img
-                    src={ep.thumbnail}
-                    alt=""
-                    className="w-12 h-12 rounded object-cover mx-4"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium">
-                      {ep.name || `Episode ${index + 1}`}
-                    </h4>
-                    <p className="text-xs text-gray-500">
-                      {new Date(comic.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4 px-4">
-                    <span className="text-yellow-500 text-sm">
-                      🪙 {ep?.price}
-                    </span>
-                    {/* <div className="bg-gray-800 px-2 py-1 rounded text-xs">
-                    1 ⌄
-                  </div> */}
-                    <div className="text-green-500 text-xl">
-                      {ep?.approve_status === 0 ? (
-                        <IconWithTooltip
-                          tooltip="Unapproved"
-                          icon={<XCircle className="w-4 h-4 text-red-500" />}
-                        />
-                      ) : (
-                        <IconWithTooltip
-                          tooltip="Approved"
-                          icon={
-                            <CircleCheckBig className="w-4 h-4 text-green-500" />
-                          }
-                        />
-                      )}
+                  <div className="flex items-center w-full sm:w-auto">
+                    <span className="w-6 text-muted-foreground font-mono font-medium">{(index + 1).toString().padStart(2, '0')}</span>
+                    <img src={ep.thumbnail} alt="" className="w-14 h-14 rounded-xl object-cover mx-4 shadow-md" />
+                    <div className="flex-1 sm:hidden">
+                      <h4 className="font-bold text-sm">{ep.name || `Episode ${index + 1}`}</h4>
+                      <p className="text-[10px] text-muted-foreground">🪙 {ep?.price} Kyats</p>
                     </div>
-                    <button className="text-gray-500 hover:text-white">
+                  </div>
+
+                  <div className="hidden sm:block flex-1 min-w-0">
+                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">{ep.name || `Episode ${index + 1}`}</h4>
+                    <p className="text-xs text-muted-foreground">{new Date(comic.created_at).toLocaleDateString()}</p>
+                  </div>
+
+                  <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
+                    <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">🪙 {ep?.price}</span>
+                    <div className="flex items-center gap-4">
+                      {ep?.approve_status === 0 ? (
+                        <IconWithTooltip tooltip="Pending" icon={<XCircle className="w-5 h-5 text-destructive" />} />
+                      ) : (
+                        <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
+                      )}
                       <EpisodeActions episode={ep} titleId={comic?.id} />
-                    </button>
+                    </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-20 border-2 border-dashed border-gray-800 rounded-xl">
-                <p className="text-gray-500 italic">
-                  No episodes available for "{comic?.name}" yet.
-                </p>
+              <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl opacity-50">
+                <p className="italic">No episodes available yet.</p>
               </div>
             )}
           </div>
         </div>
-        <div className="bg-card rounded-3xl border border-border p-4 shadow-sm">
+
+        {/* --- COMMENTS SECTION --- */}
+        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
           <CommentsSection commentsList={commentsList} />
         </div>
       </div>
+    </div>
+  );
+}
 
+// Small helper component for header stats
+function Stat({ icon, value }: { icon: React.ReactNode; value: string }) {
+  return (
+    <div className="flex items-center gap-2 px-2 first:pl-0">
+      <div className="p-1 rounded-md">{icon}</div>
+      <span className="text-xs md:text-sm font-bold whitespace-nowrap">{value}</span>
     </div>
   );
 }

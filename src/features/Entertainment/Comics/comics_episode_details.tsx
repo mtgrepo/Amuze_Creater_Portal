@@ -83,7 +83,7 @@ export default function ComicEpisodeDetails() {
 
             <div className="flex-1 space-y-6 text-center md:text-left">
               <div>
-                <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase text-white my-6">
+                <h1 className="text-xl lg:text-2xl font-bold tracking-tight mb-2 uppercase text-white my-6">
                   {episodeDetails.name || `Comic ${id}`}
                 </h1>
 

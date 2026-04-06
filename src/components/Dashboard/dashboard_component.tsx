@@ -3,7 +3,6 @@ import { StatCard } from "./status_card";
 import { BookOpen, DollarSign, Eye, ThumbsUp } from "lucide-react";
 import { useEffect } from "react";
 import { decryptAuthData } from "@/lib/helper";
-import RecentlyUpload from "./recently_upload";
 
 export default function DashboardComponent() {
     useEffect(() => {
@@ -58,7 +57,6 @@ export default function DashboardComponent() {
               </div>
               <div className="px-4 lg:px-6">
               {/* <DataTable data={data} /> */}
-              <RecentlyUpload />
               </div>
             </div>
           </div>

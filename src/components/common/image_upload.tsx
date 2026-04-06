@@ -1,5 +1,5 @@
 import { Upload, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ImageCropDialog from "./image_crop_dialog"
 
 interface ImageUploadProps {
@@ -10,16 +10,53 @@ interface ImageUploadProps {
     size?: "small" | "large"
 }
 
-export default function ImageUpload({ value, onChange, label, accept = "image/*", size = "small" }: ImageUploadProps) {
-    const [preview, setPreview] = useState<string | null>(() => {
-        if (typeof value === "string") return value
-        if (value instanceof File) {
-            const reader = new FileReader()
-            reader.onloadend = () => setPreview(reader.result as string)
-            reader.readAsDataURL(value)
+export default function ImageUpload({ 
+    value, 
+    onChange, 
+    label, 
+    accept = "image/*", 
+    size = "small" 
+}: ImageUploadProps) {
+    // 1. Initial State
+    const [preview, setPreview] = useState<string | null>(
+        typeof value === "string" ? value : null
+    );
+    
+    // We keep track of the 'previous value' to detect changes during render
+    const [prevValue, setPrevValue] = useState<File | string | null>(value || null);
+
+    // 2. Adjust state during render (React 19 / Compiler compliant)
+    // This replaces the synchronous part of the useEffect and fixes the Lint Error.
+    if (value !== prevValue) {
+        setPrevValue(value || null);
+        if (typeof value === "string") {
+            setPreview(value);
+        } else if (!value) {
+            setPreview(null);
         }
-        return null
-    })
+        // Note: We don't setPreview for File here because it's asynchronous
+    }
+
+    // 3. Effect for Asynchronous File Loading ONLY
+    useEffect(() => {
+        // If it's not a File, we already handled it in the render block above
+        if (!(value instanceof File)) return;
+
+        let isCancelled = false;
+        const reader = new FileReader();
+        
+        reader.onloadend = () => {
+            if (!isCancelled) {
+                const result = reader.result as string;
+                setPreview(result);
+            }
+        };
+        reader.readAsDataURL(value);
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [value]);
 
     const [cropDialogOpen, setCropDialogOpen] = useState(false)
     const [rawImageSrc, setRawImageSrc] = useState<string | null>(null)
@@ -28,7 +65,7 @@ export default function ImageUpload({ value, onChange, label, accept = "image/*"
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-        // Reset input so the same file can be re-selected after cancel
+        
         e.target.value = ""
 
         const reader = new FileReader()
@@ -45,6 +82,7 @@ export default function ImageUpload({ value, onChange, label, accept = "image/*"
         const reader = new FileReader()
         reader.onloadend = () => setPreview(reader.result as string)
         reader.readAsDataURL(file)
+        
         setCropDialogOpen(false)
         setRawImageSrc(null)
         setRawFile(null)
@@ -76,19 +114,23 @@ export default function ImageUpload({ value, onChange, label, accept = "image/*"
     return (
         <>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">{label}</label>
+                {label && (
+                    <label className="text-sm font-medium text-muted-foreground">
+                        {label}
+                    </label>
+                )}
                 <div className="flex items-start">
                     {preview ? (
                         <div className={`relative ${sizeClasses}`}>
                             <img
                                 src={preview}
-                                alt={label}
+                                alt={label || "Upload preview"}
                                 className="h-full w-full rounded-lg object-cover border-2 border-border"
                             />
                             <button
                                 type="button"
                                 onClick={handleRemove}
-                                className="absolute -top-2 -right-2 rounded-full bg-destructive text-destructive-foreground p-1.5 hover:bg-destructive/90 shadow-md"
+                                className="absolute -top-2 -right-2 rounded-full bg-destructive text-destructive-foreground p-1.5 hover:bg-destructive/90 shadow-md transition-colors"
                             >
                                 <X className="h-3.5 w-3.5" />
                             </button>

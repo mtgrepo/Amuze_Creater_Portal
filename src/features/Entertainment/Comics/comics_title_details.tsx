@@ -95,7 +95,6 @@ export default function ComicsTitleDetails() {
                   </Badge>
                 ))}
               </div>
-
               {/* Stats Bar: Styled as a floating card for better separation */}
               <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
                 <Stat icon={<DollarSign className="text-blue-500" />} value={`${comic?.price ?? 0} Kyats`} />
@@ -107,6 +106,18 @@ export default function ComicsTitleDetails() {
           </div>
         </div>
 
+        {/* --- ABOUT SECTION --- */}
+        <div className="grid grid-cols-1 gap-6">
+          <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
+            <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+              <span className="w-1 h-6 bg-primary rounded-full" />
+              Description
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              {comic?.description || "No description available for this title."}
+            </p>
+          </div>
+        </div>
         {/* --- EPISODE LIST SECTION --- */}
         <div className="bg-card border border-border p-5 md:p-8 rounded-3xl shadow-sm">
           <div className="flex justify-between items-center mb-8">

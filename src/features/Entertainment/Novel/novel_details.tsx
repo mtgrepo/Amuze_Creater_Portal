@@ -134,38 +134,18 @@ export default function NovelDetails() {
           </div>
         </div>
 
-        {/* PDF VIEWER DIALOG */}
-        {/* <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full bg-primary hover:bg-primary/90  cursor-pointer py-3 ">
-              Read PDF
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="max-w-[80vw]! w-full h-[90vh] p-0 border-border flex flex-col overflow-hidden">
-            {" "}
-            <div className="flex items-center justify-between p-4 border-b border-border bg-background shrink-0">
-              <h2 className="text-sm font-medium">
-                PDF Viewer: {novelDetails.name}
-              </h2>
-            </div>
-            <div className="flex-1 w-full bg-zinc-100 overflow-hidden">
-              {pdfUrl ? (
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                  <Viewer
-                    fileUrl={pdfUrl}
-                    plugins={[defaultLayoutPluginInstance]}
-                  />
-                </Worker>
-              ) : (
-                <div className="h-full flex items-center justify-center text-zinc-500">
-                  No PDF available
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog> */}
-
+        {/* --- ABOUT SECTION --- */}
+        <div className="grid grid-cols-1 gap-6">
+          <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
+            <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+              <span className="w-1 h-6 bg-primary rounded-full" />
+              Description
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              {novelDetails?.description || "No description available for this title."}
+            </p>
+          </div>
+        </div>
         {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">

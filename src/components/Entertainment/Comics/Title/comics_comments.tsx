@@ -124,8 +124,8 @@ const CommentsSection = ({commentsList} : any) => {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(reply.id)}>
+                            <AlertDialogCancel variant={"outline"} className="cursor-pointer">Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(reply.id)} variant={'destructive'} className="cursor-pointer">
                               Continue
                             </AlertDialogAction>
                           </AlertDialogFooter>

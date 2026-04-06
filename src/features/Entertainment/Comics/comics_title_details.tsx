@@ -34,8 +34,8 @@ export default function ComicsTitleDetails() {
     userId: userId,
   };
 
-    const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
-  
+  const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
+
   const {
     titleDetails: comic,
     isLoading,
@@ -67,7 +67,7 @@ export default function ComicsTitleDetails() {
   if (isCommentsLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" /> 
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
         <p className="text-gray-400">Loading comments...</p>
       </div>
     );
@@ -77,31 +77,33 @@ export default function ComicsTitleDetails() {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Banner / Header Area */}
-        <div className="relative w-full max-w-7xl mx-auto h-80 md:h-96 overflow-hidden">
+        <div className="relative overflow-hidden rounded-2xl border border-border h-80 md:h-96  bg-zinc-400 dark:bg-zinc-900">
           {" "}
+          
           {/* Background Overlay */}
           <div
-            className="absolute inset-0 bg-cover bg-center dark:opacity-30 opacity-50"
-            style={{ backgroundImage: `url(${comic?.horizontal_thumbnail})` }}
-          ></div>
-          <div className="absolute inset-0 "></div>
-          {/* Content Overlay */}
-          <div className="relative flex p-6 max-w-7xl mx-auto h-full items-end gap-6">
-            {/* Vertical Poster */}
-            <img
-              src={comic?.thumbnail}
-              alt={comic?.name}
-              className="w-32 md:w-48 h-60 rounded-lg shadow-2xl border border-gray-700 object-cover"
-            />
+            className="absolute inset-0 opacity-50 dark:opacity-30  blur-xs bg-cover bg-center"
+            style={{ backgroundImage: `url(${comic.horizontal_thumbnail})` }}
+          />
 
-            <div className="flex-1 pb-4">
-              <h1 className="text-3xl md:text-5xl font-bold mb-10">
+          {/* Content Overlay */}
+          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center ">
+            {/* Vertical Poster */}
+            <div className="w-40 h-60 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
+              <img
+                src={comic?.thumbnail}
+                alt={comic?.name}
+                className="w-32 md:w-48 h-60 rounded-lg shadow-2xl border border-gray-700 object-cover"
+              />
+            </div>
+            <div className="flex-1 space-y-6 text-center md:text-left">
+              <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase text-white my-6">
                 {comic?.name}
               </h1>
               {/* <p className="text-gray-400 mb-4">By {comic?. || "Unknown Creator"}</p> */}
 
               {/* Genre Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 my-6">
                 {comic?.generes?.map((genre: any) => (
                   <Badge key={genre?.id}>{genre.name}</Badge>
                 ))}
@@ -142,7 +144,7 @@ export default function ComicsTitleDetails() {
         </div>
 
         {/* Episode List Section */}
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto bg-card border border-border p-8 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Episode Lists</h2>
             <Button
@@ -215,8 +217,11 @@ export default function ComicsTitleDetails() {
             )}
           </div>
         </div>
+        <div className="bg-card rounded-3xl border border-border p-4 shadow-sm">
+          <CommentsSection commentsList={commentsList} />
+        </div>
       </div>
-      <CommentsSection commentsList={commentsList}/>
+
     </div>
   );
 }

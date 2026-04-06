@@ -112,7 +112,7 @@ export default function AuthorReport() {
                     <Wallet className='items-center text-primary ' />
                     <h1 className="font-bold text-lg text-foreground tracking-wider">Income Summary</h1>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <ReportCard
                         title="Total Income"
                         value={stats.totalIncome.toLocaleString()}

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Users, Banknote, Eye, Loader2 } from "lucide-react";
+import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useNovelDetailsQuery } from "../../../composable/Query/Entertainment/Novel/useNovelDetailsQuery";
@@ -46,9 +46,9 @@ export default function NovelDetails() {
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* HERO CARD */}
-        <div className="relative overflow-hidden rounded-2xl border border-border min-h-75 bg-zinc-900">
+        <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div
-            className="absolute inset-0 opacity-30 grayscale-[0.5] blur-sm bg-cover bg-center"
+            className="absolute inset-0 opacity-30  dark:grayscale-[0.5] blur-sm bg-cover bg-center"
             style={{ backgroundImage: `url(${novelDetails.thumbnail})` }}
           />
 
@@ -68,7 +68,7 @@ export default function NovelDetails() {
                 </h1>
 
                 {/* Genre Tags - Fixed with relative/z-10 and data check */}
-                <div className="relative  flex flex-wrap justify-center md:justify-start gap-2 mb-6">
+                <div className="relative  flex flex-wrap justify-center md:justify-start gap-2 my-6">
                   {novelDetails?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
@@ -79,27 +79,63 @@ export default function NovelDetails() {
                   ))}
                 </div>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-4 text-white">
-                  <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/10">
-                    <Banknote size={16} className="text-green-400" />
-                    <span className="text-sm font-medium">
-                      {novelDetails.price ?? 0} Kyats
-                    </span>
+                <div className="flex flex-wrap justify-center md:justify-start gap-6">
+                  <div className="flex flex-col items-center md:items-start">
+                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Price</span>
+                    <div className="flex items-center gap-2 text-green-400 font-bold text-xl">
+                      <Banknote size={20} />
+                      <span>{novelDetails.price ?? 0} Ks</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/10">
-                    <Eye size={16} className="text-blue-400" />
-                    <span className="text-sm font-medium">
-                      {novelDetails.views ?? 0} Views
-                    </span>
+                  <div className="h-10 w-px bg-white/10 hidden md:block" />
+                  <div className="flex flex-col items-center md:items-start">
+                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Views</span>
+                    <div className="flex items-center gap-2 text-primary dark:text-blue-400 font-bold text-xl">
+                      <Eye size={20} />
+                      <span>{(novelDetails.views ?? 0).toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
+
+                <Dialog>
+                  <DialogTrigger asChild className="my-3">
+                    <Button className="cursor-pointer py-3 ">
+                      <BookOpen />
+                      Read PDF
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent className="max-w-[80vw]! w-full h-[90vh] p-0 border-border flex flex-col overflow-hidden">
+                    {" "}
+                    <div className="flex items-center justify-between p-4 border-b border-border bg-background shrink-0">
+                      <h2 className="text-sm font-medium">
+                        PDF Viewer: {novelDetails.name}
+                      </h2>
+                    </div>
+                    <div className="flex-1 w-full bg-zinc-100 overflow-hidden">
+                      {pdfUrl ? (
+                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                          <Viewer
+                            fileUrl={pdfUrl}
+                            plugins={[defaultLayoutPluginInstance]}
+                          />
+                        </Worker>
+                      ) : (
+                        <div className="h-full flex items-center justify-center text-zinc-500">
+                          No PDF available
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
               </div>
             </div>
           </div>
         </div>
 
         {/* PDF VIEWER DIALOG */}
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger asChild>
             <Button className="w-full bg-primary hover:bg-primary/90  cursor-pointer py-3 ">
               Read PDF
@@ -128,36 +164,48 @@ export default function NovelDetails() {
               )}
             </div>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
 
         {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex items-center gap-4 bg-primary p-6 rounded-2xl shadow-lg">
-            <div className="bg-white/20 p-4 rounded-full">
-              <Users size={32} className="text-white" />
+          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
+            <div className="absolute top-0 right-0 p-4 text-primary opacity-5 group-hover:opacity-10 transition-opacity">
+              <TrendingUp size={120} />
             </div>
-            <div>
-              <p className="text-blue-100 text-sm font-medium">Total Sales</p>
-              <h3 className="text-3xl font-bold text-white">
-                {novelDetails.total_sales || 0}
-              </h3>
+            <div className="flex items-center gap-6">
+              <div className="bg-primary/10 p-5 rounded-2xl text-primary ring-1 ring-primary/20">
+                <Users size={32} />
+              </div>
+              <div>
+                <p className="text-muted-foreground font-medium">Total Community Sales</p>
+                <h3 className="text-4xl font-black text-foreground tracking-tighter">
+                  {novelDetails.total_sales || 0}
+                </h3>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-secondary p-6 rounded-2xl border border-border">
-            <div className="bg-primary/10 p-4 rounded-full text-primary">
-              <Banknote size={32} />
+          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-green-500/50 hover:shadow-lg">
+            <div className="absolute top-0 right-0 p-4 text-green-500 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Banknote size={120} />
             </div>
-            <div>
-              <p className="text-sm font-medium">Total Revenue</p>
-              <h3 className="text-3xl font-bold">
-                {(novelDetails.total_sales_amount || 0).toLocaleString()} Ks
-              </h3>
+            <div className="flex items-center gap-6">
+              <div className="bg-green-500/10 p-5 rounded-2xl text-green-500 ring-1 ring-green-500/20">
+                <Banknote size={32} />
+              </div>
+              <div>
+                <p className="text-muted-foreground font-medium">Estimated Revenue</p>
+                <h3 className="text-4xl font-black text-foreground tracking-tighter">
+                  {(novelDetails.total_sales_amount || 0).toLocaleString()} <span className="text-lg font-normal text-muted-foreground">Ks</span>
+                </h3>
+              </div>
             </div>
           </div>
         </div>
 
-        <CommentsSection commentsList={commentsList} />
+        <div className="bg-card rounded-3xl border border-border p-4 shadow-sm">
+          <CommentsSection commentsList={commentsList} />
+        </div>
       </div>
     </div>
   );

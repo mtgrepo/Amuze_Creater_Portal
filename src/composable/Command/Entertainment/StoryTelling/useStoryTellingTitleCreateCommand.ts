@@ -15,7 +15,7 @@ export const useStoryTellingTitleCreateCommand = () => {
   });
 
   return {
-    titleMutation: titleMutation.mutateAsync,
-    isPending: titleMutation?.isPending,
+    createTitleMutation: titleMutation.mutateAsync,
+    isStoryCreatePending: titleMutation?.isPending,
   };
 };

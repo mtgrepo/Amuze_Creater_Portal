@@ -16,7 +16,7 @@ export default function EditStoryTellingTitlePage() {
                 id: id,
                 name: title?.name,
                 description: title?.description,
-                genres: title?.genres?.map((g: any) => g.id.toString()) || [],
+                genres: title?.generes?.map((g: any) => g.id.toString()) || [],
                 thumbnail: title?.thumbnail,
                 horizontal_thumbnail: title?.horizontal_thumbnail
             }}

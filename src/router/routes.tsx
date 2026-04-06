@@ -1,6 +1,6 @@
 import Dashboard from "@/features/Dashboard/dashboard";
 import App from "../App";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter} from "react-router-dom";
 import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
@@ -20,6 +20,8 @@ import NovelCreate from "../features/Entertainment/Novel/novel_create";
 import UpdateNovel from "../features/Entertainment/Novel/novel_update";
 import NovelDetails from "../features/Entertainment/Novel/novel_details";
 import AuthorReport from "../features/Report/author_report";
+import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/storytelling_title_details";
+import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
 
 const router = createBrowserRouter([
   {
@@ -186,6 +188,27 @@ const router = createBrowserRouter([
             { label: "Title Edit" },
           ],
         },
+      },
+      {
+        path: "/entertainment/storytelling/details/:id",
+        element: <StoryTellingTitleDetails/>,
+        handle : {
+          crumb: ({params, data}: any) => [
+            {label: ["StoryTelling"], href: "/entertainment/storytelling"},
+            {label: data?.data?.name ?? `Title ${params.id}`}
+          ]
+        }
+      },
+      {
+        path: "/entertainment/storytelling/:id/episode/create",
+        element: <StoryTellingEpisodeCreate/>,
+        handle: {
+          crumb:({params}:any) => [
+            {label: ["StorytTelling"], href: "/entertainment/storytelling"},
+            {label: `Title ${params?.id}`, href: `/entertainment/storytelling/${params?.id}/episode/create`},
+            {label: "Episode Create"}
+          ]
+        }
       },
       // Genres
       {

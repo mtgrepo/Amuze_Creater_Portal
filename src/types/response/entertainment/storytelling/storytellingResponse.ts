@@ -66,3 +66,8 @@ export interface UpdateStoryTitlePayload {
   description: string,
   genres: number[]
 }
+
+export interface UpdateStoryEpisodePayload{
+    name: string,
+    price: number;
+}

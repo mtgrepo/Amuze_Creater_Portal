@@ -1,16 +1,40 @@
+import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
 import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
+import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
 import router from "@/router/routes";
-import { Eye, Star, ThumbsUp } from "lucide-react";
+import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
 import { useParams } from "react-router-dom"
 
 export default function StoryTellingTitleDetails () {
     const {id} = useParams();
-    const {storyTellingTitleDetails : story } = useStoryTellingTitleDetailsQuery(Number(id))
+    const {storyTellingTitleDetails : story, isLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
+
+      if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        <p className="text-gray-400">Loading comic details...</p>
+      </div>
+    );
+  }
+
+  if (error || !story) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">Oops!</h2>
+          <p className="text-gray-400">
+            Failed to load storytelling details. Please refresh or try again.
+          </p>
+        </div>
+      </div>
+    );
+  }
     return(
         <div className="min-h-screen">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -104,7 +128,7 @@ export default function StoryTellingTitleDetails () {
                     <span className="text-yellow-500 text-sm">
                       🪙 {ep?.price}
                     </span>
-{/*                    
+                   
                     <div className="text-green-500 text-xl">
                       {ep?.approve_status === 0 ? (
                         <IconWithTooltip
@@ -119,10 +143,10 @@ export default function StoryTellingTitleDetails () {
                           }
                         />
                       )}
-                    </div> */}
-                    {/* <button className="text-gray-500 hover:text-white">
+                    </div>
+                    <button className="text-gray-500 hover:text-white">
                       <EpisodeActions episode={ep} titleId={story?.id} />
-                    </button> */}
+                    </button>
                   </div>
                 </div>
               ))

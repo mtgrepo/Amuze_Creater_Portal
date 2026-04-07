@@ -22,6 +22,8 @@ import NovelDetails from "../features/Entertainment/Novel/novel_details";
 import AuthorReport from "../features/Report/author_report";
 import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/storytelling_title_details";
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
+import StoryTellingEpisodeDetails from "@/features/Entertainment/StoryTelling/storytelling_episode_details";
+import StoryTellingEpisodeUpdate from "@/features/Entertainment/StoryTelling/storytelling_episode_update";
 
 const router = createBrowserRouter([
   {
@@ -207,6 +209,30 @@ const router = createBrowserRouter([
             {label: ["StorytTelling"], href: "/entertainment/storytelling"},
             {label: `Title ${params?.id}`, href: `/entertainment/storytelling/${params?.id}/episode/create`},
             {label: "Episode Create"}
+          ]
+        }
+      },
+      {
+        path: "/entertainment/storytelling/:titleId/episode/details/:id",
+        element: <StoryTellingEpisodeDetails/>,
+        handle: {
+          crumb:({params}:any) => [
+            {label: ["StorytTelling"], href: "/entertainment/storytelling"},
+            {label: `Title ${params?.titleId}`, href: `/entertainment/storytelling/details/${params?.titleId}`},
+            {label: `Episode ${params?.id}`, href: `/entertainment/storytelling/details/${params?.id}`},
+            {label: "Details"}
+          ]
+        }
+      },
+       {
+        path: "/entertainment/storytelling/:titleId/episode/edit/:id",
+        element: <StoryTellingEpisodeUpdate/>,
+        handle: {
+          crumb:({params}:any) => [
+            {label: ["StorytTelling"], href: "/entertainment/storytelling"},
+            {label: `Title ${params?.titleId}`, href: `/entertainment/storytelling/details/${params?.titleId}`},
+            {label: `Episode ${params?.id}`, href: `/entertainment/storytelling/episode/details/${params?.id}`},
+            {label: "Details"}
           ]
         }
       },

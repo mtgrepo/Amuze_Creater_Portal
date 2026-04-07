@@ -77,7 +77,6 @@ export default function StoryTellingTitleForm({
 
   useEffect(() => {
     if (defaultValues) {
-      // reset() is the key to filling the form with async data
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
@@ -144,7 +143,6 @@ export default function StoryTellingTitleForm({
           }
         }
 
-        // Update horizontal thumbnail if provided
         if (values.horizontal_thumbnail) {
           try {
             const formData = new FormData();
@@ -159,8 +157,9 @@ export default function StoryTellingTitleForm({
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
+              toast.success("Story updated successfully with thumbnails.");
+
       }
-      toast.success("Story updated successfully with thumbnails.");
       if (onSuccess) onSuccess();
     } catch (error: any) {
       toast.error(error.message || "An error occurred during submission.");

@@ -170,9 +170,6 @@ export default function ComicsTitleDetails() {
                     <span className="text-yellow-500 text-sm">
                       🪙 {ep?.price}
                     </span>
-                    {/* <div className="bg-gray-800 px-2 py-1 rounded text-xs">
-                    1 ⌄
-                  </div> */}
                     <div className="text-green-500 text-xl">
                       {ep?.approve_status === 0 ? (
                         <IconWithTooltip

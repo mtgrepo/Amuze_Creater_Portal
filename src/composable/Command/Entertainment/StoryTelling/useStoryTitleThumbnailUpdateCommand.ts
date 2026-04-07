@@ -1,7 +1,5 @@
 import { updateStoryTellingTitleThumbnail } from "@/http/apis/entertainment/storytelling/storyTellingTitleApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 type UpdateThumbnailPayload = {
   id: number;
@@ -19,8 +17,6 @@ export const useStoryTellingTitleThumbnailUpdateCommand = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["storyTellingTitleList"] });
-      toast.success("Updated storytelling title thumbnail successfully");
-      router.navigate("/entertainment/storytelling");
     },
   });
 

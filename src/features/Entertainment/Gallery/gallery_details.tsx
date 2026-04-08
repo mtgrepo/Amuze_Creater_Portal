@@ -39,11 +39,11 @@ export default function GalleryDetails() {
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-100 dark:bg-zinc-900 shadow-xl">
           {/* Background Blur Effect */}
           <div
-            className="absolute inset-0 opacity-50 blur-md bg-cover bg-center"
+            className="absolute inset-0 opacity-50 blur-sm bg-cover bg-center"
             style={{ backgroundImage: `url(${galleryDetails.thumbnail})` }}
           />
 
-          <div className="relative flex flex-col md:flex-row gap-8 p-10 h-full items-center md:items-start z-10">
+          <div className="relative flex flex-col md:flex-row gap-8 p-10 h-full items-center md:items-start">
             {/* Main Thumbnail */}
             <div className="w-48 h-64 rounded-2xl border-4 border-white/10 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-105 duration-300">
               <img
@@ -110,13 +110,13 @@ export default function GalleryDetails() {
             <ImageIcon className="text-primary" />
             Marketing & Display Assets
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1  gap-6">
             {/* Preview File */}
             <div className="space-y-3">
               <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">Preview Thumbnail</p>
-              <div className="aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
+              <div className="aspect-video rounded-2xl w-full overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
                 {galleryDetails.preview_file ? (
-                  <img src={galleryDetails.preview_file} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Preview" />
+                  <img src={galleryDetails.preview_file} className="w-full h-full object-cover" alt="Preview" />
                 ) : (
                   <span className="text-muted-foreground">No preview file uploaded</span>
                 )}
@@ -124,7 +124,7 @@ export default function GalleryDetails() {
             </div>
 
             {/* Display File */}
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">Banner / Display Asset</p>
               <div className="aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
                 {galleryDetails.display_file ? (
@@ -133,7 +133,7 @@ export default function GalleryDetails() {
                   <span className="text-muted-foreground">No display file uploaded</span>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -23,12 +23,31 @@ import ImageUpload from "@/components/common/image_upload";
 
 // Custom Helpers
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
-import { useComicsTitleCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
-import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
-import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
 import router from "@/router/routes";
+import { useGalleryCreateCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryCreateCommand";
+import { useGalleryUpdateTextCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateTextCommand";
+import { useGalleryUpdateThumbnailCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateThumbnailCommand";
+
+// function createFormSchema(mode: "add" | "edit") {
+//   const imageSchema =
+//     mode === "add"
+//       ? z.custom<File>((val) => val instanceof File, "Image is required")
+//       : z.union([z.instanceof(File), z.string()]).optional();
+
+//   return z.object({
+//     name: z.string().min(1, "Name is required."),
+//     description: z.string().min(1, "Description is required"),
+//     price: z.number().min(0, "Price must be 0 or greater"),
+//     generes: z.array(z.string()).min(1, "Select at least one genre"),
+//     thumbnail: imageSchema,
+//     actual_file: imageSchema,
+//     created_by: z.union([z.string(), z.number()]).optional(),
+//   });
+// }
+
+// ONLY showing changed parts clearly — rest is SAME as your code
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -40,39 +59,43 @@ function createFormSchema(mode: "add" | "edit") {
     name: z.string().min(1, "Name is required."),
     description: z.string().min(1, "Description is required"),
     price: z.number().min(0, "Price must be 0 or greater"),
-    genres: z.array(z.string()).min(1, "Select at least one genre"),
+    generes: z.array(z.string()).min(1, "Select at least one genre"),
+
     thumbnail: imageSchema,
-    horizontal_thumbnail: imageSchema,
+
+    actual_file: mode === "add" ? imageSchema : z.any().optional(),
+    preview_file: mode === "edit" ? imageSchema : z.any().optional(),
+    display_file: mode === "edit" ? imageSchema : z.any().optional(),
+
     created_by: z.union([z.string(), z.number()]).optional(),
   });
 }
+type GalleryFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
-type TitleFormValues = z.infer<ReturnType<typeof createFormSchema>>;
-
-interface TitleFormProps {
+interface GalleryFormProps {
   mode: "add" | "edit";
-  defaultValues?: Partial<TitleFormValues> & { id?: string };
-  onSuccess?: () => void;
+  defaultValues?: Partial<GalleryFormValues> & { id?: string };
 }
 
-export default function ComicTitleForm({
+export default function GalleryForm({
   mode,
   defaultValues,
-  onSuccess,
-}: TitleFormProps) {
+}: GalleryFormProps) {
   const formSchema = createFormSchema(mode);
-  const { genresList } = useGenresQuery(2);
-  const { titleMutation, isPending } = useComicsTitleCreateCommand();
-  // 2. INITIALIZE FORM
-  const form = useForm<TitleFormValues>({
+  const { genresList } = useGenresQuery(7);
+  const { createGalleryMutation, isPending } = useGalleryCreateCommand();
+  //  INITIALIZE FORM
+  const form = useForm<GalleryFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      genres: defaultValues?.genres || [],
+      generes: defaultValues?.generes || [],
       price: defaultValues?.price || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
-      horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+      actual_file: defaultValues?.actual_file || undefined,
+      preview_file: defaultValues?.preview_file,
+      display_file: defaultValues?.display_file,
       created_by: "",
     },
   });
@@ -83,10 +106,12 @@ export default function ComicTitleForm({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         price: defaultValues.price ?? 0,
-        genres: defaultValues.genres || [],
+        generes: defaultValues.generes || [],
 
         thumbnail: defaultValues.thumbnail,
-        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
+        actual_file: defaultValues.actual_file,
+        preview_file: defaultValues?.preview_file,
+        display_file: defaultValues?.display_file,
         created_by: form.getValues("created_by"),
       });
     }
@@ -105,42 +130,10 @@ export default function ComicTitleForm({
     }
   }, [form]);
 
-  // const onSubmit = async (values: TitleFormValues) => {
-  //   try {
-  //     const formData = new FormData();
+  const { galleryUpdateTextMutation, isUpdatingText } = useGalleryUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdatingThumbnail } = useGalleryUpdateThumbnailCommand();
 
-  //     Object.entries(values).forEach(([key, value]) => {
-  //       if (value === null || value === undefined) return;
-
-  //       if (key === "genres" && Array.isArray(value)) {
-  //         if (mode === "add") {
-  //           value.forEach((g) => {
-  //             formData.append("genres", g);
-  //           });
-  //         } else {
-  //           formData.append("generes", JSON.stringify(value.map(Number)));
-  //         }
-  //       } else if (value instanceof File) {
-  //         formData.append(key, value);
-  //       } else {
-  //         formData.append(key, String(value));
-  //       }
-  //     });
-
-  //     if (mode === "add") {
-  //       await titleMutation(formData);
-  //     } else {
-  //       if (!defaultValues?.id) throw new Error("ID missing");
-  //       // await updateMutation(formData);
-  //     }
-  //   } catch (err: any) {
-  //     toast.error(err.message);
-  //   }
-  // };
-
-  const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
-  const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
-  const onSubmit = async (values: TitleFormValues) => {
+  const onSubmit = async (values: GalleryFormValues) => {
     try {
       if (mode === "add") {
         // --- HANDLE CREATE (Existing logic) ---
@@ -155,44 +148,55 @@ export default function ComicTitleForm({
             formData.append(key, String(value));
           }
         });
-        await titleMutation(formData);
+        console.log("submit values", values);
+        await createGalleryMutation(formData);
       } else {
         // --- HANDLE EDIT ---
         if (!defaultValues?.id) throw new Error("ID missing");
 
         const isThumbnailUpdated =
           values.thumbnail instanceof File ||
-          values.horizontal_thumbnail instanceof File;
-        
-          const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
+          values.preview_file instanceof File ||
+          values.display_file instanceof File;
 
         if (isThumbnailUpdated) {
-          // SCENARIO 1: Update Thumbnails (Multipart/FormData)
           const thumbData = new FormData();
+
           if (values.thumbnail instanceof File) {
             thumbData.append("thumbnail", values.thumbnail);
           }
-          if (values.horizontal_thumbnail instanceof File) {
-            thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+
+          if (mode === "edit") {
+            if (values.preview_file instanceof File) {
+              thumbData.append("preview_file", values.preview_file);
+              thumbData.append("display_file", values.display_file);
+            }
+            if (values.display_file instanceof File) {
+              thumbData.append("display_file", values.display_file);
+              thumbData.append("preview_file", values.preview_file);
+            }
           }
 
-          // await updateThumbnailsApi(defaultValues.id, thumbData);
-          await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, data: thumbData });
+          await updateThumbnailMutation({
+            galleryId: Number(defaultValues?.id),
+            data: thumbData,
+          });
         }
 
-        // SCENARIO 2: Update Text Data (JSON)
+        // Update Text Data 
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), // Convert strings back to numbers
+          generes: values.generes.map(Number), // Convert strings back to numbers
           price: values.price,
         };
 
-        // await updateTextApi(defaultValues.id, textPayload);
-        await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
+        await galleryUpdateTextMutation({
+          galleryId: Number(defaultValues?.id),
+          data: textPayload,
+        });
       }
-      
-      if (onSuccess) onSuccess();
+
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -205,10 +209,10 @@ export default function ComicTitleForm({
           {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Series" : "Edit Series Details"}
+              {mode === "add" ? "Create New Gallery" : "Edit Gallery"}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your comic title.
+              Fill in the information for your gallery.
             </p>
           </div>
 
@@ -245,7 +249,7 @@ export default function ComicTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comics Title</FormLabel>
+                      <FormLabel>Title</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. The Beginning After The End"
@@ -299,7 +303,7 @@ export default function ComicTitleForm({
               {/* GENRE SELECTION SECTION */}
               <FormField
                 control={form.control}
-                name="genres"
+                name="generes"
                 render={({ field }) => {
                   const toggleGenre = (id: string) => {
                     const isSelected = field.value.includes(id);
@@ -353,27 +357,66 @@ export default function ComicTitleForm({
           <div className="pt-6 border-t">
             <h3 className="text-lg font-semibold mb-4">Marketing Assets</h3>
             <div className="p-6 border rounded-xl  border-dashed">
-              <FormField
-                control={form.control}
-                name="horizontal_thumbnail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Banner / Horizontal Thumbnail (16:9 recommended)
-                    </FormLabel>
-                    <FormControl>
-                      <div className="mt-2">
-                        <ImageUpload
-                          value={field.value}
-                          onChange={field.onChange}
-                          label="Click to upload banner"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {mode === "add" ? (
+                <FormField
+                  control={form.control}
+                  name="actual_file"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Banner / Actual Thumbnail (16:9 recommended)
+                      </FormLabel>
+                      <FormControl>
+                        <div className="mt-2">
+                          <ImageUpload
+                            value={field.value}
+                            onChange={field.onChange}
+                            label="Click to upload banner"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="preview_file"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preview File</FormLabel>
+                        <FormControl>
+                          <ImageUpload
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+<FormField
+  control={form.control}
+  name="display_file"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Display File</FormLabel>
+      <FormControl>
+        <ImageUpload
+          key={field.value || "empty-display"} 
+          value={field.value}
+          onChange={field.onChange}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+                </div>
+              )}
             </div>
           </div>
 
@@ -385,14 +428,20 @@ export default function ComicTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                router.navigate("/entertainment/comics");
+                router.navigate("/entertainment/gallery");
               }}
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 cursor-pointer" disabled={isPending || isThumbnailPending || isUpdatePending}>
-              {(isPending || isThumbnailPending || isUpdatePending) && <Spinner />}
-              {mode === "add" ? "Add Title" : "Save Changes"}
+            <Button
+              type="submit"
+              className="flex-1 cursor-pointer"
+              disabled={isPending || isUpdatingThumbnail || isUpdatingText}
+            >
+              {(isPending || isUpdatingThumbnail || isUpdatingText) && (
+                <Spinner />
+              )}
+              {mode === "add" ? "Add Gallery" : "Save Changes"}
             </Button>
           </div>
         </form>

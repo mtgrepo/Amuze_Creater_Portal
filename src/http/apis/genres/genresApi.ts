@@ -14,10 +14,10 @@ export interface GenreResponse {
   };
 }
 
-export const getAllGenres = async () => {
+export const getAllGenres = async (genreId: number) => {
   try {
     const response = await axiosInstance.get(
-      `genere/get-sub-generes?subcategory_id=${1}`,
+      `genere/get-sub-generes?subcategory_id=${genreId}`,
     );
     return response?.data?.data;
   } catch (error) {

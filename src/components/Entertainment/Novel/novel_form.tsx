@@ -67,7 +67,7 @@ export default function NovelForm({
     defaultValues,
 }: NovelFormProps) {
     const formSchema = createFormSchema(mode);
-    const { genresList } = useGenresQuery();
+    const { genresList } = useGenresQuery(1);
 
     const form = useForm<NovelFormValues>({
         resolver: zodResolver(formSchema),

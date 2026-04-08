@@ -22,6 +22,10 @@ import NovelDetails from "../features/Entertainment/Novel/novel_details";
 import AuthorReport from "../features/Report/author_report";
 import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/storytelling_title_details";
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
+import GalleryMain from "@/features/Entertainment/Gallery/gallery";
+import GalleryCreate from "@/features/Entertainment/Gallery/gallery_create";
+import GalleryUpdate from "@/features/Entertainment/Gallery/gallery_update";
+import GalleryDetails from "@/features/Entertainment/Gallery/gallery_details";
 
 const router = createBrowserRouter([
   {
@@ -156,11 +160,43 @@ const router = createBrowserRouter([
               label: `Title ${params?.titleId}`,
               href: `/entertainment/comics/details/${params?.titleId}`,
             },
-            // {
-            //   label: `Episode ${params?.id}`,
-            //   href: `/entertainment/comics/details/${params?.id}`,
-            // },
             { label: "Details" },
+          ],
+        },
+      },
+      // Gallery
+      {
+        path: "/entertainment/gallery",
+        element: <GalleryMain />,
+        handle: { crumb: ["Entertainment", "Gallery"] },
+      },
+      {
+        path: "/entertainment/gallery/create",
+        element: <GalleryCreate />,
+        handle: {
+          crumb: [
+            { label: ["Gallery"], href: "/entertainment/gallery" },
+            { label: "Create" },
+          ],
+        }
+      },
+      {
+        path: "/entertainment/gallery/edit/:id",
+        element: <GalleryUpdate />,
+        handle: {
+          crumb: ({ params }: any) => [
+            { label: ["Gallery"], href: "/entertainment/gallery" },
+            { label: `Edit Gallery ${params?.id}` },
+          ],
+        },
+      },
+      {
+        path: "/entertainment/gallery/details/:id",
+        element: <GalleryDetails />,
+        handle: {
+          crumb: ({ params }: any) => [
+            { label: ["Gallery"], href: "/entertainment/gallery" },
+            { label: `Details ${params?.id}` },
           ],
         },
       },

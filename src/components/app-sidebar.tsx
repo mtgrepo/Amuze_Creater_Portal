@@ -86,8 +86,8 @@ const data = {
               icon: Newspaper
             },
             {
-              title: "Gallary",
-              url: "/entertainment/gallary",
+              title: "Gallery",
+              url: "/entertainment/gallery",
               icon: Image
             },
             {

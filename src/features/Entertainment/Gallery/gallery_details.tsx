@@ -12,15 +12,17 @@ import {
 import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { Badge } from "@/components/ui/badge";
 import { useGalleryDetailsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryDetailsQuery";
-import { useGalleryCommentsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryCommentQuery";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 
 export default function GalleryDetails() {
   const { id } = useParams();
 
   const { galleryDetails, isLoading } = useGalleryDetailsQuery(Number(id));
 
-  const { commentsList, isLoading: isCommentsLoading } =
-    useGalleryCommentsQuery(Number(id));
+  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery(
+    "gallery",
+    Number(id),
+  );
 
   if (isLoading || isCommentsLoading) {
     return (
@@ -215,7 +217,7 @@ export default function GalleryDetails() {
               See what others are saying about this novel.
             </p>
           </div>
-          <CommentsSection commentsList={commentsList} />
+          <CommentsSection commentsList={commentsList} category="gallery"/>
         </div>
       </div>
     </div>

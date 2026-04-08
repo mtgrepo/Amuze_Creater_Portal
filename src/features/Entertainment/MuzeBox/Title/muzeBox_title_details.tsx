@@ -1,6 +1,4 @@
 import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
-import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
-import { decryptAuthData } from "@/lib/helper";
 import { useParams } from "react-router-dom";
 import {
   DollarSign,
@@ -16,24 +14,12 @@ import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
-import { useComicsTitleCommentQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
 import { useMuzeBoxTitleDetailsQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxDetailsQuery";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 
 export default function MuzeBoxTitleDetails() {
   const { id } = useParams();
-
-//   const authData = localStorage.getItem("creator");
-//   const loginCreator = authData ? decryptAuthData(authData) : null;
-//   const creator = loginCreator?.creator;
-
-//   const payload = {
-//     id: id!,
-//     roleId: Number(creator?.role_id) || 0,
-//     userId: Number(creator?.id) || 0,
-//   };
-
-  const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
-//   const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
+  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('muze-box', Number(id));
 const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id)!);
 
   if (isLoading || isCommentsLoading) {
@@ -177,7 +163,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
-          <CommentsSection commentsList={commentsList} />
+          <CommentsSection commentsList={commentsList} category="muze-box"/>
         </div>
       </div>
     </div>

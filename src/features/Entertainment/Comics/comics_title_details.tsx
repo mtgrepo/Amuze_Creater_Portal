@@ -16,7 +16,7 @@ import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
-import { useComicsTitleCommentQuery } from "../../../composable/Query/Entertainment/Comics/useComicsTitleCommentQuery";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -31,7 +31,8 @@ export default function ComicsTitleDetails() {
     userId: Number(creator?.id) || 0,
   };
 
-  const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
+  // const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
+  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('comic', Number(id));
   const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
 
   if (isLoading || isCommentsLoading) {
@@ -175,7 +176,7 @@ export default function ComicsTitleDetails() {
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
-          <CommentsSection commentsList={commentsList} />
+          <CommentsSection commentsList={commentsList} category="comic"/>
         </div>
       </div>
     </div>

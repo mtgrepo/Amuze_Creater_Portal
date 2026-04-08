@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { decryptAuthData } from "@/lib/helper";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useComicsCommentDelCommand } from "../../../../composable/Command/Entertainment/Comics/useComicsCommentDelCommand";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,12 +13,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useComicStoreCommentCommand } from "../../../../composable/Command/Entertainment/Comics/useComicStoreCommentCommand";
 import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
 import { ScrollArea } from "../../../ui/scroll-area";
+import { useCommentDelCommand } from "@/composable/Command/Comment/useCommentDeleteCommand";
+import { useCommentStoreCommand } from "@/composable/Command/Comment/useCommentStoreCommand";
 
-const CommentsSection = ({commentsList} : any) => {
+const CommentsSection = ({commentsList, category } : {commentsList: any, category: string}) => {
   const { id } = useParams();
   const comicId = Number(id!);
 
@@ -32,21 +32,23 @@ const CommentsSection = ({commentsList} : any) => {
   const creatorId = loginCreator?.creator?.id;
   const creatorName = loginCreator?.creator?.name;
 
-  // const { commentsList, isLoading } = useComicsTitleCommentQuery(comicId);
-  const { deleteCommentMutation, isPending } = useComicsCommentDelCommand();
-  const { storeCommentMutation, isPending: isStorePending } = useComicStoreCommentCommand();
-
+  const { deleteCommentMutation, isPending } = useCommentDelCommand();
+  const { storeCommentMutation, isPending: isStorePending } = useCommentStoreCommand();
   const getAvatar = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
   const handleDelete = async (id: number) => {
-    await deleteCommentMutation(id);
+    await deleteCommentMutation({
+      category: category,
+      commentId: id
+    });
   };
 
   const handleCreateComment = async () => {
     if (!newComment.trim()) return;
 
     await storeCommentMutation({
-      comicId,
+      category: category,
+      id: comicId,
       parentId: null,
       comment: newComment,
     });
@@ -59,7 +61,8 @@ const CommentsSection = ({commentsList} : any) => {
     if (!text?.trim()) return;
 
     await storeCommentMutation({
-      comicId,
+      category: category,
+      id: comicId,
       parentId,
       comment: text,
     });

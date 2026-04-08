@@ -85,3 +85,20 @@ export const updateStoryTellingTitleThumbnail = async(titleId: number, type: 've
   }
 }
 
+export const getStoryTellingTitleComment = async(titleId: number, page: number, pageSize:number) => {
+  try{
+    const response = await axiosInstance.get(`story/get-comments/${titleId}`, {
+      params: {
+        page,
+        pageSize
+      }
+    });
+    return response.data;
+  }catch(error){
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "API failed");
+    }
+    throw new Error((error as string) || "Something went wrong");
+  }
+}
+

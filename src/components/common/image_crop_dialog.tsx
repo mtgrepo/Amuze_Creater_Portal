@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
@@ -76,6 +77,7 @@ export default function ImageCropDialog({
             <DialogContent className="max-w-xl">
                 <DialogHeader>
                     <DialogTitle>Crop Image</DialogTitle>
+                    <DialogDescription></DialogDescription>
                 </DialogHeader>
 
                 {/* Crop area */}

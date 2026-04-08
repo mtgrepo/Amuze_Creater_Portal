@@ -19,7 +19,7 @@ import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQ
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -54,7 +54,7 @@ export default function StoryTellingTitleForm({
   onSuccess,
 }: TitleFormProps) {
   const formSchema = createFormSchema(mode);
-  const [subcategory_id] = React.useState<number>(3);
+  const subcategory_id = 3;
   const { genresList } = useGenresBySubCategoryQuery(subcategory_id);
   const { createTitleMutation, isStoryCreatePending } =
     useStoryTellingTitleCreateCommand();
@@ -86,7 +86,8 @@ export default function StoryTellingTitleForm({
         created_by: form.getValues("created_by"), // preserve the ID from the other effect
       });
     }
-  }, [defaultValues, form]);
+  }, [defaultValues]);
+  
   useEffect(() => {
     try {
       const storedData = localStorage.getItem("creator");
@@ -98,7 +99,7 @@ export default function StoryTellingTitleForm({
     } catch (error) {
       console.error("Failed to read auth data from localStorage", error);
     }
-  }, [form]);
+  }, []);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -170,7 +171,6 @@ export default function StoryTellingTitleForm({
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-          {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {mode === "add"
@@ -183,7 +183,6 @@ export default function StoryTellingTitleForm({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT COLUMN: VISUALS */}
             <div className="space-y-6">
               <FormField
                 control={form.control}
@@ -207,7 +206,6 @@ export default function StoryTellingTitleForm({
               />
             </div>
 
-            {/* RIGHT COLUMN: DATA */}
             <div className="lg:col-span-2 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -243,7 +241,6 @@ export default function StoryTellingTitleForm({
                 )}
               />
 
-              {/* GENRE SELECTION SECTION */}
               <FormField
                 control={form.control}
                 name="genres"
@@ -296,9 +293,7 @@ export default function StoryTellingTitleForm({
             </div>
           </div>
 
-          {/* HORIZONTAL ASSETS SECTION */}
           <div className="pt-6 border-t">
-            {/* <h3 className="text-lg font-semibold mb-4">Marketing Assets</h3> */}
             <div className="p-6 border rounded-xl bg-muted/20 border-dashed">
               <FormField
                 control={form.control}
@@ -324,7 +319,6 @@ export default function StoryTellingTitleForm({
             </div>
           </div>
 
-          {/* FORM ACTIONS */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
             <Button
               type="button"

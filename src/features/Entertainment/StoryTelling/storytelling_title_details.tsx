@@ -1,20 +1,33 @@
+import CommentsSection from "@/components/common/comment";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useStoryTellingCommentDelete } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingDeleteComment";
+import { useStoryTellingStoreComment } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingStoreComment";
+import { useStoryTellingTitleCommentQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleCommentQuery";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
 import router from "@/router/routes";
 import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
+import React from "react";
 import { useParams } from "react-router-dom"
 
 export default function StoryTellingTitleDetails () {
     const {id} = useParams();
-    const {storyTellingTitleDetails : story, isLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
+    const [page, setPage] = React.useState(1);
+    const [pageSize, setPageSize] = React.useState(10);
 
-      if (isLoading) {
+    const {storyTellingTitleDetails : story, isTitleLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
+    const {storyTellingCommentLists, isStoryTellingCommentLoading} = useStoryTellingTitleCommentQuery(Number(id), page, pageSize);
+
+    const{storeCommentMutation, isStoryCommentPending} = useStoryTellingStoreComment();
+    const{deleteCommentMutation, isCommentDeletePending} = useStoryTellingCommentDelete()
+
+    const isLoading = isTitleLoading || isStoryTellingCommentLoading;
+
+    if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
@@ -160,7 +173,14 @@ export default function StoryTellingTitleDetails () {
           </div>
         </div>
       </div>
-      <CommentsSection/>
+      <CommentsSection 
+      type="story" 
+      commentsList={storyTellingCommentLists}
+      storeCommentMutation={async({type, itemId, parentId, comment}) => storeCommentMutation({
+        type, contentId:itemId, parentId, comment
+      })}
+      deleteCommentMutation={deleteCommentMutation}
+      />
         </div>
     )
 }

@@ -10,7 +10,7 @@ export const useStoryTellingTitleDetailsQuery = (id: number) => {
     });
     return{
         storyTellingTitleDetails: storyTellingTitleDetails.data?.data,
-        isLoading: storyTellingTitleDetails.isLoading,
+        isTitleLoading: storyTellingTitleDetails.isLoading,
         error: storyTellingTitleDetails.error
     }
 }

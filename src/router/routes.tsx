@@ -14,7 +14,6 @@ import ComicsEpisodeCreate from "@/features/Entertainment/Comics/comics_episode_
 import EditEpisodePage from "@/features/Entertainment/Comics/comics_episode_update";
 import ComicEpisodeDetails from "@/features/Entertainment/Comics/comics_episode_details";
 import StoryTellingLayout from "@/features/Entertainment/StoryTelling/storytellinglayout";
-import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/storytelling_title_update";
 import NovelCreate from "../features/Entertainment/Novel/novel_create";
 import UpdateNovel from "../features/Entertainment/Novel/novel_update";
@@ -24,6 +23,7 @@ import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/stor
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
 import StoryTellingEpisodeDetails from "@/features/Entertainment/StoryTelling/storytelling_episode_details";
 import StoryTellingEpisodeUpdate from "@/features/Entertainment/StoryTelling/storytelling_episode_update";
+import { StoryTellingTitleCreate } from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 
 const router = createBrowserRouter([
   {

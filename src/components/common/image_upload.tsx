@@ -23,19 +23,27 @@ export default function ImageUpload({
     );
     
     // We keep track of the 'previous value' to detect changes during render
-    const [prevValue, setPrevValue] = useState<File | string | null>(value || null);
+    // const [prevValue, setPrevValue] = useState<File | string | null>(value || null);
 
     // 2. Adjust state during render (React 19 / Compiler compliant)
     // This replaces the synchronous part of the useEffect and fixes the Lint Error.
-    if (value !== prevValue) {
-        setPrevValue(value || null);
-        if (typeof value === "string") {
+    // if (value !== prevValue) {
+    //     setPrevValue(value || null);
+    //     if (typeof value === "string") {
+    //         setPreview(value);
+    //     } else if (!value) {
+    //         setPreview(null);
+    //     }
+    //     // Note: We don't setPreview for File here because it's asynchronous
+    // }
+
+    useEffect(() => {
+         if (typeof value === "string") {
             setPreview(value);
         } else if (!value) {
             setPreview(null);
         }
-        // Note: We don't setPreview for File here because it's asynchronous
-    }
+    }, [value])
 
     // 3. Effect for Asynchronous File Loading ONLY
     useEffect(() => {

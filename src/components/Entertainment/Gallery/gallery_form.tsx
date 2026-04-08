@@ -79,7 +79,7 @@ interface GalleryFormProps {
 
 export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
   const formSchema = createFormSchema(mode);
-  const { genresList } = useGenresQuery(7);
+  const { genresList } = useGenresQuery(6);
   const { createGalleryMutation, isPending } = useGalleryCreateCommand();
   //  INITIALIZE FORM
   const form = useForm<GalleryFormValues>({

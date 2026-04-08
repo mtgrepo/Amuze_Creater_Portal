@@ -1,18 +1,26 @@
 "use client";
 
 import { useParams } from "react-router-dom";
-import { Users, Banknote, Eye, Loader2, TrendingUp, ImageIcon } from "lucide-react";
-import { useNovelCommentsQuery } from "@/composable/Query/Entertainment/Novel/useNovelCommentQuery";
+import {
+  Users,
+  Banknote,
+  Eye,
+  Loader2,
+  TrendingUp,
+  ImageIcon,
+} from "lucide-react";
 import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { Badge } from "@/components/ui/badge";
 import { useGalleryDetailsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryDetailsQuery";
+import { useGalleryCommentsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryCommentQuery";
 
 export default function GalleryDetails() {
   const { id } = useParams();
 
-    const { galleryDetails, isLoading } = useGalleryDetailsQuery(Number(id));
+  const { galleryDetails, isLoading } = useGalleryDetailsQuery(Number(id));
+
   const { commentsList, isLoading: isCommentsLoading } =
-    useNovelCommentsQuery(Number(id));
+    useGalleryCommentsQuery(Number(id));
 
   if (isLoading || isCommentsLoading) {
     return (
@@ -34,7 +42,6 @@ export default function GalleryDetails() {
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-100 dark:bg-zinc-900 shadow-xl">
           {/* Background Blur Effect */}
@@ -73,7 +80,9 @@ export default function GalleryDetails() {
 
                 <div className="flex flex-wrap justify-center md:justify-start gap-10">
                   <div className="flex flex-col items-center md:items-start">
-                    <span className="text-muted-foreground text-xs uppercase tracking-[0.2em] mb-2 font-bold">Base Price</span>
+                    <span className="text-muted-foreground text-xs uppercase tracking-[0.2em] mb-2 font-bold">
+                      Base Price
+                    </span>
                     <div className="flex items-center gap-2 text-green-500 font-black text-2xl">
                       <Banknote size={24} />
                       <span>{galleryDetails.price ?? 0} Ks</span>
@@ -81,10 +90,14 @@ export default function GalleryDetails() {
                   </div>
                   <div className="h-12 w-px bg-border hidden md:block" />
                   <div className="flex flex-col items-center md:items-start">
-                    <span className="text-muted-foreground text-xs uppercase tracking-[0.2em] mb-2 font-bold">Total Engagement</span>
+                    <span className="text-muted-foreground text-xs uppercase tracking-[0.2em] mb-2 font-bold">
+                      Total Engagement
+                    </span>
                     <div className="flex items-center gap-2 text-blue-500 font-black text-2xl">
                       <Eye size={24} />
-                      <span>{(galleryDetails.views ?? 0).toLocaleString()}</span>
+                      <span>
+                        {(galleryDetails.views ?? 0).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -100,7 +113,10 @@ export default function GalleryDetails() {
             Description
           </h3>
           <p className="text-muted-foreground leading-relaxed text-lg italic">
-            "{galleryDetails?.description || "No description available for this title."}"
+            "
+            {galleryDetails?.description ||
+              "No description available for this title."}
+            "
           </p>
         </div>
 
@@ -113,12 +129,20 @@ export default function GalleryDetails() {
           <div className="grid grid-cols-1  gap-6">
             {/* Preview File */}
             <div className="space-y-3">
-              <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">Preview Thumbnail</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">
+                Preview Thumbnail
+              </p>
               <div className="aspect-video rounded-2xl w-full overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
                 {galleryDetails.preview_file ? (
-                  <img src={galleryDetails.preview_file} className="w-full h-full object-cover" alt="Preview" />
+                  <img
+                    src={galleryDetails.preview_file}
+                    className="w-full h-full object-cover"
+                    alt="Preview"
+                  />
                 ) : (
-                  <span className="text-muted-foreground">No preview file uploaded</span>
+                  <span className="text-muted-foreground">
+                    No preview file uploaded
+                  </span>
                 )}
               </div>
             </div>
@@ -148,7 +172,9 @@ export default function GalleryDetails() {
                 <Users size={40} />
               </div>
               <div>
-                <p className="text-muted-foreground font-bold text-sm uppercase">Total Copies Sold</p>
+                <p className="text-muted-foreground font-bold text-sm uppercase">
+                  Total Copies Sold
+                </p>
                 <h3 className="text-5xl font-black text-foreground tracking-tighter">
                   {galleryDetails.total_sales || 0}
                 </h3>
@@ -165,9 +191,14 @@ export default function GalleryDetails() {
                 <Banknote size={40} />
               </div>
               <div>
-                <p className="text-muted-foreground font-bold text-sm uppercase">Estimated Gross Revenue</p>
+                <p className="text-muted-foreground font-bold text-sm uppercase">
+                  Estimated Gross Revenue
+                </p>
                 <h3 className="text-5xl font-black text-foreground tracking-tighter">
-                  {(galleryDetails.total_sales_amount || 0).toLocaleString()} <span className="text-xl font-medium text-muted-foreground">Ks</span>
+                  {(galleryDetails.total_sales_amount || 0).toLocaleString()}{" "}
+                  <span className="text-xl font-medium text-muted-foreground">
+                    Ks
+                  </span>
                 </h3>
               </div>
             </div>
@@ -180,7 +211,9 @@ export default function GalleryDetails() {
             <h3 className="text-xl font-bold flex items-center gap-2">
               Community Discussion
             </h3>
-            <p className="text-muted-foreground text-sm">See what others are saying about this novel.</p>
+            <p className="text-muted-foreground text-sm">
+              See what others are saying about this novel.
+            </p>
           </div>
           <CommentsSection commentsList={commentsList} />
         </div>

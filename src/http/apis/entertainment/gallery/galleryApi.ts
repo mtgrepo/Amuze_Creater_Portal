@@ -75,3 +75,20 @@ export const updateGalleryThumbnail = async ( galleryId: number, data: FormData)
         throw new Error(error as string || "Something went wrong")
     }
 }
+
+export const getGalleryComments = async (galleryId: number) => {
+    try {
+        const response = await axiosInstance.get(`/gallery/get-comments/${galleryId}`, { 
+            params: {
+                page: 1,
+                pageSize: 1000,
+            },
+         });
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.message || "Error occurred while fetching gallery comments");
+        }
+        throw new Error("Something went wrong!");
+    }
+}

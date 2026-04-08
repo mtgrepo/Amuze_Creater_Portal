@@ -27,7 +27,11 @@ export const getAllComments = async (category: string ,id: number) => {
 
 export const deleteComment = async ( category: string, commentId: number) => {
     try {
-        const response = await axiosInstance.delete(`${category}/delete-comment/${commentId}`)
+        let route = "delete-comment";
+        if(category === "story"){
+          route = "delete-story-comment"
+        }
+        const response = await axiosInstance.delete(`${category}/${route}/${commentId}`)
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -39,7 +43,11 @@ export const deleteComment = async ( category: string, commentId: number) => {
 
 export const replyComment = async ( category: string, id: number, parentId: number | null, comment: string) => {
     try {
-        const response = await axiosInstance.post(`${category}/store-comment`, {
+        let route = "store-comment";
+        if(category === "story"){
+          route = "store-story-comment"
+        }
+        const response = await axiosInstance.post(`${category}/${route}`, {
             [`${category}Id`]: id,
             parentId,
             comment

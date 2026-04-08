@@ -1,4 +1,3 @@
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
 import { decryptAuthData } from "@/lib/helper";
 import { useParams } from "react-router-dom";
@@ -17,6 +16,7 @@ import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import CommentsSection from "@/components/common/comment_component";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();

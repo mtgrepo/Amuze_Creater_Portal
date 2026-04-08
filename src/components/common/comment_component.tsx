@@ -13,11 +13,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Input } from "../../../ui/input";
-import { Textarea } from "../../../ui/textarea";
-import { ScrollArea } from "../../../ui/scroll-area";
+
 import { useCommentDelCommand } from "@/composable/Command/Comment/useCommentDeleteCommand";
 import { useCommentStoreCommand } from "@/composable/Command/Comment/useCommentStoreCommand";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { ScrollArea } from "../ui/scroll-area";
 
 const CommentsSection = ({commentsList, category } : {commentsList: any, category: string}) => {
   const { id } = useParams();

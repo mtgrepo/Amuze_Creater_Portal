@@ -103,26 +103,6 @@ export const updateThumbnail = async (id: number, type: string, data: FormData) 
   }
 };
 
-export const getAllComments = async (id: number) => {
-  try {
-    const response = await axiosInstance.get(`comic/get-comments/${id}`, {
-      params: {
-        page: 1,
-        pageSize: 1000,
-      },
-    });
-    // console.log("comment res", response?.data);
-    return response?.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(
-        error?.response?.data?.message ||
-          "Error occurred while fetching comments",
-      );
-    }
-    throw new Error("Something went wrong!");
-  }
-};
 
 export const getTitleExcelExport = async () => {
   try {

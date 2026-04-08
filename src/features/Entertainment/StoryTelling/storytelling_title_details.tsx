@@ -1,10 +1,11 @@
+import CommentsSection from "@/components/common/comment_component";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
 import router from "@/router/routes";
 import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
@@ -13,7 +14,7 @@ import { useParams } from "react-router-dom"
 export default function StoryTellingTitleDetails () {
     const {id} = useParams();
     const {storyTellingTitleDetails : story, isLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
-
+  const { commentsList } = useCommentQuery('story',Number(id));
       if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -160,7 +161,7 @@ export default function StoryTellingTitleDetails () {
           </div>
         </div>
       </div>
-      <CommentsSection/>
+      <CommentsSection category={"story"} commentsList={commentsList}/>
         </div>
     )
 }

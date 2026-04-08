@@ -1,4 +1,3 @@
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { useParams } from "react-router-dom";
 import {
   DollarSign,
@@ -16,6 +15,7 @@ import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_a
 import { Badge } from "@/components/ui/badge";
 import { useMuzeBoxTitleDetailsQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxDetailsQuery";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import CommentsSection from "@/components/common/comment_component";
 
 export default function MuzeBoxTitleDetails() {
   const { id } = useParams();

@@ -3,7 +3,6 @@ import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useNovelDetailsQuery } from "../../../composable/Query/Entertainment/Novel/useNovelDetailsQuery";
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { Badge } from "@/components/ui/badge";
 
 // PDF Viewer Imports
@@ -12,6 +11,7 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import CommentsSection from "@/components/common/comment_component";
 
 export default function NovelDetails() {
   const { id } = useParams();

@@ -9,10 +9,10 @@ import {
   TrendingUp,
   ImageIcon,
 } from "lucide-react";
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { Badge } from "@/components/ui/badge";
 import { useGalleryDetailsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryDetailsQuery";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import CommentsSection from "@/components/common/comment_component";
 
 export default function GalleryDetails() {
   const { id } = useParams();

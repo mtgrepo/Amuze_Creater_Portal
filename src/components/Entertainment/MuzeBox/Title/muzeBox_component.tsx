@@ -16,13 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ComicsTitleResponse } from "@/types/response/entertainment/comics/comicsTitleResponse";
 import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
+import type { MuzeBoxDetailsResponse } from "@/types/response/entertainment/muzeBox/muzeBoxResponse";
 
-export type ComicsTitleProps = {
-  data: ComicsTitleResponse[];
+export type MuzeBoxProps = {
+  data: MuzeBoxDetailsResponse[];
   total: number;
   totalPages: number;
   page: number;
@@ -35,7 +35,7 @@ export type ComicsTitleProps = {
   onSearchChange: (value: string) => void;
 };
 
-export function ComicsTitleComponents({
+export function MuzeBoxComponents({
   data,
   totalPages,
   isFetching = false,
@@ -44,7 +44,7 @@ export function ComicsTitleComponents({
   limit,
   search,
   onPaginationChange,
-}: ComicsTitleProps) {
+}: MuzeBoxProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

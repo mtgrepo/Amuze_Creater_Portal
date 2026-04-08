@@ -3,8 +3,6 @@ import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useNovelDetailsQuery } from "../../../composable/Query/Entertainment/Novel/useNovelDetailsQuery";
-import { useNovelCommentsQuery } from "@/composable/Query/Entertainment/Novel/useNovelCommentQuery";
-import CommentsSection from "@/components/Entertainment/Comics/Title/comics_comments";
 import { Badge } from "@/components/ui/badge";
 
 // PDF Viewer Imports
@@ -12,6 +10,8 @@ import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import CommentsSection from "@/components/common/comment_component";
 
 export default function NovelDetails() {
   const { id } = useParams();
@@ -20,10 +20,8 @@ export default function NovelDetails() {
   const { novelDetails, isNovelDetailsLoading } = useNovelDetailsQuery(
     Number(id),
   );
-  const { commentsList, isLoading: isNovelCommentsLoading } =
-    useNovelCommentsQuery(Number(id));
-
-  if (isNovelDetailsLoading || isNovelCommentsLoading) {
+  const { commentsList, isLoading} = useCommentQuery('novel',Number(id))
+  if (isNovelDetailsLoading || isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -184,7 +182,7 @@ export default function NovelDetails() {
         </div>
 
         <div className="bg-card rounded-3xl border border-border p-4 shadow-sm">
-          <CommentsSection commentsList={commentsList} />
+          <CommentsSection commentsList={commentsList} category="novel"/>
         </div>
       </div>
     </div>

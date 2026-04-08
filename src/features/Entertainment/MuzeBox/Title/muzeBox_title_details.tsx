@@ -1,5 +1,3 @@
-import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
-import { decryptAuthData } from "@/lib/helper";
 import { useParams } from "react-router-dom";
 import {
   DollarSign,
@@ -15,25 +13,14 @@ import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
+import { useMuzeBoxTitleDetailsQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxDetailsQuery";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 
-export default function ComicsTitleDetails() {
+export default function MuzeBoxTitleDetails() {
   const { id } = useParams();
-
-  const authData = localStorage.getItem("creator");
-  const loginCreator = authData ? decryptAuthData(authData) : null;
-  const creator = loginCreator?.creator;
-
-  const payload = {
-    id: id!,
-    roleId: Number(creator?.role_id) || 0,
-    userId: Number(creator?.id) || 0,
-  };
-
-  // const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
-  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('comic', Number(id));
-  const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
+  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('muze-box', Number(id));
+const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id)!);
 
   if (isLoading || isCommentsLoading) {
     return (
@@ -44,7 +31,7 @@ export default function ComicsTitleDetails() {
     );
   }
 
-  if (error || !comic) {
+  if (error || !titleDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -65,7 +52,7 @@ export default function ComicsTitleDetails() {
           {/* Background Image Layer */}
           <div
             className="absolute inset-0 opacity-40 blur-md scale-105 bg-cover bg-center"
-            style={{ backgroundImage: `url(${comic.horizontal_thumbnail})` }}
+            style={{ backgroundImage: `url(${titleDetails.horizontal_thumbnail})` }}
           />
           {/* Gradient Overlay for Readability */}
           <div className="absolute inset-0 bg-linear-to-t from-card via-card/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80" />
@@ -76,8 +63,8 @@ export default function ComicsTitleDetails() {
             <div className="shrink-0 group">
               <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 transition-transform group-hover:scale-[1.02] duration-300">
                 <img
-                  src={comic?.thumbnail}
-                  alt={comic?.name}
+                  src={titleDetails?.thumbnail}
+                  alt={titleDetails?.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -86,11 +73,11 @@ export default function ComicsTitleDetails() {
             {/* Info Section: Added better spacing and responsive text alignment */}
             <div className="flex-1 space-y-4 text-center md:text-left w-full items-center">
               <h1 className="text-xl lg:text-2xl font-black tracking-tight text-foreground drop-shadow-sm leading-tight">
-                {comic?.name}
+                {titleDetails?.name}
               </h1>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                {comic?.generes?.map((genre: any) => (
+                {titleDetails?.genres?.map((genre: any) => (
                   <Badge key={genre?.id} className="bg-primary text-white border-none">
                     {genre.name}
                   </Badge>
@@ -98,10 +85,10 @@ export default function ComicsTitleDetails() {
               </div>
               {/* Stats Bar: Styled as a floating card for better separation */}
               <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
-                <Stat icon={<DollarSign className="text-blue-500" />} value={`${comic?.price ?? 0} Kyats`} />
-                <Stat icon={<Star className="text-yellow-500 fill-yellow-500" />} value={`${comic?.rating ?? 0} Rating`} />
-                <Stat icon={<Eye className="text-blue-500" />} value={`${comic?.views ?? 0} Views`} />
-                <Stat icon={<ThumbsUp className="text-red-500" />} value={`${comic?.likes ?? 0} Likes`} />
+                <Stat icon={<DollarSign className="text-blue-500" />} value={`${titleDetails?.price ?? 0} Kyats`} />
+                <Stat icon={<Star className="text-yellow-500 fill-yellow-500" />} value={`${titleDetails?.rating ?? 0} Rating`} />
+                <Stat icon={<Eye className="text-blue-500" />} value={`${titleDetails?.views ?? 0} Views`} />
+                <Stat icon={<ThumbsUp className="text-red-500" />} value={`${titleDetails?.likes ?? 0} Likes`} />
               </div>
             </div>
           </div>
@@ -115,7 +102,7 @@ export default function ComicsTitleDetails() {
               Description
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              {comic?.description || "No description available for this title."}
+              {titleDetails?.description || "No description available for this title."}
             </p>
           </div>
         </div>
@@ -124,7 +111,7 @@ export default function ComicsTitleDetails() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`)}
+              onClick={() => router.navigate(`/entertainment/titleDetailss/episode/create/${id}`)}
               className="rounded-full shadow-lg"
             >
               Add Episode
@@ -132,8 +119,8 @@ export default function ComicsTitleDetails() {
           </div>
 
           <div className="grid gap-3">
-            {comic?.comic_episodes?.length > 0 ? (
-              comic.comic_episodes.map((ep: any, index: number) => (
+            {titleDetails?.muze_box_episodes?.length > 0 ? (
+              titleDetails.muze_box_episodes.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
                   className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
@@ -149,7 +136,7 @@ export default function ComicsTitleDetails() {
 
                   <div className="hidden sm:block flex-1 min-w-0">
                     <h4 className="font-bold truncate group-hover:text-primary transition-colors">{ep.name || `Episode ${index + 1}`}</h4>
-                    <p className="text-xs text-muted-foreground">{new Date(comic.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(titleDetails.created_at).toLocaleDateString()}</p>
                   </div>
 
                   <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
@@ -160,7 +147,7 @@ export default function ComicsTitleDetails() {
                       ) : (
                         <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
                       )}
-                      <EpisodeActions episode={ep} titleId={comic?.id} />
+                      <EpisodeActions episode={ep} titleId={titleDetails?.id} />
                     </div>
                   </div>
                 </div>
@@ -176,7 +163,7 @@ export default function ComicsTitleDetails() {
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
-          <CommentsSection commentsList={commentsList} category="comic"/>
+          <CommentsSection commentsList={commentsList} category="muze-box"/>
         </div>
       </div>
     </div>

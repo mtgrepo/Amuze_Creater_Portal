@@ -24,11 +24,10 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
-import { useNovelCreateCommand } from "../../../composable/Command/Entertainment/Novel/useCreateCommand";
-import { Spinner } from "../../ui/spinner";
-import { useNovelUpdateTextCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateCommand";
-import { useNovelUpdateThumbnailCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateThumbnailCommand";
-import { useNovelUpdatePdfCommand } from "../../../composable/Command/Entertainment/Novel/useUpdatePdfCommand";
+import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxCreateCommand";
+import { Spinner } from "@/components/ui/spinner";
+import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateTextCommand";
+import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateThumbnailCommand";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -39,46 +38,42 @@ function createFormSchema(mode: "add" | "edit") {
   return z.object({
     name: z.string().min(1, "Name is required."),
     description: z.string().min(1, "Description is required"),
-    price: z.number().min(0, "Price must be 0 or greater"),
+    // price: z.number().min(0, "Price must be 0 or greater"),
 
     age_rating: z.number().min(0).optional(),
-    preview: z.number().min(0).optional(),
-    generes: z.array(z.string()).min(1, "Select at least one genre"),
+    // preview: z.number().min(0).optional(),
+    genres: z.array(z.string()).min(1, "Select at least one genre"),
 
     thumbnail: imageSchema,
     horizontal_thumbnail: imageSchema,
-
-    file_path: z.union([z.instanceof(File), z.string()]).optional(),
 
     created_by: z.union([z.string(), z.number()]).optional(),
   });
 }
 
-type NovelFormValues = z.infer<ReturnType<typeof createFormSchema>>;
+type MuzeBoxValues = z.infer<ReturnType<typeof createFormSchema>>;
 
-interface NovelFormProps {
+interface MuzeBoxFormProps {
   mode: "add" | "edit";
-  defaultValues?: Partial<NovelFormValues> & { id?: string };
+  defaultValues?: Partial<MuzeBoxValues> & { id?: string };
   onSuccess?: () => void;
 }
 
-export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
+export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   const formSchema = createFormSchema(mode);
-  const { genresList } = useGenresQuery(1);
+  const { genresList } = useGenresQuery(7);
 
-  const form = useForm<NovelFormValues>({
+  const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      generes: defaultValues?.generes || [],
-      price: defaultValues?.price || 0,
+      genres: defaultValues?.genres || [],
+      //   price: defaultValues?.price || 0,
       age_rating: defaultValues?.age_rating || 0,
-      preview: defaultValues?.preview || 0,
+      //   preview: defaultValues?.preview || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-
-      file_path: defaultValues?.file_path || undefined,
 
       created_by: "",
     },
@@ -89,13 +84,12 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
+        // price: defaultValues.price ?? 0,
         age_rating: defaultValues.age_rating ?? 0,
-        generes: defaultValues.generes || [],
-        preview: defaultValues.preview ?? 0,
+        genres: defaultValues.genres || [],
+        // preview: defaultValues.preview ?? 0,
         thumbnail: defaultValues.thumbnail,
         horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        file_path: defaultValues.file_path,
 
         created_by: form.getValues("created_by"),
       });
@@ -115,26 +109,33 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
     }
   }, [form]);
 
-  const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
-  const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdatingThumbnail } =
-    useNovelUpdateThumbnailCommand();
-  const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
-  const onSubmit = async (values: NovelFormValues) => {
+  //   const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
+  //   const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
+  //   const { updateThumbnailMutation, isUpdatingThumbnail } =
+  //     useNovelUpdateThumbnailCommand();
+  //   const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
+
+  const { muzeBoxCreateMutation, isPending } = useMuzeBoxCreateCommand();
+  const { muzeBoxTextUpdateMutation, isUpdateTextPending } =
+    useMuzeBoxUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdateThumbnailPending } =
+    useMuzeBoxUpdateThumbnailCommand();
+
+  const onSubmit = async (values: MuzeBoxValues) => {
     try {
       if (mode === "add") {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
           if (value === null || value === undefined) return;
-          if (key === "generes" && Array.isArray(value)) {
-            value.forEach((g) => formData.append("generes", g));
+          if (key === "genres" && Array.isArray(value)) {
+            value.forEach((g) => formData.append("genres", g));
           } else if (value instanceof File) {
             formData.append(key, value);
           } else {
             formData.append(key, String(value));
           }
         });
-        await novelCreateMutation(formData);
+        await muzeBoxCreateMutation(formData);
         form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
@@ -144,10 +145,8 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
         const type =
           values.thumbnail instanceof File ? "vertical" : "horizontal";
 
-        const isPdfUpdated = values.file_path instanceof File;
-
         if (isThumbnailUpdated) {
-          // SCENARIO 1: Update Thumbnails (Multipart/FormData)
+          // Update Thumbnails (Multipart/FormData)
           const thumbData = new FormData();
           if (values.thumbnail instanceof File) {
             thumbData.append("thumbnail", values.thumbnail);
@@ -160,20 +159,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
           }
 
           await updateThumbnailMutation({
-            id: Number(defaultValues?.id),
+            muzeBoxId: Number(defaultValues?.id),
             type: type,
-            thumbnail: thumbData,
-          });
-          form.reset();
-        }
-
-        if (isPdfUpdated) {
-          // SCENARIO 2: Update PDF (Multipart/FormData)
-          const pdfData = new FormData();
-          pdfData.append("file_path", values.file_path as File);
-          await updatePdfMutation({
-            id: Number(defaultValues?.id),
-            pdf: pdfData,
+            data: thumbData,
           });
           form.reset();
         }
@@ -181,10 +169,10 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.generes.map(Number), // Convert strings back to numbers
-          price: values.price,
+          genres: values.genres.map(Number), // Convert strings back to numbers
+          //   price: values.price,
         };
-        await updateTextMutation({
+        await muzeBoxTextUpdateMutation({
           id: Number(defaultValues?.id),
           data: textPayload,
         });
@@ -241,22 +229,6 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   )}
                 />
 
-                {/* PRICE */}
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price</FormLabel>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormItem>
-                  )}
-                />
-
                 {/* AGE RATING */}
                 <FormField
                   control={form.control}
@@ -269,49 +241,6 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="preview"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preview</FormLabel>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="file_path"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>File Upload</FormLabel>
-
-                      {/* Show existing file if editing */}
-                      {typeof field.value === "string" && mode === "edit" && (
-                        <div className="">
-                          <a
-                            href={field.value}
-                            target="_blank"
-                            className="text-primary underline"
-                          >
-                            View existing file
-                          </a>
-                        </div>
-                      )}
-
-                      <FormControl>
-                        <Input
-                          type="file"
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                        />
-                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -332,7 +261,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               {/* GENRES */}
               <FormField
                 control={form.control}
-                name="generes"
+                name="genres"
                 render={({ field }) => {
                   const toggleGenre = (id: string) => {
                     const exists = field.value.includes(id);
@@ -405,16 +334,12 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               type="submit"
               className="w-full flex-1 cursor-pointer"
               disabled={
-                isNovelCreating ||
-                isUpdatingText ||
-                isUpdatingThumbnail ||
-                isUpdatingPdf
+                isPending || isUpdateTextPending || isUpdateThumbnailPending
               }
             >
-              {(isNovelCreating ||
-                isUpdatingText ||
-                isUpdatingThumbnail ||
-                isUpdatingPdf) && <Spinner />}
+              {(isPending ||
+                isUpdateTextPending ||
+                isUpdateThumbnailPending) && <Spinner />}
               Submit
             </Button>
           </div>

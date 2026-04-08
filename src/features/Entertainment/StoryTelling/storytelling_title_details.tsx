@@ -1,13 +1,11 @@
-import CommentsSection from "@/components/common/comment";
+import CommentsSection from "@/components/common/comment_component";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useStoryTellingCommentDelete } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingDeleteComment";
-import { useStoryTellingStoreComment } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingStoreComment";
-import { useStoryTellingTitleCommentQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleCommentQuery";
+import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
 import router from "@/router/routes";
 import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
@@ -16,18 +14,9 @@ import { useParams } from "react-router-dom"
 
 export default function StoryTellingTitleDetails () {
     const {id} = useParams();
-    const [page, setPage] = React.useState(1);
-    const [pageSize, setPageSize] = React.useState(10);
-
     const {storyTellingTitleDetails : story, isTitleLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
-    const {storyTellingCommentLists, isStoryTellingCommentLoading} = useStoryTellingTitleCommentQuery(Number(id), page, pageSize);
-
-    const{storeCommentMutation, isStoryCommentPending} = useStoryTellingStoreComment();
-    const{deleteCommentMutation, isCommentDeletePending} = useStoryTellingCommentDelete()
-
-    const isLoading = isTitleLoading || isStoryTellingCommentLoading;
-
-    if (isLoading) {
+  const { commentsList } = useCommentQuery('story',Number(id));
+      if (isTitleLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
@@ -173,14 +162,7 @@ export default function StoryTellingTitleDetails () {
           </div>
         </div>
       </div>
-      <CommentsSection 
-      type="story" 
-      commentsList={storyTellingCommentLists}
-      storeCommentMutation={async({type, itemId, parentId, comment}) => storeCommentMutation({
-        type, contentId:itemId, parentId, comment
-      })}
-      deleteCommentMutation={deleteCommentMutation}
-      />
+      <CommentsSection category={"story"} commentsList={commentsList}/>
         </div>
     )
 }

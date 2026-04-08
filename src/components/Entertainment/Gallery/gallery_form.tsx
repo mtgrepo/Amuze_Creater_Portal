@@ -77,10 +77,7 @@ interface GalleryFormProps {
   defaultValues?: Partial<GalleryFormValues> & { id?: string };
 }
 
-export default function GalleryForm({
-  mode,
-  defaultValues,
-}: GalleryFormProps) {
+export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
   const { createGalleryMutation, isPending } = useGalleryCreateCommand();
@@ -130,13 +127,14 @@ export default function GalleryForm({
     }
   }, [form]);
 
-  const { galleryUpdateTextMutation, isUpdatingText } = useGalleryUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdatingThumbnail } = useGalleryUpdateThumbnailCommand();
+  const { galleryUpdateTextMutation, isUpdatingText } =
+    useGalleryUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdatingThumbnail } =
+    useGalleryUpdateThumbnailCommand();
 
   const onSubmit = async (values: GalleryFormValues) => {
     try {
       if (mode === "add") {
-        // --- HANDLE CREATE (Existing logic) ---
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
           if (value === null || value === undefined) return;
@@ -183,7 +181,7 @@ export default function GalleryForm({
           });
         }
 
-        // Update Text Data 
+        // Update Text Data
         const textPayload = {
           name: values.name,
           description: values.description,
@@ -196,7 +194,6 @@ export default function GalleryForm({
           data: textPayload,
         });
       }
-
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -398,23 +395,23 @@ export default function GalleryForm({
                     )}
                   />
 
-<FormField
-  control={form.control}
-  name="display_file"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Display File</FormLabel>
-      <FormControl>
-        <ImageUpload
-          key={field.value || "empty-display"} 
-          value={field.value}
-          onChange={field.onChange}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                  <FormField
+                    control={form.control}
+                    name="display_file"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Display File</FormLabel>
+                        <FormControl>
+                          <ImageUpload
+                            key={field.value || "empty-display"}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               )}
             </div>

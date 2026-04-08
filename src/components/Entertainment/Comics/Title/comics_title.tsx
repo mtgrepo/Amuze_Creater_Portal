@@ -82,14 +82,7 @@ React.useEffect(() => {
 
   return (
     <div className="w-full">
-      {/* <div className="flex items-center py-4">
-        <Input
-  placeholder="Filter name..."
-  value={search}
-  onChange={(e) => onSearchChange(e.target.value)}
-  className="max-w-sm"
-/>
-      </div> */}
+
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
           <TableHeader>

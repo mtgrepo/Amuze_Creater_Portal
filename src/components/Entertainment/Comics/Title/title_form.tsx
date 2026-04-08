@@ -105,45 +105,12 @@ export default function ComicTitleForm({
     }
   }, [form]);
 
-  // const onSubmit = async (values: TitleFormValues) => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     Object.entries(values).forEach(([key, value]) => {
-  //       if (value === null || value === undefined) return;
-
-  //       if (key === "genres" && Array.isArray(value)) {
-  //         if (mode === "add") {
-  //           value.forEach((g) => {
-  //             formData.append("genres", g);
-  //           });
-  //         } else {
-  //           formData.append("generes", JSON.stringify(value.map(Number)));
-  //         }
-  //       } else if (value instanceof File) {
-  //         formData.append(key, value);
-  //       } else {
-  //         formData.append(key, String(value));
-  //       }
-  //     });
-
-  //     if (mode === "add") {
-  //       await titleMutation(formData);
-  //     } else {
-  //       if (!defaultValues?.id) throw new Error("ID missing");
-  //       // await updateMutation(formData);
-  //     }
-  //   } catch (err: any) {
-  //     toast.error(err.message);
-  //   }
-  // };
 
   const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
   const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
   const onSubmit = async (values: TitleFormValues) => {
     try {
       if (mode === "add") {
-        // --- HANDLE CREATE (Existing logic) ---
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
           if (value === null || value === undefined) return;
@@ -157,7 +124,6 @@ export default function ComicTitleForm({
         });
         await titleMutation(formData);
       } else {
-        // --- HANDLE EDIT ---
         if (!defaultValues?.id) throw new Error("ID missing");
 
         const isThumbnailUpdated =
@@ -167,7 +133,6 @@ export default function ComicTitleForm({
           const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
 
         if (isThumbnailUpdated) {
-          // SCENARIO 1: Update Thumbnails (Multipart/FormData)
           const thumbData = new FormData();
           if (values.thumbnail instanceof File) {
             thumbData.append("thumbnail", values.thumbnail);
@@ -176,11 +141,9 @@ export default function ComicTitleForm({
             thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
           }
 
-          // await updateThumbnailsApi(defaultValues.id, thumbData);
           await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, data: thumbData });
         }
 
-        // SCENARIO 2: Update Text Data (JSON)
         const textPayload = {
           name: values.name,
           description: values.description,
@@ -188,7 +151,6 @@ export default function ComicTitleForm({
           price: values.price,
         };
 
-        // await updateTextApi(defaultValues.id, textPayload);
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
       }
       

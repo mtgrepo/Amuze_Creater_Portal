@@ -1,11 +1,11 @@
 import { getAllGenres, getGenresBySubCategory, type GenreResponse } from "@/http/apis/genres/genresApi";
 import { useQuery } from "@tanstack/react-query"
 
-export const useGenresQuery = () => {
+export const useGenresQuery = (genreId: number) => {
     const genresList = useQuery<GenreResponse[]>({
         queryKey: ['genresList'],
         queryFn: async () => {
-            const res = await getAllGenres();
+            const res = await getAllGenres(genreId);
             return res
         }
     })

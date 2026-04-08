@@ -16,13 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ComicsTitleResponse } from "@/types/response/entertainment/comics/comicsTitleResponse";
 import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
+import type { GalleryResponse } from "@/types/response/entertainment/gallery/galleryResponse";
 
-export type ComicsTitleProps = {
-  data: ComicsTitleResponse[];
+export type GalleryProps = {
+  data: GalleryResponse[];
   total: number;
   totalPages: number;
   page: number;
@@ -35,7 +35,7 @@ export type ComicsTitleProps = {
   onSearchChange: (value: string) => void;
 };
 
-export function ComicsTitleComponents({
+export function GalleryTitleComponent({
   data,
   totalPages,
   isFetching = false,
@@ -44,7 +44,7 @@ export function ComicsTitleComponents({
   limit,
   search,
   onPaginationChange,
-}: ComicsTitleProps) {
+}: GalleryProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

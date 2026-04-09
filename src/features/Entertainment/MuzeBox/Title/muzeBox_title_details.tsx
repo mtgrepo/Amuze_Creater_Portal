@@ -47,7 +47,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
 
-        {/* --- HEADER / BANNER AREA --- */}
+        {/*  HEADER / BANNER AREA  */}
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
           {/* Background Image Layer */}
           <div
@@ -57,7 +57,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
           {/* Gradient Overlay for Readability */}
           <div className="absolute inset-0 bg-linear-to-t from-card via-card/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80" />
 
-          {/* Content Wrapper: Changed from fixed height to min-height */}
+          {/* Content Wrapper */}
           <div className="relative flex flex-col md:flex-row gap-8 p-6 md:p-10 items-center md:items-end min-h-80">
 
             <div className="shrink-0 group">
@@ -70,7 +70,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
               </div>
             </div>
 
-            {/* Info Section: Added better spacing and responsive text alignment */}
+            {/* Info Section */}
             <div className="flex-1 space-y-4 text-center md:text-left w-full items-center">
               <h1 className="text-xl lg:text-2xl font-black tracking-tight text-foreground drop-shadow-sm leading-tight">
                 {titleDetails?.name}
@@ -83,7 +83,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
                   </Badge>
                 ))}
               </div>
-              {/* Stats Bar: Styled as a floating card for better separation */}
+              {/* Stats Bar */}
               <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
                 <Stat icon={<DollarSign className="text-blue-500" />} value={`${titleDetails?.price ?? 0} Kyats`} />
                 <Stat icon={<Star className="text-yellow-500 fill-yellow-500" />} value={`${titleDetails?.rating ?? 0} Rating`} />
@@ -94,7 +94,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
           </div>
         </div>
 
-        {/* --- ABOUT SECTION --- */}
+        {/*  ABOUT SECTION  */}
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
             <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
@@ -106,12 +106,12 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
             </p>
           </div>
         </div>
-        {/* --- EPISODE LIST SECTION --- */}
+        {/*  EPISODE LIST SECTION  */}
         <div className="bg-card border border-border p-5 md:p-8 rounded-3xl shadow-sm">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => router.navigate(`/entertainment/titleDetailss/episode/create/${id}`)}
+              onClick={() => router.navigate(`/entertainment/muze-box/episode/create/${id}`)}
               className="rounded-full shadow-lg"
             >
               Add Episode
@@ -147,7 +147,7 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
                       ) : (
                         <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
                       )}
-                      <EpisodeActions episode={ep} titleId={titleDetails?.id} />
+                      <EpisodeActions episode={ep} titleId={titleDetails?.id} titleName={titleDetails?.name}/>
                     </div>
                   </div>
                 </div>

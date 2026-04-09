@@ -39,8 +39,12 @@ export const deleteComment = async ( category: string, commentId: number) => {
 
 export const replyComment = async ( category: string, id: number, parentId: number | null, comment: string) => {
     try {
+      let categoryId = category;
+      if (category === "muze-box") {
+        categoryId = "series"
+      }
         const response = await axiosInstance.post(`${category}/store-comment`, {
-            [`${category}Id`]: id,
+            [`${categoryId}Id`]: id,
             parentId,
             comment
         })

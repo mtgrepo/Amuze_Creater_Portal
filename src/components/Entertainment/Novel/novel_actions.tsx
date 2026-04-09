@@ -21,12 +21,18 @@ export default function NovelActions(novel: NovelResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/novel/details/${novel.id}`);
+    navigate(`/entertainment/novel/details/${novel.id}`, {
+      state: {
+        titleName: novel?.name
+      }
+    });
   };
 
   const handleEditTitle = () => {
     navigate(`/entertainment/novel/edit/${novel.id}`, {
-      state: novel,
+      state: {
+        titleName: novel?.name
+      },
     });
   };
 

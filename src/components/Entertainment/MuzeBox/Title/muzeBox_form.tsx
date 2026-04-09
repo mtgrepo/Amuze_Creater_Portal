@@ -24,10 +24,10 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
-import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxCreateCommand";
+import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
-import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateTextCommand";
-import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateThumbnailCommand";
+import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateTextCommand";
+import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -189,7 +189,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
           {/* HEADER */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New Novel" : "Edit Novel"}
+              {mode === "add" ? "Create New MuzeBox" : "Edit MuzeBox"}
             </h2>
           </div>
 
@@ -325,7 +325,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => router.navigate("/entertainment/novel")}
+              onClick={() => router.navigate("/entertainment/muze-box")}
             >
               Cancel
             </Button>

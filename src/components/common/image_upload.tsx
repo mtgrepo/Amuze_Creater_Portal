@@ -30,19 +30,40 @@ export default function ImageUpload({
 
     const acceptType = fieldType === "image" ? "image/*" : "video/*"
 
+    // useEffect(() => {
+    //     if (!value) return
+
+    //     if (typeof value === "string") {
+    //         setPreview(value)
+    //     } else {
+    //         const reader = new FileReader()
+    //         reader.onloadend = () => setPreview(reader.result as string)
+    //         reader.readAsDataURL(value)
+
+    //         setFileType(value.type.startsWith("video/") ? "video" : "image")
+    //     }
+    // }, [value])
+
     useEffect(() => {
-        if (!value) return
+    if (!value) return;
 
-        if (typeof value === "string") {
-            setPreview(value)
+    if (typeof value === "string") {
+        setPreview(value);
+        
+        if (fieldType === "video") {
+            setFileType("video");
         } else {
-            const reader = new FileReader()
-            reader.onloadend = () => setPreview(reader.result as string)
-            reader.readAsDataURL(value)
-
-            setFileType(value.type.startsWith("video/") ? "video" : "image")
+            setFileType("image");
         }
-    }, [value])
+    } else {
+        // Logic for File objects
+        const reader = new FileReader();
+        reader.onloadend = () => setPreview(reader.result as string);
+        reader.readAsDataURL(value);
+
+        setFileType(value.type.startsWith("video/") ? "video" : "image");
+    }
+}, [value, fieldType]); // Added fieldType to dependency array
 
     const validateFile = (file: File) => {
         const maxBytes = maxSizeMB * 1024 * 1024

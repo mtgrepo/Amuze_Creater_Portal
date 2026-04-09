@@ -30,25 +30,6 @@ import { useGalleryCreateCommand } from "@/composable/Command/Entertainment/Gall
 import { useGalleryUpdateTextCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateTextCommand";
 import { useGalleryUpdateThumbnailCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateThumbnailCommand";
 
-// function createFormSchema(mode: "add" | "edit") {
-//   const imageSchema =
-//     mode === "add"
-//       ? z.custom<File>((val) => val instanceof File, "Image is required")
-//       : z.union([z.instanceof(File), z.string()]).optional();
-
-//   return z.object({
-//     name: z.string().min(1, "Name is required."),
-//     description: z.string().min(1, "Description is required"),
-//     price: z.number().min(0, "Price must be 0 or greater"),
-//     generes: z.array(z.string()).min(1, "Select at least one genre"),
-//     thumbnail: imageSchema,
-//     actual_file: imageSchema,
-//     created_by: z.union([z.string(), z.number()]).optional(),
-//   });
-// }
-
-// ONLY showing changed parts clearly — rest is SAME as your code
-
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"

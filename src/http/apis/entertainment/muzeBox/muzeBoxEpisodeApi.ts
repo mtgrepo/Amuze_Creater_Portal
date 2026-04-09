@@ -8,7 +8,7 @@ export interface PresignedUrlProps {
     parts: number
 }
 
-export const getChunkPresignedUploadUrl = async (data: PresignedUrlProps) => {
+export const getPresignedUploadUrl = async (data: PresignedUrlProps) => {
     try {
         const response = await axiosInstance.post(`muze-box/generate-presigned-upload-url`, data);
         return response?.data;
@@ -31,3 +31,4 @@ export const uploadMultipart = async () => {
         throw new Error(error as string || "Something went wrong")
     }
 }
+

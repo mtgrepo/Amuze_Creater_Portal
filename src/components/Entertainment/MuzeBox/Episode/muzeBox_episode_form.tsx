@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,13 +18,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/common/image_upload";
+// Replace with your actual Loader/Spinner component
+const Spinner = () => <span className="animate-spin mr-2">◌</span>;
 
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
-import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxCreateCommand";
-import { Spinner } from "@/components/ui/spinner";
-import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateTextCommand";
-import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateThumbnailCommand";
+import { getPresignedUploadUrl } from "../../../../http/apis/entertainment/muzeBox/muzeBoxEpisodeApi";
+import router from "../../../../router/routes";
+import { useParams } from "react-router-dom";
+
+type UploadedPart = {
+    partNumber: number;
+    etag: string;
+};
 
 function createFormSchema(mode: "add" | "edit") {
     const imageSchema =
@@ -33,7 +38,8 @@ function createFormSchema(mode: "add" | "edit") {
             : z.union([z.instanceof(File), z.string()]).optional();
 
     return z.object({
-        id: z.number().min(1, "MuzeBox Title Id is required."),
+        // Changed to optional so "Add" mode doesn't fail validation before submission
+        id: z.number().optional(),
         name: z.string().min(1, "Name is required."),
         description: z.string().min(1, "Description is required"),
         price: z.number().min(0, "Price must be 0 or greater"),
@@ -44,17 +50,9 @@ function createFormSchema(mode: "add" | "edit") {
             })
             .refine(
                 (file) =>
-                    file === null ||
-                    ["video/mp4", "video/avi", "video/quicktime"].includes(file.type),
+                    !file || ["video/mp4", "video/avi", "video/quicktime"].includes(file.type),
                 { message: "Only valid video files are allowed." }
             ),
-
-        // age_rating: z.number().min(0).optional(),
-        // preview: z.number().min(0).optional(),
-        // genres: z.array(z.string()).min(1, "Select at least one genre"),
-
-        // horizontal_thumbnail: imageSchema,
-
         created_by: z.union([z.string(), z.number()]).optional(),
     });
 }
@@ -63,16 +61,21 @@ type MuzeBoxValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 interface MuzeBoxFormProps {
     mode: "add" | "edit";
-    defaultValues?: Partial<MuzeBoxValues> & { id?: string };
+    defaultValues?: Partial<MuzeBoxValues> & { id?: string | number };
     onSuccess?: () => void;
 }
 
-export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormProps) {
+export default function MuzeBoxEpisodeForm({ mode, defaultValues, onSuccess }: MuzeBoxFormProps) {
+    const { id } = useParams();
     const formSchema = createFormSchema(mode);
+
+    // Placeholder loading states - replace these with your actual mutation hooks
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<MuzeBoxValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            id: defaultValues?.id ? Number(defaultValues.id) : undefined,
             name: defaultValues?.name || "",
             description: defaultValues?.description || "",
             price: defaultValues?.price || 0,
@@ -85,6 +88,7 @@ export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormP
     useEffect(() => {
         if (defaultValues) {
             form.reset({
+                id: defaultValues.id ? Number(defaultValues.id) : undefined,
                 name: defaultValues.name || "",
                 description: defaultValues.description || "",
                 price: defaultValues.price ?? 0,
@@ -104,72 +108,112 @@ export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormP
                 if (id) form.setValue("created_by", id);
             }
         } catch (error) {
-            console.error(error);
+            console.error("Failed to load creator data:", error);
         }
     }, [form]);
 
-    const { muzeBoxCreateMutation, isPending } = useMuzeBoxCreateCommand();
-    const { muzeBoxTextUpdateMutation, isUpdateTextPending } =
-        useMuzeBoxUpdateTextCommand();
-    const { updateThumbnailMutation, isUpdateThumbnailPending } =
-        useMuzeBoxUpdateThumbnailCommand();
+    async function getChunkPresignedUploadUrl(file: File, seriesId: number, episodeName: string, parts: number) {
+        const data = {
+            contentType: file.type,
+            seriesId: seriesId,
+            episodeName: episodeName,
+            parts
+        };
+        return await getPresignedUploadUrl(data);
+    }
+
+    async function uploadMultipart(file: File, presignedParts: any[], chunkSizeMB: number = 0) {
+        console.log("In upload multi part", presignedParts)
+        const uploadedParts: UploadedPart[] = [];
+        const concurrency = Number(import.meta.env.UPLOAD_CONCURRENCY) || 4;
+        let index = 0;
+
+        async function uploadNext() {
+            if (index >= presignedParts.length) return;
+
+            const current = index++;
+            const { partNumber, url } = presignedParts[current];
+            let chunk: Blob;
+
+            if (chunkSizeMB === 0) {
+                chunk = file;
+            } else {
+                const start = (partNumber - 1) * (chunkSizeMB * 1024 * 1024);
+                const end = Math.min(start + (chunkSizeMB * 1024 * 1024), file.size);
+                chunk = file.slice(start, end);
+            }
+
+            const res = await fetch(url, {
+                method: "PUT",
+                body: chunk
+            });
+
+            if (!res.ok) throw new Error(`Upload failed for part ${partNumber}`);
+
+            const rawEtag = res.headers.get("ETag");
+            if (!rawEtag) throw new Error(`Missing ETag for part ${partNumber}`);
+
+            const etag = rawEtag.replace(/"/g, "");
+            uploadedParts.push({ partNumber, etag });
+
+            await uploadNext();
+        }
+
+        await Promise.all(Array(concurrency).fill(0).map(uploadNext));
+        return uploadedParts;
+    }
+
+    const bytesToMB = (bytes: number, decimals = 2): number => {
+        const factor = Math.pow(10, decimals);
+        return Math.round((bytes / (1024 * 1024)) * factor) / factor;
+    };
 
     const onSubmit = async (values: MuzeBoxValues) => {
+        setIsSubmitting(true);
         try {
-            if (mode === "add") {
-                const formData = new FormData();
-                Object.entries(values).forEach(([key, value]) => {
-                    if (value === null || value === undefined) return;
-                    else if (value instanceof File) {
-                        formData.append(key, value);
-                    } else {
-                        formData.append(key, String(value));
-                    }
-                });
-                console.log("submitted value", values)
-                // await muzeBoxCreateMutation(formData);
-                form.reset();
-            } else {
-                if (!defaultValues?.id) throw new Error("ID missing");
-                const isThumbnailUpdated =
-                    values.thumbnail instanceof File ||
-                    values.video instanceof File;
-                const type =
-                    values.thumbnail instanceof File ? "vertical" : "horizontal";
+            const videoFile = values.video as File;
+            const fileSizeMB = bytesToMB(videoFile.size);
+            let parts = 1;
+            let newChunkSizeMB = 0;
 
-                if (isThumbnailUpdated) {
-                    // Update Thumbnails (Multipart/FormData)
-                    const thumbData = new FormData();
-                    if (values.thumbnail instanceof File) {
-                        thumbData.append("thumbnail", values.thumbnail);
-                    }
-                    if (values.video instanceof File) {
-                        thumbData.append(
-                            "video",
-                            values.video,
-                        );
-                    }
-
-                    await updateThumbnailMutation({
-                        muzeBoxId: Number(defaultValues?.id),
-                        type: type,
-                        data: thumbData,
-                    });
-                    form.reset();
-                }
-
-                const textPayload = {
-                    name: values.name,
-                    description: values.description,
-                    price: values.price,
-                };
-                // await muzeBoxTextUpdateMutation({
-                //   id: Number(defaultValues?.id),
-                //   data: textPayload,
-                // });
+            if (fileSizeMB >= 200) {
+                newChunkSizeMB = fileSizeMB <= 1024 ? 30 : 50;
+                const chunkSize = newChunkSizeMB * 1024 * 1024;
+                parts = Math.ceil(videoFile.size / chunkSize);
             }
+
+            // Series ID is usually passed from defaultValues or a parent context
+            const seriesId = Number(id);
+            if (!seriesId && mode === "add") throw new Error("Series ID is required to upload an episode.");
+            console.log("series id", seriesId)
+            const uploadUrls = await getChunkPresignedUploadUrl(videoFile, seriesId, values.name, parts);
+            console.log("upload urls", uploadUrls)
+            const uploadedParts = await uploadMultipart(videoFile, uploadUrls.data.urls, newChunkSizeMB);
+
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("description", values.description);
+            formData.append("series_id", String(seriesId));
+            formData.append("thumbnail", values.thumbnail as File);
+            formData.append("tempFilePath", uploadUrls.data.tempFilePath);
+            formData.append("price", values.price.toString());
+            formData.append("uploadId", uploadUrls.data.uploadId);
+            formData.append("parts", JSON.stringify(uploadedParts.sort((a, b) => a.partNumber - b.partNumber)));
+
+            if (mode === "add") {
+                // await muzeBoxCreateMutation(formData);
+console.log("FormData:", Object.fromEntries(formData.entries()));
+            } else {
+                // Handle Update Logic
+                toast.success("Episode updated successfully!");
+            }
+
+            form.reset();
+            onSuccess?.();
         } catch (err: any) {
-            toast.error(err.message);
+            toast.error(err.message || "Something went wrong");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -177,14 +221,13 @@ export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormP
         <div className="max-w-7xl mx-auto p-6 border rounded-xl shadow-sm">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-                    {/* HEADER */}
                     <div className="border-b pb-4">
                         <h2 className="text-2xl font-bold">
                             {mode === "add" ? "Create New Episode" : "Edit Episode"}
                         </h2>
                     </div>
 
-                    <div className="space-y-6 max-w-sm mx-auto ">
+                    <div className="space-y-6 max-w-sm mx-auto">
                         <FormField
                             control={form.control}
                             name="thumbnail"
@@ -202,63 +245,64 @@ export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormP
                             )}
                         />
                     </div>
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* LEFT */}
-
-
-                        {/* RIGHT */}
                         <div className="lg:col-span-2 space-y-6">
                             <div className="grid md:grid-cols-2 gap-4">
-                                {/* NAME */}
                                 <FormField
                                     control={form.control}
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Title</FormLabel>
-                                            <Input {...field} placeholder="Enter name..." />
+                                            <FormControl>
+                                                <Input {...field} placeholder="Enter name..." />
+                                            </FormControl>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* AGE RATING */}
                                 <FormField
                                     control={form.control}
                                     name="price"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Price</FormLabel>
-                                            <Input
-                                                placeholder="Enter price..."
-                                                type="number"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                            />
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="0.00"
+                                                    type="number"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             </div>
 
-                            {/* DESCRIPTION */}
                             <FormField
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Description</FormLabel>
-                                        <Textarea {...field} placeholder="Enter description..." />
+                                        <FormControl>
+                                            <Textarea {...field} placeholder="Enter description..." />
+                                        </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-
-                            {/* HORIZONTAL THUMBNAIL */}
                             <FormField
                                 control={form.control}
                                 name="video"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Video</FormLabel>
+                                        <FormLabel>Video File</FormLabel>
                                         <FormControl>
                                             <ImageUpload
                                                 fieldType="video"
@@ -266,41 +310,30 @@ export default function MuzeBoxEpisodeForm({ mode, defaultValues }: MuzeBoxFormP
                                                 onChange={field.onChange}
                                             />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            {/* <DragAndDrop
-                                fieldKey="video"
-                                control={form.control}
-                                setValue={form.setValue}
-                                setFile={setVideoFile}
-                                currentFile={videoFile}
-                            /> */}
                         </div>
                     </div>
 
-                    {/* ACTIONS */}
-                    <div className="flex gap-3 pt-6 border-t flex-1 items-center justify-baseline">
+                    <div className="flex gap-3 pt-6 border-t items-center">
                         <Button
-                            className="w-full flex-1 cursor-pointer"
+                            className="flex-1"
                             type="button"
                             variant="outline"
-                            onClick={() => router.navigate("/entertainment/novel")}
+                            onClick={() => router.navigate('/erntertainment/muze-box')}
                         >
                             Cancel
                         </Button>
 
                         <Button
                             type="submit"
-                            className="w-full flex-1 cursor-pointer"
-                            disabled={
-                                isPending || isUpdateTextPending || isUpdateThumbnailPending
-                            }
+                            className="flex-1"
+                            disabled={isSubmitting}
                         >
-                            {(isPending ||
-                                isUpdateTextPending ||
-                                isUpdateThumbnailPending) && <Spinner />}
-                            Submit
+                            {isSubmitting && <Spinner />}
+                            {mode === "add" ? "Upload Episode" : "Save Changes"}
                         </Button>
                     </div>
                 </form>

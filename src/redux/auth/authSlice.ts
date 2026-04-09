@@ -22,7 +22,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action: PayloadAction<{ creator: CreatorDetails; token: Token }>) => {
-      // 1. Check if the role_id is exactly 4
+      // Check if the role_id is exactly 4
       if (action.payload.creator.role_id !== 4) {
         toast.error("Unauthorized: Access restricted to specific roles.");
         
@@ -33,7 +33,7 @@ const authSlice = createSlice({
         return; 
       }
 
-      // 2. Proceed with login if role_id is 4
+      //  Proceed with login if role_id is 4
       state.creator = action.payload.creator;
       state.token = action.payload.token;
       state.isAuthenticated = !!action.payload.token?.access;

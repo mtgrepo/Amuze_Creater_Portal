@@ -111,7 +111,12 @@ const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(Number(id
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => router.navigate(`/entertainment/muze-box/episode/create/${id}`)}
+              onClick={() => router.navigate(`/entertainment/muze-box/episode/create/${id}`, {
+                state: {
+                  titleId: id,
+                  titleName: titleDetails?.name
+                }
+              })}
               className="rounded-full shadow-lg"
             >
               Add Episode

@@ -25,14 +25,12 @@ type BreadCrumbLayoutProps = {
 export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
   const location = useLocation();
 
-  // 1. Memoize calculation to prevent infinite re-renders
   const crumbs = useMemo(() => {
     return matches
       .filter((match) => match.handle?.crumb)
       .flatMap((match, index, filteredArray) => {
         const isLastMatch = index === filteredArray.length - 1;
 
-        // 2. Pass 'location' so handle can access location.state
         const raw = typeof match.handle!.crumb === "function"
           ? match.handle!.crumb({
             data: match.data,
@@ -53,7 +51,6 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
           label: item.label,
           href: item.href || match.pathname,
           isLast: isLastMatch && i === labelArray.length - 1,
-          // 3. Unique key including label prevents 'insertBefore' DOM crash
           key: `crumb-${match.pathname}-${index}-${i}-${item.label}`,
         }));
       });

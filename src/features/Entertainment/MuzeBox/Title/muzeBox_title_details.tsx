@@ -43,7 +43,7 @@ export default function MuzeBoxTitleDetails() {
         <div className="text-center space-y-4">
           <XCircle className="w-12 h-12 text-destructive mx-auto" />
           <h2 className="text-2xl font-bold text-foreground">Oops!</h2>
-          <p className="text-muted-foreground">Failed to load comic details.</p>
+          <p className="text-muted-foreground">Failed to load muze box details.</p>
         </div>
       </div>
     );

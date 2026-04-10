@@ -296,7 +296,7 @@ const router = createBrowserRouter(
             crumb: ({ location }: any) => [
               { label: "Entertainment" },
               { label: "MuzeBox", href: "/entertainment/muze-box" },
-              { label: `${location?.state?.titleName}` },
+              { label: `${location?.state?.titleName}`, href: `/entertainment/muze-box/title/details/${location?.state?.titleId}` },
               { label: "Episode Create" },
             ]
           }

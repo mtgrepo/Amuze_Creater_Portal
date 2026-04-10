@@ -39,6 +39,7 @@ import { useNovelUpdateTextCommand } from "../../../composable/Command/Entertain
 import { useNovelUpdateThumbnailCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateThumbnailCommand";
 import { useNovelUpdatePdfCommand } from "../../../composable/Command/Entertainment/Novel/useUpdatePdfCommand";
 import ConfirmCard from "../../common/confirm_card";
+import RequiredLabel from "../../common/required_label";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -130,9 +131,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
 
   const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
   const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdatingThumbnail } =
-    useNovelUpdateThumbnailCommand();
+  const { updateThumbnailMutation, isUpdatingThumbnail } = useNovelUpdateThumbnailCommand();
   const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
+
   const onSubmit = async (values: NovelFormValues) => {
     try {
       if (mode === "add") {
@@ -226,7 +227,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 name="thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
@@ -248,8 +251,13 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <Input {...field} placeholder="Enter title..."/>
+                      <FormLabel>
+                        <RequiredLabel label="Title" />
+                      </FormLabel>
+                     <FormControl>
+                       <Input {...field} placeholder="Enter title..."/>
+                     </FormControl>
+                     <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -260,12 +268,17 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
-                      <Input
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coin/MMK)" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
                         type="number"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -276,12 +289,17 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   name="age_rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Age Rating</FormLabel>
-                      <Input
+                      <FormLabel>
+                        <RequiredLabel label="Age Rating" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
                         type="number"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -290,12 +308,17 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   name="preview"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Preview</FormLabel>
-                      <Input
+                      <FormLabel>
+                        <RequiredLabel label="Preview" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
                         type="number"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -304,7 +327,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   name="file_path"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>File Upload</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="File Upload" />
+                      </FormLabel>
 
                       {/* Show existing file if editing */}
                       {typeof field.value === "string" && mode === "edit" && (
@@ -325,6 +350,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                           onChange={(e) => field.onChange(e.target.files?.[0])}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -336,8 +362,13 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea {...field} placeholder="Enter description..."/>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Enter description..."/>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -358,7 +389,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
 
                   return (
                     <FormItem>
-                      <FormLabel>Genres</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 border p-4 rounded-lg">
                         {genresList?.map((g: any) => {
                           const selected = field.value.includes(
@@ -390,13 +423,16 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 name="horizontal_thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Horizontal Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Horizontal Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
                         onChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -9,7 +9,7 @@ import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/
 import { Input } from "../../../components/ui/input";
 import { useGalleryQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryQuery";
 import { GalleryTitleComponent } from "@/components/Entertainment/Gallery/gallery_component";
-
+import { useDebounce } from "use-debounce";
 export default function GalleryMain() {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
@@ -17,7 +17,7 @@ export default function GalleryMain() {
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
+  const [debouncedSearch] = useDebounce(search, 700);
 
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
@@ -50,14 +50,6 @@ export default function GalleryMain() {
   React.useEffect(() => {
     setPage(1);
   }, [debouncedSearch]);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(handler);
-  }, [search]);
 
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();

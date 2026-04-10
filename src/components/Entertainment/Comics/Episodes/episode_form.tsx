@@ -40,6 +40,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
 
 // schema
 function createEpisodeSchema(mode: "add" | "edit") {
@@ -208,7 +209,7 @@ export default function ComicEpisodeForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center text-center">
                   <FormLabel className="text-sm uppercase font-bold tracking-widest text-muted-foreground mb-4">
-                    Episode Cover
+                   <RequiredLabel label="Episode Cover"/>
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -230,7 +231,7 @@ export default function ComicEpisodeForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Episode Name</FormLabel>
+                  <FormLabel className="font-bold "><RequiredLabel label="Episode Name"/></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g. Chapter 05: The Storm"
@@ -247,7 +248,9 @@ export default function ComicEpisodeForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Price (Coins)</FormLabel>
+                  <FormLabel className="font-bold ">
+                    <RequiredLabel label="Price (Coins)"/>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -267,7 +270,9 @@ export default function ComicEpisodeForm({
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2 ">
                 <ImageIcon size={20} className="text-primary" />
-                <h3 className="text-lg font-bold">Comic Pages</h3>
+                <h3 className="text-lg font-bold">
+                  <RequiredLabel label="Comic Pages" />
+                </h3>
                 <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-bold border border-primary/20">
                   {form.watch("images")?.length || 0} Pages
                 </span>

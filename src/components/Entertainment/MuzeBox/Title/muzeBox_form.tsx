@@ -38,6 +38,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateTextCommand";
 import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
 import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -214,7 +215,9 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
@@ -236,8 +239,13 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <Input {...field} />
+                      <FormLabel>
+                        <RequiredLabel label="Title" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter title..."/>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -248,12 +256,17 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   name="age_rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Age Rating</FormLabel>
-                      <Input
+                      <FormLabel>
+                        <RequiredLabel label="Age Rating" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
                         type="number"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -265,8 +278,13 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea {...field} />
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Enter description..."/>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -287,7 +305,9 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
 
                   return (
                     <FormItem>
-                      <FormLabel>Genres</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 border p-4 rounded-lg">
                         {genresList?.map((g: any) => {
                           const selected = field.value.includes(
@@ -319,13 +339,16 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="horizontal_thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Horizontal Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Horizontal Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
                         onChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

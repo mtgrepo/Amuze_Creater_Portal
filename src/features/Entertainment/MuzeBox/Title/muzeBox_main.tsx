@@ -19,7 +19,7 @@ export default function MuzeBox() {
   const creatorId = loginCreator?.creator?.id;
 
 const [text, setText] = React.useState("");
-const [debounceText] = useDebounce(text, 400);
+const [debounceText] = useDebounce(text, 700);
 
   const queryParams = React.useMemo(() => {
     switch (tab) {

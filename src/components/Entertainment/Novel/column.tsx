@@ -22,15 +22,15 @@ const columns: ColumnDef<NovelResponse>[] = [
         enableSorting: false,
         enableHiding: false,
     },
-    {
-        accessorKey: "thumbnail",
-        id: "thumbnail",
-        header: "Thumbnail",
-        cell: ({ row }) => {
-            const thumbnail = row.getValue("thumbnail") as string;
-            return <img src={thumbnail} alt="" className="w-20 h-12" />;
-        },
-    },
+    // {
+    //     accessorKey: "thumbnail",
+    //     id: "thumbnail",
+    //     header: "Thumbnail",
+    //     cell: ({ row }) => {
+    //         const thumbnail = row.getValue("thumbnail") as string;
+    //         return <img src={thumbnail} alt="" className="w-20 h-12" />;
+    //     },
+    // },
 
     {
         accessorKey: "name",

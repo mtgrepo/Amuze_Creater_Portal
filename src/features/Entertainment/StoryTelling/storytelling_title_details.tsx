@@ -9,7 +9,6 @@ import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
 import router from "@/router/routes";
 import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
-import React from "react";
 import { useParams } from "react-router-dom"
 
 export default function StoryTellingTitleDetails () {

@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
 import { CheckCircle2 } from "lucide-react";
+import RequiredLabel from "../../../common/required_label";
 
 type UploadedPart = {
   partNumber: number;
@@ -302,7 +303,9 @@ export default function MuzeBoxEpisodeForm({
               name="thumbnail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
+                  <FormLabel>
+                    <RequiredLabel label="Thumbnail" />
+                  </FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value}
@@ -323,7 +326,9 @@ export default function MuzeBoxEpisodeForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Name" />
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Enter name..." />
                       </FormControl>
@@ -337,7 +342,9 @@ export default function MuzeBoxEpisodeForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coin/MMK)" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="0.00"
@@ -359,7 +366,9 @@ export default function MuzeBoxEpisodeForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Enter description..." />
                     </FormControl>
@@ -373,7 +382,9 @@ export default function MuzeBoxEpisodeForm({
                 name="video"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Video File</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Video" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         fieldType="video"

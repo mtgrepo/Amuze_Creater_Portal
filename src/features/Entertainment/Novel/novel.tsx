@@ -9,6 +9,7 @@ import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/
 import { Input } from "../../../components/ui/input";
 import { useNovelQuery } from "../../../composable/Query/Entertainment/Novel/useNovelQuery";
 import { NovelComponent } from "../../../components/Entertainment/Novel/novel_component";
+import { useDebounce } from "use-debounce";
 
 export default function Novel() {
   const [page, setPage] = React.useState(1);
@@ -17,7 +18,7 @@ export default function Novel() {
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
+  const [debouncedSearch] = useDebounce(search, 700);
 
     const queryParams = React.useMemo(() => {
       switch (tab) {
@@ -47,14 +48,6 @@ export default function Novel() {
   React.useEffect(() => {
     setPage(1);
   }, [debouncedSearch, tab]);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(handler);
-  }, [search]);
 
   const handlePaginationChange = (newPage: number, newLimit: number) => {
     setPage(newPage);

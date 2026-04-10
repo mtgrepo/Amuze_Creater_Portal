@@ -40,6 +40,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -120,10 +121,8 @@ export default function ComicTitleForm({
     }
   }, [form]);
 
-  const { updateTitleMutation, isPending: isUpdatePending } =
-    useComicsTitleUpdateCommand();
-  const { updateThumbnailMutation, isPending: isThumbnailPending } =
-    useComicsThumbnailUpdateCommand();
+  const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
+  const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
   const onSubmit = async (values: TitleFormValues) => {
     try {
       if (mode === "add") {
@@ -207,7 +206,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label="Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -231,7 +230,9 @@ export default function ComicTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comics Title</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Comics Title" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. The Beginning After The End"
@@ -248,7 +249,9 @@ export default function ComicTitleForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price (Coins/Currency)</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coins/MMK)" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -269,7 +272,9 @@ export default function ComicTitleForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -298,7 +303,9 @@ export default function ComicTitleForm({
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
+                      <FormLabel className="text-base">
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -344,7 +351,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Banner / Horizontal Thumbnail (16:9 recommended)
+                      <RequiredLabel label="Horizontal Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">

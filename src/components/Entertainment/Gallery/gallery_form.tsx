@@ -40,6 +40,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../common/confirm_card";
+import RequiredLabel from "../../common/required_label";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -218,7 +219,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label="Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -242,7 +243,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Title" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. The Beginning After The End"
@@ -259,7 +262,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price (Coins/Currency)</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coins/MMK)" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -280,7 +285,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -309,7 +316,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
+                      <FormLabel className="text-base">
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -356,7 +365,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Banner / Actual Thumbnail (16:9 recommended)
+                        <RequiredLabel label="Banner" />
                       </FormLabel>
                       <FormControl>
                         <div className="mt-2">

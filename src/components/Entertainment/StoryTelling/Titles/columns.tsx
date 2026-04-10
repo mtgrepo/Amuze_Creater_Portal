@@ -16,7 +16,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { format, formatDate } from "date-fns";
+import { format } from "date-fns";
 
 export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
   {
@@ -147,7 +147,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
         {icon}
 
         <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden group-hover:flex
-                  max-w-xs break-words whitespace-normal rounded bg-gray-800 text-white text-xs 
+                  max-w-xs wrap-break-word whitespace-normal rounded bg-gray-800 text-white text-xs 
                   px-2 py-1 shadow-lg pointer-events-none">
           {tooltip}
         </div>

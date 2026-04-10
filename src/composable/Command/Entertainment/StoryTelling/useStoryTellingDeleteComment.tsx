@@ -1,6 +1,6 @@
-import { deleteComment } from "@/http/apis/comments/commentApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner";
+import { deleteComment } from "../../../../http/apis/comment/commentApi";
 
 export const useStoryTellingCommentDelete = () => {
     const queryClient = useQueryClient();

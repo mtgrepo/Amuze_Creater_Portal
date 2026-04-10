@@ -1,6 +1,6 @@
 import Dashboard from "@/features/Dashboard/dashboard";
 import App from "../App";
-import { createBrowserRouter, href } from "react-router-dom";
+import { createBrowserRouter} from "react-router-dom";
 import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
@@ -23,7 +23,6 @@ import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/stor
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
 import StoryTellingEpisodeDetails from "@/features/Entertainment/StoryTelling/storytelling_episode_details";
 import StoryTellingEpisodeUpdate from "@/features/Entertainment/StoryTelling/storytelling_episode_update";
-import { StoryTellingTitleCreate } from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 import GalleryMain from "@/features/Entertainment/Gallery/gallery";
 import GalleryCreate from "@/features/Entertainment/Gallery/gallery_create";
 import GalleryUpdate from "@/features/Entertainment/Gallery/gallery_update";
@@ -32,6 +31,13 @@ import MuzeBox from "@/features/Entertainment/MuzeBox/Title/muzeBox_main";
 import MuzeBoxTitleCreate from "@/features/Entertainment/MuzeBox/Title/muzeBox_title_create";
 import UpdateMuzeBoxTitle from "@/features/Entertainment/MuzeBox/Title/muzeBox_title_update";
 import MuzeBoxTitleDetails from "@/features/Entertainment/MuzeBox/Title/muzeBox_title_details";
+import MuseumLayout from "@/features/Entertainment/Museum/museum_layout";
+import MuseumCreate from "@/features/Entertainment/Museum/museum_create";
+import MuseumDetails from "@/features/Entertainment/Museum/museum_details";
+import MuseumUpdate from "@/features/Entertainment/Museum/museum_update";
+import MuseumTitleCreate from "@/features/Entertainment/Museum/museum_title_create";
+import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
+import MuseumTitleDetails from "@/features/Entertainment/Museum/museum_title_details";
 
 const router = createBrowserRouter(
   [
@@ -335,6 +341,75 @@ const router = createBrowserRouter(
               {
                 label: `Episode ${params?.id}`,
                 href: `/entertainment/storytelling/episode/details/${params?.id}`,
+              },
+              { label: "Details" },
+            ],
+          },
+        },
+        //Museum
+        {
+          path: "/entertainment/museum",
+          element: <MuseumLayout />,
+          handle: { crumb: ["Entertainment", "Museum"] },
+        },
+        {
+          path: "/entertainment/museum/create",
+          element: <MuseumCreate />,
+          handle: {
+            crumb: [
+              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum Create" },
+            ],
+          },
+        },
+        {
+          path: "/entertainment/museum/edit/:id",
+          element: <MuseumUpdate />,
+          handle: {
+            crumb: [
+              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum Edit" },
+            ],
+          },
+        },
+        {
+          path: "/entertainment/museum/details/:id",
+          element: <MuseumDetails />,
+          handle: {
+            crumb: ({ params, data }: any) => [
+              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: data?.data?.name ?? `Museum ${params.id}` },
+            ],
+          },
+        },
+        //museum title
+        {
+          path: "/entertainment/museum/:id/title/create",
+          element: <MuseumTitleCreate />,
+          handle: {
+            crumb: ({ params }: any) => [
+              { label: ["Museum"], href: "/entertainment/museum" },
+              {
+                label: `Museum ${params?.id}`,
+                href: `/entertainment/museum/${params?.id}/title/create`,
+              },
+              { label: "Title Create" },
+            ],
+          },
+        },
+        {
+          path: "/entertainment/museum/:museumId/title/details/:id",
+          element: <MuseumTitleDetails/>,
+          handle: {
+            crumb: ({ params }: any) => [
+              { label: ["Museum"], href: "/entertainment/museum" },
+              {
+                label: `Museum ${params?.museumId}`,
+                href: `/entertainment/museum/details/${params?.museumId}`,
+              },
+              {
+                label: `Title ${params?.id}`,
+                href: `/entertainment/museum/details/${params?.id}`,
               },
               { label: "Details" },
             ],

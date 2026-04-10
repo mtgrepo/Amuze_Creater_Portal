@@ -1,5 +1,5 @@
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
-import { StoryTellingTable } from "@/components/Entertainment/StoryTelling/Titles/storytelling-table";
+import { StoryTellingTable } from "@/components/Entertainment/StoryTelling/Titles/storytelling_table";
 import { Button } from "@/components/ui/button";
 import { useStoryTellingTitleQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleQuery";
 import { decryptAuthData } from "@/lib/helper";

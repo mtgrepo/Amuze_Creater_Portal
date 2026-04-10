@@ -1,15 +1,14 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { StatCard } from "./status_card";
 import { BookOpen, DollarSign, Eye, ThumbsUp } from "lucide-react";
-import { useEffect } from "react";
-import { decryptAuthData } from "@/lib/helper";
 
 export default function DashboardComponent() {
-    useEffect(() => {
-    const raw = decryptAuthData(localStorage.getItem('creator')!);
-    console.log("localStorage raw →", raw?.creator);
-    console.log("permission", raw?.creator?.permissions)
-  }, []);
+  //   useEffect(() => {
+  //   const raw = decryptAuthData(localStorage.getItem('creator')!);
+  //   console.log("localStorage raw →", raw?.creator);
+  //   console.log("permission", raw?.creator?.permissions)
+  // }, []);
+
 
   return (
     <SidebarProvider

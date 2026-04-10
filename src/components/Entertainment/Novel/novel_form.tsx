@@ -40,6 +40,7 @@ import { useNovelUpdateThumbnailCommand } from "../../../composable/Command/Ente
 import { useNovelUpdatePdfCommand } from "../../../composable/Command/Entertainment/Novel/useUpdatePdfCommand";
 import ConfirmCard from "../../common/confirm_card";
 import RequiredLabel from "../../common/required_label";
+import { useTranslation } from "react-i18next";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -208,6 +209,8 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-7xl mx-auto p-6 border rounded-xl shadow-sm">
       <Form {...form}>
@@ -228,7 +231,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Thumbnail" />
+                      <RequiredLabel label={t('thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -252,7 +255,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Title" />
+                        <RequiredLabel label={t('title')} />
                       </FormLabel>
                      <FormControl>
                        <Input {...field} placeholder="Enter title..."/>
@@ -269,7 +272,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Price (Coin/MMK)" />
+                        <RequiredLabel label={t('price')} />
                       </FormLabel>
                       <FormControl>
                         <Input

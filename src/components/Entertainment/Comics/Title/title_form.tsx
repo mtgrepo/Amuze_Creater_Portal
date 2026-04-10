@@ -93,6 +93,7 @@ export default function ComicTitleForm({
     },
   });
 
+
   useEffect(() => {
     if (defaultValues) {
       form.reset({
@@ -115,6 +116,8 @@ export default function ComicTitleForm({
         const loginCreator = decryptAuthData(storedData);
         const id = loginCreator?.creator?.id;
         if (id) form.setValue("created_by", id);
+          if (id) form.setValue("created_by", id, { shouldDirty: false }); 
+
       }
     } catch (error) {
       console.error("Failed to read auth data from localStorage", error);
@@ -384,24 +387,24 @@ export default function ComicTitleForm({
               Cancel & Reset
             </Button>
             <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
-                <Button
-                  className="flex-1 cursor-pointer"
-                  type="button"
-                  onClick={async () => {
-                    const isValid = await form.trigger();
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
 
-                    if (isValid) {
-                      setCreateDialog(true);
-                    } else {
-                      toast.error("Please fill in all required fields correctly.");
-                    }
-                  }}
-                >
-                  {(isPending || isThumbnailPending || isUpdatePending) && (
-                    <Spinner className="mr-2 w-4 h-4" />
-                  )}
-                  {mode === "add" ? "Add Title" : "Save Changes"}
-                </Button>
+                  if (isValid) {
+                    setCreateDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isPending || isThumbnailPending || isUpdatePending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">

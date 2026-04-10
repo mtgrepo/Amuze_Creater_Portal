@@ -218,7 +218,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
           {/* HEADER */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New Novel" : "Edit Novel"}
+              {mode === "add" ? t('create_new_novel') : t('edit_novel')}
             </h2>
           </div>
 
@@ -293,7 +293,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Age Rating" />
+                        <RequiredLabel label={t('age_rating')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -312,7 +312,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Preview" />
+                        <RequiredLabel label={t('preview')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -331,7 +331,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
                       <FormLabel>
-                        <RequiredLabel label="File Upload" />
+                        <RequiredLabel label={t('file_upload')} />
                       </FormLabel>
 
                       {/* Show existing file if editing */}
@@ -366,7 +366,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Description" />
+                      <RequiredLabel label={t('description')} />
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Enter description..."/>
@@ -393,7 +393,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   return (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Genres" />
+                        <RequiredLabel label={t('genres')} />
                       </FormLabel>
                       <div className="flex flex-wrap gap-2 border p-4 rounded-lg">
                         {genresList?.map((g: any) => {
@@ -427,7 +427,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Horizontal Thumbnail" />
+                      <RequiredLabel label={t('horizontal_thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload

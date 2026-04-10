@@ -4,5 +4,13 @@
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
-  "price": "စျေးနှုန်း"
+  "price": "စျေးနှုန်း",
+  "description": "အကြောင်းအရာ",
+  "genres": "အမျိုးအစား",
+  "age_rating": "အသက်ကန့်သက်ချက်",
+  "horizontal_thumbnail": "ဓာတ်ပုံ (အလျားလိုက်)",
+  "file_upload": "ဖိုင်",
+  "preview": "စာမျက်နှာ",
+  "create_new_novel": "ဝတ္ထုအသစ်ထည့်ရန်",
+  "edit_novel": "ဝတ္ထုအချက်အလက်ပြင်ဆင်ရန်"
 }

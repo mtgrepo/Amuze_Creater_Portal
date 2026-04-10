@@ -14,18 +14,19 @@ export function LanguageToggle() {
         i18n.changeLanguage(lng)
     }
 
-    // Check if the current language is English
+    // Determine current state
     const isEn = i18n.language === "en"
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="relative">
-                    {/* English Flag Icon */}
-                    <div className={`transition-all duration-300 items-center justify-center ${isEn ? "scale-100 rotate-0" : "scale-0 -rotate-90 opacity-0"
-                        }`}>
-                        <svg width={20} height={20} viewBox="0 0 20 20" fill="none">
-                            <rect width={20} height={20} />
+                <Button variant="outline" size="icon" className="relative flex items-center justify-center">
+                    
+                    {/* English/UK Flag Container */}
+                    <div className={`flex items-center justify-center h-5 w-5 transition-all duration-300 ${
+                        isEn ? "scale-100 rotate-0" : "scale-0 -rotate-90 opacity-0"
+                    }`}>
+                        <svg width={20} height={20} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20Z" fill="#F0F0F0" />
                             <path d="M9.56445 9.99995H19.9992C19.9992 9.09737 19.8789 8.22299 19.6547 7.39124H9.56445V9.99995Z" fill="#D80027" />
                             <path d="M9.56445 4.78266H18.5315C17.9193 3.78375 17.1366 2.90083 16.2241 2.17395H9.56445V4.78266Z" fill="#D80027" />
@@ -35,35 +36,22 @@ export function LanguageToggle() {
                         </svg>
                     </div>
 
-                    {/* Myanmar Flag Icon */}
-                    <div className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 ${!isEn ? "scale-100 rotate-0" : "scale-0 rotate-90 opacity-0"
-                        }`}>
-                        <svg width={20} height={20} viewBox="0 0 20 20" fill="none">
-                            <rect width={20} height={20} />
-                            <rect width={1876} height={988} transform="translate(-284 -588)" />
-                            <path
-                                d="M19.378 13.4783C19.78 12.395 20 11.2232 20 10C20 8.77683 19.78 7.60507 19.378 6.52179L10 5.65222L0.621992 6.52179C0.220039 7.60507 0 8.77683 0 10C0 11.2232 0.220039 12.395 0.621992 13.4783L10 14.3478L19.378 13.4783Z"
-                                fill="#6DA544"
-                            />
-                            <path
-                                d="M19.3771 6.52176C17.9642 2.71375 14.2987 0 9.9991 0C5.69945 0 2.03402 2.71375 0.621094 6.52176H19.3771Z"
-                                fill="#FFDA44"
-                            />
-                            <path
-                                d="M9.9991 20C14.2987 20 17.9642 17.2863 19.3771 13.4783H0.621094C2.03402 17.2863 5.69945 20 9.9991 20Z"
-                                fill="#D80027"
-                            />
-                            <path
-                                d="M16.8573 8.46042H11.6188L9.99996 3.47827L8.38113 8.46042H3.14258L7.38066 11.5396L5.76184 16.5218L9.99996 13.4783L14.2381 16.5217L12.6193 11.5395L16.8573 8.46042Z"
-                                fill="#F0F0F0"
-                            />
+                    {/* Myanmar Flag Container */}
+                    <div className={`absolute flex items-center justify-center h-5 w-5 transition-all duration-300 ${
+                        !isEn ? "scale-100 rotate-0" : "scale-0 rotate-90 opacity-0"
+                    }`}>
+                        <svg width={20} height={20} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.378 13.4783C19.78 12.395 20 11.2232 20 10C20 8.77683 19.78 7.60507 19.378 6.52179L10 5.65222L0.621992 6.52179C0.220039 7.60507 0 8.77683 0 10C0 11.2232 0.220039 12.395 0.621992 13.4783L10 14.3478L19.378 13.4783Z" fill="#6DA544" />
+                            <path d="M19.3771 6.52176C17.9642 2.71375 14.2987 0 9.9991 0C5.69945 0 2.03402 2.71375 0.621094 6.52176H19.3771Z" fill="#FFDA44" />
+                            <path d="M9.9991 20C14.2987 20 17.9642 17.2863 19.3771 13.4783H0.621094C2.03402 17.2863 5.69945 20 9.9991 20Z" fill="#D80027" />
+                            <path d="M16.8573 8.46042H11.6188L9.99996 3.47827L8.38113 8.46042H3.14258L7.38066 11.5396L5.76184 16.5218L9.99996 13.4783L14.2381 16.5217L12.6193 11.5395L16.8573 8.46042Z" fill="#F0F0F0" />
                         </svg>
-
                     </div>
 
                     <span className="sr-only">Switch Language</span>
                 </Button>
             </DropdownMenuTrigger>
+            
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => changeLanguage("en")}>
                     English

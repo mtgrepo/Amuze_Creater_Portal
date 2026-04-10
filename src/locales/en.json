@@ -4,5 +4,13 @@
 
   "thumbnail" : "Thumbnail",
   "title": "Title",
-  "price": "Price"
+  "price": "Price",
+  "description": "Description",
+  "genres": "Genres",
+  "age_rating": "Age Rating",
+  "horizontal_thumbnail": "Horizontal Thumbnail",
+  "file_upload": "File Upload",
+  "preview": "Preview",
+  "create_new_novel": "Create New Novel",
+  "edit_novel": "Edit Novel"
 }

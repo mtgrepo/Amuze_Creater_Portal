@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FolderPlus, Image as ImageIcon, X, Plus } from "lucide-react";
+import { FolderPlus, Image as ImageIcon, X, Plus, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,8 +39,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 
-// --- SCHEMA ---
+// schema
 function createEpisodeSchema(mode: "add" | "edit") {
   const fileSchema =
     mode === "add"
@@ -74,9 +75,11 @@ export default function ComicEpisodeForm({
 }: EpisodeFormProps) {
   const formSchema = createEpisodeSchema(mode);
 
-  // INITIALIZE FORM
+  // initialize form
   const form = useForm<EpisodeFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       title_id: comicTitleId,
@@ -86,19 +89,20 @@ export default function ComicEpisodeForm({
       created_by: "",
     },
   });
+  const [createDialog, setCreateDialog] = useState(false);
 
-  // API COMMANDS
+  // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
   const { episodeMutation: updateMutation, isPending: updatePending } = useComicEpisodeUpdateCommand();
   const { episodeThumbnailMutation, isPending: thumbnailPending } = useComicEpisodeThumbnailUpdateCommand();
   const { deleteImageMutation, isPending: deletePending } = useEpisodeDeleteCommand();
 
-  //  HELPERS
+  //  helpers
   const removeImage = async (index: number) => {
     const currentImages = form.getValues("images");
     const imageToRemove = currentImages[index];
 
-    // Check if it's an existing image object from the server
+    // Check image
     const isExistingOnServer = imageToRemove?.id && !(imageToRemove instanceof File);
 
     if (mode === "edit" && isExistingOnServer) {
@@ -118,7 +122,7 @@ export default function ComicEpisodeForm({
     form.setValue("images", updatedImages, { shouldValidate: true });
   };
 
-  // AUTH SYNC
+  // auth data
   useEffect(() => {
     try {
       const storedData = localStorage.getItem("creator");
@@ -132,7 +136,7 @@ export default function ComicEpisodeForm({
     }
   }, [form]);
 
-  //  ONSUBMIT
+  //  btn submit
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
       const formData = new FormData();
@@ -154,7 +158,7 @@ export default function ComicEpisodeForm({
         }
         await episodeMutation(formData);
       } else {
-        // Edit Mode Logic
+        // Edit 
         if (values.thumbnail instanceof File) {
           formData.append("thumbnail", values.thumbnail);
           await episodeThumbnailMutation({
@@ -386,14 +390,59 @@ export default function ComicEpisodeForm({
             >
               Back to Series
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 cursor-pointer"
-              disabled={createPending || updatePending || thumbnailPending}
-            >
-              {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2" />}
-              {mode === "add" ? "Publish Episode" : "Update Episode"}
-            </Button>
+            <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
+              <Button
+                type="button"
+                className="flex-1 cursor-pointer"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setCreateDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(createPending || updatePending || thumbnailPending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={createPending || updatePending || thumbnailPending}
+                  >
+                    {createPending || updatePending || thumbnailPending ? (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    ) : null}
+                    Confirm & {mode === "add" ? "Publish Episode" : "Update Episode"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
         </form>
       </Form>

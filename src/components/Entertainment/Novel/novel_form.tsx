@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,6 +38,7 @@ import { Spinner } from "../../ui/spinner";
 import { useNovelUpdateTextCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateCommand";
 import { useNovelUpdateThumbnailCommand } from "../../../composable/Command/Entertainment/Novel/useUpdateThumbnailCommand";
 import { useNovelUpdatePdfCommand } from "../../../composable/Command/Entertainment/Novel/useUpdatePdfCommand";
+import ConfirmCard from "../../common/confirm_card";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -65,9 +75,12 @@ interface NovelFormProps {
 export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(1);
+  const [confirmDialog, setConfirmDialog] = useState(false);
 
   const form = useForm<NovelFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -236,7 +249,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Title</FormLabel>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Enter title..."/>
                     </FormItem>
                   )}
                 />
@@ -324,7 +337,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-                    <Textarea {...field} />
+                    <Textarea {...field} placeholder="Enter description..."/>
                   </FormItem>
                 )}
               />
@@ -400,23 +413,68 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
             >
               Cancel
             </Button>
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+                <Button
+                  type="button"
+                  className="flex-1 cursor-pointer"
+                  onClick={async () => {
+                    const isValid = await form.trigger();
 
-            <Button
-              type="submit"
-              className="w-full flex-1 cursor-pointer"
-              disabled={
-                isNovelCreating ||
-                isUpdatingText ||
-                isUpdatingThumbnail ||
-                isUpdatingPdf
-              }
-            >
-              {(isNovelCreating ||
-                isUpdatingText ||
-                isUpdatingThumbnail ||
-                isUpdatingPdf) && <Spinner />}
-              Submit
-            </Button>
+                    if (isValid) {
+                      setConfirmDialog(true);
+                    } else {
+                      toast.error("Please fill in all required fields correctly.");
+                    }
+                  }}
+
+                >
+                  {(isNovelCreating ||
+                    isUpdatingText ||
+                    isUpdatingThumbnail ||
+                    isUpdatingPdf) && (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    )}
+                  {mode === "add" ? "Add Title" : "Save Changes"}
+                </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isNovelCreating ||
+                      isUpdatingText ||
+                      isUpdatingThumbnail ||
+                      isUpdatingPdf}
+                  >
+                    {(isNovelCreating ||
+                      isUpdatingText ||
+                      isUpdatingThumbnail ||
+                      isUpdatingPdf) && (
+                        <Spinner className="mr-2 w-4 h-4" />
+                      )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </Form>

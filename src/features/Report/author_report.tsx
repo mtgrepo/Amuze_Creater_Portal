@@ -61,10 +61,8 @@ export default function AuthorReport() {
         const now = new Date();
         
         return tableData.reduce((acc, item) => {
-            // Mapping keys: authorIncome and purchaseDate
             const income = Number(item.authorIncome) || 0;
             
-            // new Date("26 Nov 2025") works natively in most browsers
             const itemDate = new Date(item.purchaseDate);
 
             // Safety check for valid date

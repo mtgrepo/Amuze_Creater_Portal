@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,10 +33,11 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
 import router from "@/router/routes";
-import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxCreateCommand";
+import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
-import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateTextCommand";
-import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateThumbnailCommand";
+import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateTextCommand";
+import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
+import ConfirmCard from "../../../common/confirm_card";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -62,9 +72,12 @@ interface MuzeBoxFormProps {
 export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
+  const [confirmDialog, setConfirmDialog] = useState(false);
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -189,7 +202,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
           {/* HEADER */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New Novel" : "Edit Novel"}
+              {mode === "add" ? "Create New MuzeBox" : "Edit MuzeBox"}
             </h2>
           </div>
 
@@ -325,23 +338,65 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => router.navigate("/entertainment/novel")}
+              onClick={() => router.navigate("/entertainment/muze-box")}
             >
               Cancel
             </Button>
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
 
-            <Button
-              type="submit"
-              className="w-full flex-1 cursor-pointer"
-              disabled={
-                isPending || isUpdateTextPending || isUpdateThumbnailPending
-              }
-            >
-              {(isPending ||
-                isUpdateTextPending ||
-                isUpdateThumbnailPending) && <Spinner />}
-              Submit
-            </Button>
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isPending || isUpdateTextPending || isUpdateThumbnailPending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader className="text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isPending || isUpdateTextPending || isUpdateThumbnailPending}
+                  >
+                    {(isPending ||
+                      isUpdateTextPending ||
+                      isUpdateThumbnailPending) && (
+                        <Spinner className="mr-2 w-4 h-4" />
+                      )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
         </form>
       </Form>

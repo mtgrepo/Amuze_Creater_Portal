@@ -47,8 +47,13 @@ export const replyComment = async ( category: string, id: number, parentId: numb
         if(category === "story"){
           route = "store-story-comment"
         }
+              let categoryId = category;
+      if (category === "muze-box") {
+        categoryId = "series"
+      }
+
         const response = await axiosInstance.post(`${category}/${route}`, {
-            [`${category}Id`]: id,
+            [`${categoryId}Id`]: id,
             parentId,
             comment
         })

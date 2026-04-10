@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FolderPlus } from "lucide-react";
+import { CheckCircle2, FolderPlus } from "lucide-react";
 import ImageUpload from "@/components/common/image_upload";
 import { Button } from "@/components/ui/button";
 import router from "@/router/routes";
@@ -21,10 +21,20 @@ import { useEpisodeCreateCommand } from "@/composable/Command/Entertainment/Stor
 import { useEpisodeUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeUpdateCommand";
 import { useEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeThumbnailUpdateCommand";
 import { useEpisodeAudioUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeAudioUpdateCommand";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { decryptAuthData } from "@/lib/helper";
 import { generateStoryEpisodePresignedUrl } from "@/http/apis/entertainment/storytelling/storyTellingEpisodeApi";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -60,10 +70,14 @@ export default function StoryTellingEpisodeForm({
   defaultValues,
   onSuccess,
 }: EpisodeFormProps) {
+  const [confirmDialog, setConfirmDialog] = useState(false);
+
   const formSchema = createFormSchema(mode);
 
   const form = useForm<EpisodeFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       title_id: titleId,
@@ -74,80 +88,88 @@ export default function StoryTellingEpisodeForm({
     },
   });
 
-  const { createEpisodeMutation, isCreateEpisodePending } = useEpisodeCreateCommand();
-  const { updateEpisodeMutation, isUpdateEpisodePending } = useEpisodeUpdateCommand();
-  const { updateEpisodeThumbnailMutation, isUpdateEpisodeThumbnailPending } = useEpisodeThumbnailUpdateCommand();
-  const { updateEpisodeAudioMutation, isUpdateEpisodeAudioPending } = useEpisodeAudioUpdateCommand();
+  const { createEpisodeMutation, isCreateEpisodePending } =
+    useEpisodeCreateCommand();
+  const { updateEpisodeMutation, isUpdateEpisodePending } =
+    useEpisodeUpdateCommand();
+  const { updateEpisodeThumbnailMutation, isUpdateEpisodeThumbnailPending } =
+    useEpisodeThumbnailUpdateCommand();
+  const { updateEpisodeAudioMutation, isUpdateEpisodeAudioPending } =
+    useEpisodeAudioUpdateCommand();
 
-  const isLoading = isCreateEpisodePending || isUpdateEpisodePending || isUpdateEpisodeThumbnailPending || isUpdateEpisodeAudioPending;
+  const isLoading =
+    isCreateEpisodePending ||
+    isUpdateEpisodePending ||
+    isUpdateEpisodeThumbnailPending ||
+    isUpdateEpisodeAudioPending;
 
-    useEffect(() => {
-      try {
-        const storedData = localStorage.getItem("creator");
-        if (storedData) {
-          const loginCreator = decryptAuthData(storedData);
-          const id = loginCreator?.creator?.id;
-          if (id) form.setValue("created_by", id);
-        }
-      } catch (error) {
-        console.error("Auth sync error:", error);
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("creator");
+      if (storedData) {
+        const loginCreator = decryptAuthData(storedData);
+        const id = loginCreator?.creator?.id;
+        if (id) form.setValue("created_by", id);
       }
-    }, [form]);
+    } catch (error) {
+      console.error("Auth sync error:", error);
+    }
+  }, [form]);
 
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
       if (mode === "add") {
-      if (!(values.file_path instanceof File)) {
-        throw new Error("Audio file is required");
+        if (!(values.file_path instanceof File)) {
+          throw new Error("Audio file is required");
+        }
+
+        const presignedResult = await generateStoryEpisodePresignedUrl(
+          Number(values.title_id),
+          values.name,
+          values.file_path.type,
+        );
+
+        if (!presignedResult.status) {
+          throw new Error(presignedResult.message);
+        }
+
+        const { url, tempFilePath } = presignedResult.data;
+
+        const uploadRes = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": values.file_path.type,
+          },
+          body: values.file_path,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Audio upload failed");
+        }
+
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("title_id", String(values.title_id));
+        formData.append("price", String(values.price));
+
+        if (values.created_by) {
+          formData.append("created_by", String(values.created_by));
+        }
+
+        // thumbnail still file ✅
+        if (values.thumbnail instanceof File) {
+          formData.append("thumbnail", values.thumbnail);
+        }
+
+        formData.append("file_path", tempFilePath);
+
+        await createEpisodeMutation(formData);
       }
-
-      const presignedResult = await generateStoryEpisodePresignedUrl(
-        Number(values.title_id),
-        values.name,
-        values.file_path.type
-      );
-
-      if (!presignedResult.status) {
-        throw new Error(presignedResult.message);
-      }
-
-      const { url, tempFilePath } = presignedResult.data;
-
-      const uploadRes = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": values.file_path.type,
-        },
-        body: values.file_path,
-      });
-
-      if (!uploadRes.ok) {
-        throw new Error("Audio upload failed");
-      }
-
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("title_id", String(values.title_id));
-      formData.append("price", String(values.price));
-
-      if (values.created_by) {
-        formData.append("created_by", String(values.created_by));
-      }
-
-      // thumbnail still file ✅
-      if (values.thumbnail instanceof File) {
-        formData.append("thumbnail", values.thumbnail);
-      }
-
-      formData.append("file_path", tempFilePath);
-
-      await createEpisodeMutation(formData);
-    }
 
       const updateStoryTellingEpisodePayload = {
         name: values.name,
-        price: values.price
-      }
+        price: values.price,
+      };
 
       if (mode === "edit" && defaultValues?.id) {
         await updateEpisodeMutation({
@@ -161,8 +183,8 @@ export default function StoryTellingEpisodeForm({
 
           await updateEpisodeThumbnailMutation({
             episodeId: defaultValues.id,
-            thumbnail: thumbnailData
-          })
+            thumbnail: thumbnailData,
+          });
         }
 
         if (values.file_path instanceof File) {
@@ -171,12 +193,12 @@ export default function StoryTellingEpisodeForm({
 
           await updateEpisodeAudioMutation({
             episodeId: defaultValues.id,
-            audio: audioData
+            audio: audioData,
           });
         }
-        toast.success("Episode updated successfully!")
+        toast.success("Episode updated successfully!");
       }
-      if(onSuccess) onSuccess();
+      if (onSuccess) onSuccess();
     } catch (error: any) {
       toast.error(error.message || "An error occured.");
     }
@@ -194,7 +216,9 @@ export default function StoryTellingEpisodeForm({
               {mode === "add" ? "New Episode" : "Edit Episode"}
             </h1>
             <p className="text-muted-foreground text-sm">
-              {mode === "add" ? "Create New Storytelling Episode" : "Edit Storytelling Episode Details"}
+              {mode === "add"
+                ? "Create New Storytelling Episode"
+                : "Edit Storytelling Episode Details"}
             </p>
           </div>
         </div>
@@ -232,10 +256,7 @@ export default function StoryTellingEpisodeForm({
                 <FormItem>
                   <FormLabel className="font-bold ">Episode Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter episode name"
-                      {...field}
-                    />
+                    <Input placeholder="Enter episode name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,8 +300,6 @@ export default function StoryTellingEpisodeForm({
                 </FormItem>
               )}
             />
-
-
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-border">
@@ -293,12 +312,65 @@ export default function StoryTellingEpisodeForm({
             >
               Back to Titles
             </Button>
+
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+                <Button
+                type="button"
+                  className="flex-1 cursor-pointer"
+                  onClick={async () => {
+                    const isValid = await form.trigger();
+
+                    if (isValid) {
+                      setConfirmDialog(true);
+                    } else {
+                      toast.error("Please fill in all required fields correctly.");
+                    }
+                  }}
+                >
+                  {(isLoading) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                  {mode === "add" ? "Add Title" : "Save Changes"}
+                </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isLoading}
+                  >
+                    {(isLoading) && (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Button
               type="submit"
               className="flex-1 cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading && <Spinner className="mr-2" />}
+              {isLoading && <Spinner className="mr-2 w-4 h-4" />}
               {mode === "add" ? "Create Episode" : "Update Episode"}
             </Button>
           </div>

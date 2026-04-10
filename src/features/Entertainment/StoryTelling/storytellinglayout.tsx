@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input";
 
 export default function StoryTellingLayout() {
     const [page, setPage] = React.useState(1);
-    const [pageSize, setPageSize] = React.useState(5);
     const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
+    const [pageSize, setPageSize] = React.useState(10);
     const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
     const creatorId = loginCreator?.creator?.id;
     const [search, setSearch] = React.useState("");

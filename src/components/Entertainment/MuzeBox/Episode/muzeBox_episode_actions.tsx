@@ -15,28 +15,29 @@ import type { ComicsTitleDetailsResponse } from "@/types/response/entertainment/
 
 interface EpisodeActionsProps {
   episode: ComicsTitleDetailsResponse;
-  titleId?: number; 
-  titleName?: string
+  titleId: number;
+  titleName: string
 }
 
 export default function EpisodeActions({ episode, titleId, titleName }: EpisodeActionsProps) {
   const navigate = useNavigate();
 
   const handleEditEpisode = () => {
-    navigate(`/entertainment/storytelling/${titleId}/episode/edit/${episode?.id}`, {
-      state: { 
-        episode, 
-        titleId ,
+    // We add titleId to the state object here
+    navigate(`/entertainment/muze-box/${titleId}/episode/edit/${episode?.id}`, {
+      state: {
+        episode,
+        titleId,
         titleName
       },
     });
   };
 
   const handleViewDetails = () => {
-        navigate(`/entertainment/storytelling/${titleId}/episode/details/${episode?.id}`, {
-      state: { 
-        episode, 
-        titleId ,
+    navigate(`/entertainment/muze-box/${titleId}/episode/details/${episode?.id}`, {
+      state: {
+        episode,
+        titleId,
         titleName
       },
     });
@@ -45,6 +46,7 @@ export default function EpisodeActions({ episode, titleId, titleName }: EpisodeA
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
+        {/* Note: Ensure this is not wrapped in another <button> in the parent */}
         <Button variant="ghost" className="h-8 w-8 p-0">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />

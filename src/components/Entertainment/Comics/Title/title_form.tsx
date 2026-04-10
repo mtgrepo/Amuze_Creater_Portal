@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,17 @@ import { decryptAuthData } from "@/lib/helper";
 import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
 import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
 import router from "@/router/routes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -62,10 +73,14 @@ export default function ComicTitleForm({
 }: TitleFormProps) {
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(2);
+  const [createDialog, setCreateDialog] = useState(false);
+
   const { titleMutation, isPending } = useComicsTitleCreateCommand();
-  // 2. INITIALIZE FORM
+
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -76,7 +91,7 @@ export default function ComicTitleForm({
       created_by: "",
     },
   });
-  // Inside ComicTitleForm...
+
   useEffect(() => {
     if (defaultValues) {
       form.reset({
@@ -105,9 +120,10 @@ export default function ComicTitleForm({
     }
   }, [form]);
 
-
-  const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
-  const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
+  const { updateTitleMutation, isPending: isUpdatePending } =
+    useComicsTitleUpdateCommand();
+  const { updateThumbnailMutation, isPending: isThumbnailPending } =
+    useComicsThumbnailUpdateCommand();
   const onSubmit = async (values: TitleFormValues) => {
     try {
       if (mode === "add") {
@@ -129,8 +145,9 @@ export default function ComicTitleForm({
         const isThumbnailUpdated =
           values.thumbnail instanceof File ||
           values.horizontal_thumbnail instanceof File;
-        
-          const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
+
+        const type =
+          values.thumbnail instanceof File ? "vertical" : "horizontal";
 
         if (isThumbnailUpdated) {
           const thumbData = new FormData();
@@ -138,22 +155,29 @@ export default function ComicTitleForm({
             thumbData.append("thumbnail", values.thumbnail);
           }
           if (values.horizontal_thumbnail instanceof File) {
-            thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+            thumbData.append(
+              "horizontal_thumbnail",
+              values.horizontal_thumbnail,
+            );
           }
 
-          await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, data: thumbData });
+          await updateThumbnailMutation({
+            id: Number(defaultValues?.id),
+            type: type,
+            data: thumbData,
+          });
         }
 
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), // Convert strings back to numbers
+          genres: values.genres.map(Number),
           price: values.price,
         };
 
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
       }
-      
+
       if (onSuccess) onSuccess();
     } catch (err: any) {
       toast.error(err.message);
@@ -285,11 +309,10 @@ export default function ComicTitleForm({
                               <Badge
                                 key={g.id}
                                 variant={isSelected ? "default" : "outline"}
-                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${
-                                  isSelected
-                                    ? "scale-105 shadow-md"
-                                    : "hover:bg-muted"
-                                }`}
+                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${isSelected
+                                  ? "scale-105 shadow-md"
+                                  : "hover:bg-muted"
+                                  }`}
                                 onClick={() => toggleGenre(g.id.toString())}
                               >
                                 {g.name}
@@ -339,6 +362,7 @@ export default function ComicTitleForm({
             </div>
           </div>
 
+
           {/* FORM ACTIONS */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
             <Button
@@ -352,10 +376,59 @@ export default function ComicTitleForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 cursor-pointer" disabled={isPending || isThumbnailPending || isUpdatePending}>
-              {(isPending || isThumbnailPending || isUpdatePending) && <Spinner />}
-              {mode === "add" ? "Add Title" : "Save Changes"}
-            </Button>
+            <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
+                <Button
+                  className="flex-1 cursor-pointer"
+                  type="button"
+                  onClick={async () => {
+                    const isValid = await form.trigger();
+
+                    if (isValid) {
+                      setCreateDialog(true);
+                    } else {
+                      toast.error("Please fill in all required fields correctly.");
+                    }
+                  }}
+                >
+                  {(isPending || isThumbnailPending || isUpdatePending) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                  {mode === "add" ? "Add Title" : "Save Changes"}
+                </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isPending || isThumbnailPending || isUpdatePending}
+                  >
+                    {isPending || isThumbnailPending || isUpdatePending ? (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    ) : null}
+                    Confirm & {mode === "add" ? "Create" : "Save"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
         </form>
       </Form>

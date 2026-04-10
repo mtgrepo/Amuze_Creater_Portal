@@ -19,11 +19,21 @@ import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQ
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
-import { useEffect } from "react";
+import  { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -55,6 +65,8 @@ export default function StoryTellingTitleForm({
 }: TitleFormProps) {
   const formSchema = createFormSchema(mode);
   const subcategory_id = 3;
+  const [confirmDialog, setConfirmDialog] = useState(false);
+
   const { genresList } = useGenresBySubCategoryQuery(subcategory_id);
   const { createTitleMutation, isStoryCreatePending } =
     useStoryTellingTitleCreateCommand();
@@ -65,6 +77,8 @@ export default function StoryTellingTitleForm({
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -147,7 +161,10 @@ export default function StoryTellingTitleForm({
         if (values.horizontal_thumbnail) {
           try {
             const formData = new FormData();
-            formData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+            formData.append(
+              "horizontal_thumbnail",
+              values.horizontal_thumbnail,
+            );
 
             await updateThumbnailMutation({
               id: Number(defaultValues.id),
@@ -158,8 +175,7 @@ export default function StoryTellingTitleForm({
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
-              toast.success("Story updated successfully with thumbnails.");
-
+        toast.success("Story updated successfully with thumbnails.");
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -267,11 +283,10 @@ export default function StoryTellingTitleForm({
                               <Badge
                                 key={g.id}
                                 variant={isSelected ? "default" : "outline"}
-                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${
-                                  isSelected
-                                    ? "scale-105 shadow-md"
-                                    : "hover:bg-muted"
-                                }`}
+                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${isSelected
+                                  ? "scale-105 shadow-md"
+                                  : "hover:bg-muted"
+                                  }`}
                                 onClick={() => toggleGenre(g.id.toString())}
                               >
                                 {g.name}
@@ -331,20 +346,65 @@ export default function StoryTellingTitleForm({
             >
               Cancel & Reset
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 "
-              disabled={
-                isStoryCreatePending ||
-                isStoryTitleUpdatePending ||
-                isThumbnailUpdatePending
-              }
-            >
-              {(isStoryCreatePending ||
-                isStoryTitleUpdatePending ||
-                isThumbnailUpdatePending) && <Spinner />}
-              {mode === "add" ? "Add Title" : "Save Changes"}
-            </Button>
+
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isStoryCreatePending ||
+                  isStoryTitleUpdatePending ||
+                  isThumbnailUpdatePending) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isStoryCreatePending ||
+                      isStoryTitleUpdatePending ||
+                      isThumbnailUpdatePending}
+                  >
+                    {(isStoryCreatePending ||
+                      isStoryTitleUpdatePending ||
+                      isThumbnailUpdatePending) && (
+                        <Spinner className="mr-2 w-4 h-4" />
+                      )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </Form>

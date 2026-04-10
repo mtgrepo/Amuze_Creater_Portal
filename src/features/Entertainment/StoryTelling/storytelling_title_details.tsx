@@ -95,7 +95,12 @@ export default function StoryTellingTitleDetails () {
             <h2 className="text-2xl font-semibold">Episode Lists</h2>
             <Button
               onClick={() =>
-                router.navigate(`/entertainment/storytelling/${id}/episode/create`)
+                router.navigate(`/entertainment/storytelling/${id}/episode/create`, {
+                  state: {
+                    titleName: story?.name,
+                    titleId: story?.id
+                  }
+                })
               }
               className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors"
             >
@@ -147,7 +152,7 @@ export default function StoryTellingTitleDetails () {
                       )}
                     </div>
                     <button className="text-gray-500 hover:text-white">
-                      <EpisodeActions episode={ep} titleId={story?.id} />
+                      <EpisodeActions episode={ep} titleId={story?.id} titleName={story?.name}/>
                     </button>
                   </div>
                 </div>

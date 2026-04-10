@@ -124,7 +124,11 @@ export default function ComicsTitleDetails() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`)}
+              onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`, {
+                state: {
+                  titleName: comic?.name
+                }
+              })}
               className="rounded-full shadow-lg"
             >
               Add Episode
@@ -160,7 +164,7 @@ export default function ComicsTitleDetails() {
                       ) : (
                         <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
                       )}
-                      <EpisodeActions episode={ep} titleId={comic?.id} />
+                      <EpisodeActions episode={ep} titleId={comic?.id} titleName={comic?.name}/>
                     </div>
                   </div>
                 </div>

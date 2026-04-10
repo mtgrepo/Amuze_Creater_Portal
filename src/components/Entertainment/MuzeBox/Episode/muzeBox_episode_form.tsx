@@ -28,6 +28,18 @@ import { useMuzeBoxEpisodeTextUpdateCommand } from "@/composable/Command/Enterta
 import { useMuzeBoxEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeThumbnailCommand";
 import { useMuzeBoxEpisodeVideoUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeVideoUpdateCommand";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
+import { CheckCircle2 } from "lucide-react";
 
 type UploadedPart = {
   partNumber: number;
@@ -67,7 +79,7 @@ export default function MuzeBoxEpisodeForm({
 }: MuzeBoxFormProps) {
   const { id } = useParams();
   const formSchema = createFormSchema(mode);
-
+  const [confirmDialog, setConfirmDialog] = useState(false);
   // Placeholder loading states - replace these with your actual mutation hooks
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -378,7 +390,7 @@ export default function MuzeBoxEpisodeForm({
 
           <div className="flex gap-3 pt-6 border-t items-center">
             <Button
-              className="flex-1"
+              className="flex-1 cursor-pointer"
               type="button"
               variant="outline"
               onClick={() =>
@@ -396,24 +408,74 @@ export default function MuzeBoxEpisodeForm({
               Cancel
             </Button>
 
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={
-                isSubmitting ||
-                isPending ||
-                isTextUpdating ||
-                isThumbnailUpdating ||
-                isVideoUpdating
-              }
-            >
-              {(isSubmitting ||
-                isPending ||
-                isTextUpdating ||
-                isThumbnailUpdating ||
-                isVideoUpdating) && <Spinner className="mr-2 w-4 h-4" />}
-              {mode === "add" ? "Add Episode" : "Save Changes"}
-            </Button>
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isSubmitting ||
+                  isPending ||
+                  isTextUpdating ||
+                  isThumbnailUpdating ||
+                  isVideoUpdating) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm
+                    {mode === "add" ? "Add Episode" : "Save Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} description={form.getValues("description")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isSubmitting ||
+                      isPending ||
+                      isTextUpdating ||
+                      isThumbnailUpdating ||
+                      isVideoUpdating}
+                  >
+                    {isSubmitting ||
+                      isPending ||
+                      isTextUpdating ||
+                      isThumbnailUpdating ||
+                      isVideoUpdating &&
+                      <Spinner className="mr-2 w-4 h-4" />
+                    }
+                    Confirm &
+                    {mode === "add" ? "Add Episode" : "Save Changes"}
+
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
         </form>
       </Form>

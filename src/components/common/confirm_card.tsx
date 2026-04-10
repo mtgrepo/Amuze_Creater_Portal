@@ -21,22 +21,26 @@ export default function ConfirmCard(data: ConfirmCardProps) {
                 <div className="space-y-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         Description
-                    </span>
+                    </span> 
                     <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                         {data?.description || "No description provided."}
                     </p>
                 </div>
             )}
 
-
-            <div className="flex justify-between items-center pt-2 border-t border-border/50">
+         
+            { data?.price !== undefined && (
+                <div className="flex justify-between items-center pt-2 border-t border-border/50">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Price
                 </span>
-                <Badge variant="secondary" className="font-mono">
+                <Badge variant="secondary" className="">
                     {data?.price} Coins
                 </Badge>
             </div>
+            ) }
+            
+            
         </div>
     )
 }

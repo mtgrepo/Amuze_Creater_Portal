@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FolderPlus } from "lucide-react";
+import { CheckCircle2, FolderPlus } from "lucide-react";
 import ImageUpload from "@/components/common/image_upload";
 import { Button } from "@/components/ui/button";
 import router from "@/router/routes";
@@ -21,10 +21,20 @@ import { useEpisodeCreateCommand } from "@/composable/Command/Entertainment/Stor
 import { useEpisodeUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeUpdateCommand";
 import { useEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeThumbnailUpdateCommand";
 import { useEpisodeAudioUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeAudioUpdateCommand";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { decryptAuthData } from "@/lib/helper";
 import { generateStoryEpisodePresignedUrl } from "@/http/apis/entertainment/storytelling/storyTellingEpisodeApi";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -60,6 +70,8 @@ export default function StoryTellingEpisodeForm({
   defaultValues,
   onSuccess,
 }: EpisodeFormProps) {
+  const [confirmDialog, setConfirmDialog] = useState(false);
+
   const formSchema = createFormSchema(mode);
 
   const form = useForm<EpisodeFormValues>({
@@ -300,6 +312,59 @@ export default function StoryTellingEpisodeForm({
             >
               Back to Titles
             </Button>
+
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+                <Button
+                type="button"
+                  className="flex-1 cursor-pointer"
+                  onClick={async () => {
+                    const isValid = await form.trigger();
+
+                    if (isValid) {
+                      setConfirmDialog(true);
+                    } else {
+                      toast.error("Please fill in all required fields correctly.");
+                    }
+                  }}
+                >
+                  {(isLoading) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                  {mode === "add" ? "Add Title" : "Save Changes"}
+                </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isLoading}
+                  >
+                    {(isLoading) && (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Button
               type="submit"
               className="flex-1 cursor-pointer"

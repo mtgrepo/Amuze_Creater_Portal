@@ -18,8 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ImageUpload from "@/components/common/image_upload";
-// Replace with your actual Loader/Spinner component
-const Spinner = () => <span className="animate-spin mr-2">◌</span>;
 
 import { decryptAuthData } from "@/lib/helper";
 import { getPresignedUploadUrl } from "../../../../http/apis/entertainment/muzeBox/muzeBoxEpisodeApi";
@@ -29,12 +27,12 @@ import { useMuzeBoxEpisodeCreateCommand } from "@/composable/Command/Entertainme
 import { useMuzeBoxEpisodeTextUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeTextUpdateCommand";
 import { useMuzeBoxEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeThumbnailCommand";
 import { useMuzeBoxEpisodeVideoUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeVideoUpdateCommand";
+import { Spinner } from "@/components/ui/spinner";
 
 type UploadedPart = {
   partNumber: number;
   etag: string;
 };
-
 
 function createFormSchema(mode: "add" | "edit") {
   const fileOrUrl =
@@ -57,15 +55,15 @@ type MuzeBoxValues = z.infer<ReturnType<typeof createFormSchema>>;
 interface MuzeBoxFormProps {
   mode: "add" | "edit";
   defaultValues?: Partial<MuzeBoxValues> & { id?: string | number };
-  titleId?: number,
-  titleName?: string
+  titleId?: number;
+  titleName?: string;
 }
 
 export default function MuzeBoxEpisodeForm({
   mode,
   defaultValues,
   titleId,
-  titleName
+  titleName,
 }: MuzeBoxFormProps) {
   const { id } = useParams();
   const formSchema = createFormSchema(mode);
@@ -75,6 +73,8 @@ export default function MuzeBoxEpisodeForm({
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       id: defaultValues?.id ? Number(defaultValues.id) : undefined,
       name: defaultValues?.name || "",
@@ -381,12 +381,17 @@ export default function MuzeBoxEpisodeForm({
               className="flex-1"
               type="button"
               variant="outline"
-              onClick={() => router.navigate(`/entertainment/muze-box/title/details/${titleId}`, {
-                state: {
-                    titleName,
-                    titleId
-                }
-              })}
+              onClick={() =>
+                router.navigate(
+                  `/entertainment/muze-box/title/details/${titleId}`,
+                  {
+                    state: {
+                      titleName,
+                      titleId,
+                    },
+                  },
+                )
+              }
             >
               Cancel
             </Button>
@@ -406,7 +411,7 @@ export default function MuzeBoxEpisodeForm({
                 isPending ||
                 isTextUpdating ||
                 isThumbnailUpdating ||
-                isVideoUpdating) && <Spinner />}
+                isVideoUpdating) && <Spinner className="mr-2 w-4 h-4" />}
               {mode === "add" ? "Add Episode" : "Save Changes"}
             </Button>
           </div>

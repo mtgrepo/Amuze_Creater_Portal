@@ -65,6 +65,8 @@ export default function StoryTellingTitleForm({
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -146,7 +148,10 @@ export default function StoryTellingTitleForm({
         if (values.horizontal_thumbnail) {
           try {
             const formData = new FormData();
-            formData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+            formData.append(
+              "horizontal_thumbnail",
+              values.horizontal_thumbnail,
+            );
 
             await updateThumbnailMutation({
               id: Number(defaultValues.id),
@@ -157,8 +162,7 @@ export default function StoryTellingTitleForm({
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
-              toast.success("Story updated successfully with thumbnails.");
-
+        toast.success("Story updated successfully with thumbnails.");
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -348,7 +352,9 @@ export default function StoryTellingTitleForm({
             >
               {(isStoryCreatePending ||
                 isStoryTitleUpdatePending ||
-                isThumbnailUpdatePending) && <Spinner />}
+                isThumbnailUpdatePending) && (
+                <Spinner className="mr-2 w-4 h-4" />
+              )}
               {mode === "add" ? "Add Title" : "Save Changes"}
             </Button>
           </div>

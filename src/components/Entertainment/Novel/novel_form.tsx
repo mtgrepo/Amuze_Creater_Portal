@@ -68,6 +68,8 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
 
   const form = useForm<NovelFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -414,7 +416,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               {(isNovelCreating ||
                 isUpdatingText ||
                 isUpdatingThumbnail ||
-                isUpdatingPdf) && <Spinner />}
+                isUpdatingPdf) && <Spinner className="mr-2 w-4 h-4" />}
               Submit
             </Button>
           </div>

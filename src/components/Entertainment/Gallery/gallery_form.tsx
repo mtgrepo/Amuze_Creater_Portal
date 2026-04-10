@@ -65,6 +65,8 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
   //  INITIALIZE FORM
   const form = useForm<GalleryFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -417,7 +419,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
               disabled={isPending || isUpdatingThumbnail || isUpdatingText}
             >
               {(isPending || isUpdatingThumbnail || isUpdatingText) && (
-                <Spinner />
+                <Spinner className="mr-2 w-4 h-4" />
               )}
               {mode === "add" ? "Add Gallery" : "Save Changes"}
             </Button>

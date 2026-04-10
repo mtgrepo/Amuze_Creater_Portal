@@ -65,6 +65,8 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -339,7 +341,9 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
             >
               {(isPending ||
                 isUpdateTextPending ||
-                isUpdateThumbnailPending) && <Spinner />}
+                isUpdateThumbnailPending) && (
+                <Spinner className="mr-2 w-4 h-4" />
+              )}
               Submit
             </Button>
           </div>

@@ -40,7 +40,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-// --- SCHEMA ---
+// schema
 function createEpisodeSchema(mode: "add" | "edit") {
   const fileSchema =
     mode === "add"
@@ -74,9 +74,11 @@ export default function ComicEpisodeForm({
 }: EpisodeFormProps) {
   const formSchema = createEpisodeSchema(mode);
 
-  // INITIALIZE FORM
+  // initialize form
   const form = useForm<EpisodeFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       title_id: comicTitleId,
@@ -87,18 +89,18 @@ export default function ComicEpisodeForm({
     },
   });
 
-  // API COMMANDS
+  // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
   const { episodeMutation: updateMutation, isPending: updatePending } = useComicEpisodeUpdateCommand();
   const { episodeThumbnailMutation, isPending: thumbnailPending } = useComicEpisodeThumbnailUpdateCommand();
   const { deleteImageMutation, isPending: deletePending } = useEpisodeDeleteCommand();
 
-  //  HELPERS
+  //  helpers
   const removeImage = async (index: number) => {
     const currentImages = form.getValues("images");
     const imageToRemove = currentImages[index];
 
-    // Check if it's an existing image object from the server
+    // Check image
     const isExistingOnServer = imageToRemove?.id && !(imageToRemove instanceof File);
 
     if (mode === "edit" && isExistingOnServer) {
@@ -118,7 +120,7 @@ export default function ComicEpisodeForm({
     form.setValue("images", updatedImages, { shouldValidate: true });
   };
 
-  // AUTH SYNC
+  // auth data
   useEffect(() => {
     try {
       const storedData = localStorage.getItem("creator");
@@ -132,7 +134,7 @@ export default function ComicEpisodeForm({
     }
   }, [form]);
 
-  //  ONSUBMIT
+  //  btn submit
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
       const formData = new FormData();
@@ -154,7 +156,7 @@ export default function ComicEpisodeForm({
         }
         await episodeMutation(formData);
       } else {
-        // Edit Mode Logic
+        // Edit 
         if (values.thumbnail instanceof File) {
           formData.append("thumbnail", values.thumbnail);
           await episodeThumbnailMutation({
@@ -391,7 +393,7 @@ export default function ComicEpisodeForm({
               className="flex-1 cursor-pointer"
               disabled={createPending || updatePending || thumbnailPending}
             >
-              {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2" />}
+              {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2 w-4 h-4" />}
               {mode === "add" ? "Publish Episode" : "Update Episode"}
             </Button>
           </div>

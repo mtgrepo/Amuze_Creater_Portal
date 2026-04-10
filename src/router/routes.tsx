@@ -355,7 +355,7 @@ const router = createBrowserRouter(
           element: <StoryTellingEpisodeCreate />,
           handle: {
             crumb: ({ location }: any) => [
-              { label: "StorytTelling", href: "/entertainment/storytelling" },
+              { label: "StoryTelling", href: "/entertainment/storytelling" },
               {
                 label: location?.state?.titleName,
                 href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
@@ -369,7 +369,7 @@ const router = createBrowserRouter(
           element: <StoryTellingEpisodeDetails />,
           handle: {
             crumb: ({ location }: any) => [
-              { label: "StorytTelling", href: "/entertainment/storytelling" },
+              { label: "StoryTelling", href: "/entertainment/storytelling" },
               {
                 label: location?.state?.titleName,
                 href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
@@ -386,7 +386,7 @@ const router = createBrowserRouter(
           element: <StoryTellingEpisodeUpdate />,
           handle: {
             crumb: ({ location }: any) => [
-              { label: "StorytTelling", href: "/entertainment/storytelling" },
+              { label: "StoryTelling", href: "/entertainment/storytelling" },
               {
                 label: location?.state?.titleName,
                 href: `/entertainment/storytelling/details/${location?.state?.titleId}`,

@@ -9,7 +9,7 @@ import React from "react";
 
 export default function StoryTellingLayout() {
     const [page, setPage] = React.useState(1);
-    const [pageSize, setPageSize] = React.useState(5);
+    const [pageSize, setPageSize] = React.useState(10);
     const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
     const creatorId = loginCreator?.creator?.id;
 

@@ -34,6 +34,7 @@ import UpdateMuzeBoxTitle from "@/features/Entertainment/MuzeBox/Title/muzeBox_t
 import MuzeBoxTitleDetails from "@/features/Entertainment/MuzeBox/Title/muzeBox_title_details";
 import  MuzeBoxEpisodeCreate from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_create";
 import MuzeBoxEditEpisodePage from "@/features/Entertainment/MuzeBox/Episode/muzeBox_episode_update";
+import MuzeBoxEpisodeDetails from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_details";
 
 const router = createBrowserRouter(
   [
@@ -309,6 +310,18 @@ const router = createBrowserRouter(
               { label: "MuzeBox", href: "/entertainment/muze-box" },
               { label: `${location?.state?.titleName}`, href: `/entertainment/muze-box/title/details/${location?.state?.titleId}` },
               { label: `Edit ${location?.state?.episode?.name}` },
+            ]
+          }
+        },
+        {
+          path: "/entertainment/muze-box/:titleId/episode/details/:id",
+          element: <MuzeBoxEpisodeDetails />,
+          handle: {
+            crumb: ({ location }: any) => [
+              { label: "Entertainment" },
+              { label: "MuzeBox", href: "/entertainment/muze-box" },
+              { label: `${location?.state?.titleName}`, href: `/entertainment/muze-box/title/details/${location?.state?.titleId}` },
+              { label: `${location?.state?.episode?.name}` },
             ]
           }
         },

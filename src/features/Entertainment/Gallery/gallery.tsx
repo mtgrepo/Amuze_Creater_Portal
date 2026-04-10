@@ -12,7 +12,7 @@ import { GalleryTitleComponent } from "@/components/Entertainment/Gallery/galler
 
 export default function GalleryMain() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(10);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);

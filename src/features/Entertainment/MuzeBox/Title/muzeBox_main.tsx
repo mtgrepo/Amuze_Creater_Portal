@@ -13,7 +13,7 @@ import { useDebounce } from "use-debounce";
 
 export default function MuzeBox() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(10);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FolderPlus, Image as ImageIcon, X, Plus } from "lucide-react";
+import { FolderPlus, Image as ImageIcon, X, Plus, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
 
 // schema
 function createEpisodeSchema(mode: "add" | "edit") {
@@ -88,6 +89,7 @@ export default function ComicEpisodeForm({
       created_by: "",
     },
   });
+  const [createDialog, setCreateDialog] = useState(false);
 
   // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
@@ -388,14 +390,59 @@ export default function ComicEpisodeForm({
             >
               Back to Series
             </Button>
-            <Button
+                        <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className="flex-1 cursor-pointer"
+
+                >
+                  {(createPending || updatePending || thumbnailPending) && (
+                    <Spinner className="mr-2 w-4 h-4" />
+                  )}
+                  {mode === "add" ? "Add Title" : "Save Changes"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={createPending || updatePending || thumbnailPending}
+                  >
+                    {createPending || updatePending || thumbnailPending ? (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    ) : null}
+                    Confirm & {mode === "add" ? "Publish Episode" : "Update Episode"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            {/* <Button
               type="submit"
               className="flex-1 cursor-pointer"
               disabled={createPending || updatePending || thumbnailPending}
             >
               {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2 w-4 h-4" />}
               {mode === "add" ? "Publish Episode" : "Update Episode"}
-            </Button>
+            </Button> */}
           </div>
         </form>
       </Form>

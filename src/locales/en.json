@@ -2,6 +2,10 @@
   "welcome": "Welcome",
   "settings": "Settings",
 
+  "all": "All",
+  "approved": "Approved",
+  "published": "Published",
+
   "thumbnail" : "Thumbnail",
   "title": "Title",
   "price": "Price",
@@ -12,5 +16,14 @@
   "file_upload": "File Upload",
   "preview": "Preview",
   "create_new_novel": "Create New Novel",
-  "edit_novel": "Edit Novel"
+  "edit_novel": "Edit Novel",
+  "add_new_novel": "Add New Novel",
+  "export_data": "Export Data",
+
+  "no": "No",
+  "name": "Name",
+  "views": "Views",
+  "likes": "Likes",
+  "rating": "Rating",
+  "date": "Date"
 }

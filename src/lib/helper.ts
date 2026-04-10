@@ -63,3 +63,12 @@ export function decryptAuthData(dataStr: string): AuthData | null {
     return null;
   }
 }
+
+export const toBurmeseNumber = (num: number | string): string => {
+  const burmeseDigits = ["၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"];
+  return num
+    .toString()
+    .split("")
+    .map((digit) => (/[0-9]/.test(digit) ? burmeseDigits[parseInt(digit)] : digit))
+    .join("");
+};

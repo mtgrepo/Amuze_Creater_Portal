@@ -10,6 +10,7 @@ import { Input } from "../../../components/ui/input";
 import { useNovelQuery } from "../../../composable/Query/Entertainment/Novel/useNovelQuery";
 import { NovelComponent } from "../../../components/Entertainment/Novel/novel_component";
 import { useDebounce } from "use-debounce";
+import { useTranslation } from "react-i18next";
 
 export default function Novel() {
   const [page, setPage] = React.useState(1);
@@ -77,6 +78,8 @@ export default function Novel() {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
@@ -94,7 +97,7 @@ export default function Novel() {
               onClick={() => router.navigate("/entertainment/novel/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Novel
+              {t("add_new_novel")}
             </Button>
             <Button
               variant="outline"
@@ -104,7 +107,7 @@ export default function Novel() {
               disabled={isLoadingExcel}
             >
               <FileUp className="h-4 w-4" />
-              Export Data
+             {t("export_data")}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -117,13 +120,13 @@ export default function Novel() {
             >
               <TabsList className="w-full grid grid-cols-3" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
-                  All
+                  {t("all")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
-                  Approved
+                  {t("approved")}
                 </TabsTrigger>
                 <TabsTrigger value="published" className="w-full text-center">
-                  Published
+                  {t("published")}
                 </TabsTrigger>
               </TabsList>
 

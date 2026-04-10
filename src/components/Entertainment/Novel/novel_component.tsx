@@ -16,10 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
+import NovelColumn from "./column";
 
 export type NovelProps = {
   data: NovelResponse[];
@@ -53,6 +53,8 @@ export function NovelComponent({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
+  const columns = NovelColumn();
   const table = useReactTable({
     data,
     columns,

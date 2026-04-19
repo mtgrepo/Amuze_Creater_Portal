@@ -1,36 +1,33 @@
-import CommentsSection from "@/components/common/comment_component";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
-import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
+import { useMuseumTitleDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumTitleDetailQuery";
 import router from "@/router/routes";
 import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
 import { useParams } from "react-router-dom"
 
-export default function StoryTellingTitleDetails () {
+export default function MuseumTitleDetails () {
     const {id} = useParams();
-    const {storyTellingTitleDetails : story, isTitleLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
-  const { commentsList } = useCommentQuery('story',Number(id));
+    const {titleDetails, isTitleLoading, error} = useMuseumTitleDetailsQuery(Number(id));
+
       if (isTitleLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading comic details...</p>
+        <p className="text-gray-400">Loading title details...</p>
       </div>
     );
   }
 
-  if (error || !story) {
+  if (error || !titleDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-500 mb-2">Oops!</h2>
           <p className="text-gray-400">
-            Failed to load storytelling details. Please refresh or try again.
+            Failed to load title details. Please refresh or try again.
           </p>
         </div>
       </div>
@@ -43,7 +40,7 @@ export default function StoryTellingTitleDetails () {
         <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center dark:opacity-30 opacity-50"
-            style={{ backgroundImage: `url(${story?.horizontal_thumbnail})` }}
+            style={{ backgroundImage:  "var(--card-foreground)"}}
           >
           </div>
           <div className="absolute inset-0 "></div>
@@ -51,34 +48,27 @@ export default function StoryTellingTitleDetails () {
           <div className="relative flex p-6 ">
             {/* Vertical Poster */}
             <img
-              src={story?.thumbnail}
-              alt={story?.name}
+              src={titleDetails?.thumbnail}
+              alt={titleDetails?.name}
               className="w-32 md:w-48 h-60 rounded-lg shadow-2xl border border-gray-700 object-cover"
             />
 
             <div className="ml-4 space-y-2">
               <h1 className="text-2xl md:text-4xl font-bold">
-                {story?.name}
+                {titleDetails?.name}
               </h1>
-
-              {/* Genre Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {story?.generes?.map((genre: any) => (
-                  <Badge key={genre?.id}>{genre.name}</Badge>
-                ))}
-              </div>
 
               {/* Stats Bar */}
                <div className="flex items-center gap-6 flex-wrap">
-                <Status icon={<Star size={16} />} value={story?.rating} color={"yellow"} label={"Rating"} />
-                <Status icon={<Eye size={16} />} value={story?.views} color={"gray"} label={"Views"} />
-                <Status icon={<ThumbsUp size={16} />} value={story?.likes} color={"blue"} label={"Likes"} />
+                <Status icon={<Star size={16} />} value={titleDetails?.ratings} color={"yellow"} label={"Rating"} />
+                <Status icon={<Eye size={16} />} value={titleDetails?.views} color={"gray"} label={"Views"} />
+                <Status icon={<ThumbsUp size={16} />} value={titleDetails?.likes} color={"blue"} label={"Likes"} />
               </div>
 
               <div className="flex gap-2">
                 <h3 className="text-sm">Description:</h3>
-                {story?.description ? (
-                    <LongText text={story?.description}/>
+                {titleDetails?.description ? (
+                    <LongText text={titleDetails?.description}/>
                 ): (
                     <p className="text-sm italic">"No description"</p>
                 )}
@@ -94,12 +84,7 @@ export default function StoryTellingTitleDetails () {
             <h2 className="text-2xl font-semibold">Episode Lists</h2>
             <Button
               onClick={() =>
-                router.navigate(`/entertainment/storytelling/${id}/episode/create`, {
-                  state: {
-                    titleName: story?.name,
-                    titleId: story?.id
-                  }
-                })
+                router.navigate(`/entertainment/storytelling/${id}/episode/create`)
               }
               className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors"
             >
@@ -108,8 +93,8 @@ export default function StoryTellingTitleDetails () {
           </div>
 
           <div className="space-y-3">
-            {story?.story_episodes && story?.story_episodes?.length > 0 ? (
-              story.story_episodes.map((ep: any, index: number) => (
+            {titleDetails?.museum_episodes && titleDetails?.museum_episodes?.length > 0 ? (
+             titleDetails.museum_episodes.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
                   className="flex items-center  border border-border p-3 rounded-xl  transition-colors"
@@ -126,9 +111,7 @@ export default function StoryTellingTitleDetails () {
                     <h4 className="font-medium">
                       {ep.name || `Episode ${index + 1}`}
                     </h4>
-                        <p className="text-xs text-gray-500">
-                        {new Date(story.created_at!).toLocaleDateString()}
-                        </p>
+    
                   </div>    
                   <div className="flex items-center gap-4 px-4">
                     <span className="text-yellow-500 text-sm">
@@ -151,7 +134,7 @@ export default function StoryTellingTitleDetails () {
                       )}
                     </div>
                     <button className="text-gray-500 hover:text-white">
-                      <EpisodeActions episode={ep} titleId={story?.id} titleName={story?.name}/>
+                      <EpisodeActions episode={ep} titleId={titleDetails?.id} />
                     </button>
                   </div>
                 </div>
@@ -159,14 +142,13 @@ export default function StoryTellingTitleDetails () {
             ) : (
               <div className="text-center py-20 border-2 border-dashed border-gray-800 rounded-xl">
                 <p className="text-gray-500 italic">
-                  No episodes available for "{story?.name}" yet.
+                  No episodes available for "{titleDetails?.name}" yet.
                 </p>
               </div>
             )}
           </div>
         </div>
       </div>
-      <CommentsSection category="story" commentsList={commentsList}/>
         </div>
     )
 }

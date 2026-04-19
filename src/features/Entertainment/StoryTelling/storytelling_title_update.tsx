@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 
 export default function EditStoryTellingTitlePage() {
     const {id} = useParams();
-    const {storyTellingTitleDetails, isTitleLoading: isLoading} = useStoryTellingTitleDetailsQuery(Number(id));
+    const {storyTellingTitleDetails, isTitleLoading} = useStoryTellingTitleDetailsQuery(Number(id));
     const title = storyTellingTitleDetails;
-      if (isLoading && !title) return <p>Loading...</p>;
+      if (isTitleLoading && !title) return <p>Loading...</p>;
 
     return(
         <div className="p-6">

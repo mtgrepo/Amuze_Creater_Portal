@@ -1,6 +1,6 @@
 import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleDetailsQuery";
 import { decryptAuthData } from "@/lib/helper";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DollarSign,
   Star,
@@ -11,7 +11,6 @@ import {
   CircleCheckBig,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +19,7 @@ import CommentsSection from "@/components/common/comment_component";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const authData = localStorage.getItem("creator");
   const loginCreator = authData ? decryptAuthData(authData) : null;
@@ -124,7 +124,7 @@ export default function ComicsTitleDetails() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => router.navigate(`/entertainment/comics/episode/create/${id}`, {
+              onClick={() => navigate(`/entertainment/comics/episode/create/${id}`, {
                 state: {
                   titleName: comic?.name
                 }

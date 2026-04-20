@@ -1,10 +1,11 @@
 import { createMuzeBoxEpisode } from "@/http/apis/entertainment/muzeBox/muzeBoxEpisodeApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useMuzeBoxEpisodeCreateCommand = () => {
     const qc = useQueryClient();
+    const navigate = useNavigate();
 
     const episodeCreateMutation = useMutation({
         mutationKey: ['createMuzeBoxEpisode'],
@@ -16,7 +17,7 @@ export const useMuzeBoxEpisodeCreateCommand = () => {
             qc.invalidateQueries({ queryKey: ['muzeBoxList'] });
             qc.invalidateQueries({ queryKey: ['muzeBoxTitleDetails'] });
             toast.success("MuzeBox episode create successfully");
-            router.navigate(-1);
+            navigate(-1);
         }
     })
 

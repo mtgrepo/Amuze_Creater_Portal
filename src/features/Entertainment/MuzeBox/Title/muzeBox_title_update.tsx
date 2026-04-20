@@ -10,19 +10,26 @@ export default function UpdateMuzeBoxTitle() {
     // Merge state and API data, prioritizing API data once it arrives
     const muzeBox = titleDetails || state;
 
-    if (isLoading && !muzeBox) return <p>Loading...</p>;
+    if (isLoading && !muzeBox) {
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <p>Loading muzeBox data...</p>
+            </div>
+        );
+    };
+
     return (
         <div className="p-6">
             <MuzeBoxForm
                 mode="edit"
                 defaultValues={{
                     id: id,
-                    name: muzeBox?.name,
-                    description: muzeBox?.description,
-                    genres: muzeBox?.genres?.map((g: any) => g.id.toString()) || [],
-                    age_rating: muzeBox?.age_rating,
-                    thumbnail: muzeBox?.thumbnail,
-                    horizontal_thumbnail: muzeBox?.horizontal_thumbnail,
+                    name: muzeBox.name,
+                    description: muzeBox.description,
+                    genres: muzeBox.genres?.map((g: any) => g.id.toString()) || [],
+                    age_rating: muzeBox.age_rating,
+                    thumbnail: muzeBox.thumbnail,
+                    horizontal_thumbnail: muzeBox.horizontal_thumbnail,
                 }}
             />
         </div>

@@ -1,11 +1,11 @@
 import { createGallery } from "@/http/apis/entertainment/gallery/galleryApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useGalleryCreateCommand = () => {
   const qc = useQueryClient();
-
+  const navigate = useNavigate();
   const createGalleryMutation = useMutation({
     mutationKey: ["createGallery"],
     mutationFn: async (data: FormData) => {
@@ -15,7 +15,7 @@ export const useGalleryCreateCommand = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["galleryList"] });
       toast.success("Gallery created successfully");
-      router.navigate("/entertainment/gallery");
+      navigate("/entertainment/gallery");
     },
   });
   return {

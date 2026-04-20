@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DollarSign,
   Star,
@@ -9,7 +9,6 @@ import {
   CircleCheckBig,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import router from "@/router/routes";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import { Badge } from "@/components/ui/badge";
 import { useMuzeBoxTitleDetailsQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxDetailsQuery";
@@ -19,6 +18,8 @@ import EpisodeActions from "@/components/Entertainment/MuzeBox/Episode/muzeBox_e
 
 export default function MuzeBoxTitleDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const { commentsList, isLoading: isCommentsLoading } = useCommentQuery(
     "muze-box",
     Number(id),
@@ -134,7 +135,7 @@ export default function MuzeBoxTitleDetails() {
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
               onClick={() =>
-                router.navigate(
+                navigate(
                   `/entertainment/muze-box/episode/create/${id}`,
                   {
                     state: {

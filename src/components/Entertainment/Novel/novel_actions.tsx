@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
+import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
 
 export default function NovelActions(novel: NovelResponse) {
   const navigate = useNavigate();

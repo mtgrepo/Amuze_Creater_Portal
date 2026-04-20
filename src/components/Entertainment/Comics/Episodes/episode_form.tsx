@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,11 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 import ImageUpload from "@/components/common/image_upload";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 
-// Hooks
 import { useComicsEpisodeCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeCreateCommand";
 import { useComicEpisodeUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeUpdateCommand";
 import { useComicEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useEpisodeThumbnailUpdateCommand";
@@ -41,6 +39,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
 // schema
 function createEpisodeSchema(mode: "add" | "edit") {
@@ -74,6 +74,11 @@ export default function ComicEpisodeForm({
   defaultValues,
   onSuccess,
 }: EpisodeFormProps) {
+    const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+    const resetToken = useRef(defaultValues?.id);
+  
   const formSchema = createEpisodeSchema(mode);
 
   // initialize form
@@ -87,11 +92,28 @@ export default function ComicEpisodeForm({
       price: defaultValues?.price ?? 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       images: defaultValues?.images || [],
-      created_by: "",
+      created_by: creatorId,
     },
   });
-  const [createDialog, setCreateDialog] = useState(false);
 
+    useEffect(() => {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      form.reset({
+        ...defaultValues,
+        created_by: creatorId, 
+      });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
+    }
+  }, [defaultValues, mode, creatorId]);
+
+  const [createDialog, setCreateDialog] = useState(false);
+  const navigate = useNavigate();
   // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
   const { episodeMutation: updateMutation, isPending: updatePending } = useComicEpisodeUpdateCommand();
@@ -123,19 +145,26 @@ export default function ComicEpisodeForm({
     form.setValue("images", updatedImages, { shouldValidate: true });
   };
 
-  // auth data
+const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Auth sync error:", error);
-    }
-  }, [form]);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   //  btn submit
   const onSubmit = async (values: EpisodeFormValues) => {
@@ -390,7 +419,7 @@ export default function ComicEpisodeForm({
               type="button"
               variant="outline"
               className="flex-1 cursor-pointer"
-              onClick={() => router.navigate(-1)}
+              onClick={() => navigate(-1)}
               disabled={createPending || updatePending || thumbnailPending}
             >
               Back to Series
@@ -449,6 +478,7 @@ export default function ComicEpisodeForm({
             </AlertDialog>
 
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

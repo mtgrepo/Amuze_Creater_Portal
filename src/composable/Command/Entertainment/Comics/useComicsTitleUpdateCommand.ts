@@ -1,5 +1,4 @@
 import { updateTitle, type TitleProps } from "@/http/apis/entertainment/comics/comicsTitleApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner";
 
@@ -14,7 +13,7 @@ export const useComicsTitleUpdateCommand = () => {
         },
         onSuccess: () => {
             qc.invalidateQueries({queryKey: ['comicsTitleList']});
-            router.navigate('/entertainment/comics');
+            // navigate('/entertainment/comics');
             toast.success(`Updated title successfully`);
         }
     })

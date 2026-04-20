@@ -2,15 +2,41 @@
   "welcome": "ကြိုဆိုပါသည်",
   "settings": "ဆက်တင်များ",
 
+  "all": "အားလုံး",
+  "approved": "အတည်ပြုပြီး",
+  "published": "ထုတ်ဝေပြီး",
+
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
   "price": "စျေးနှုန်း",
   "description": "အကြောင်းအရာ",
   "genres": "အမျိုးအစား",
-  "age_rating": "အသက်ကန့်သက်ချက်",
+  "age_rating": "အသက်",
   "horizontal_thumbnail": "ဓာတ်ပုံ (အလျားလိုက်)",
   "file_upload": "ဖိုင်",
   "preview": "စာမျက်နှာ",
   "create_new_novel": "ဝတ္ထုအသစ်ထည့်ရန်",
-  "edit_novel": "ဝတ္ထုအချက်အလက်ပြင်ဆင်ရန်"
+  "edit_novel": "ဝတ္ထုအချက်အလက်ပြင်ဆင်ရန်",
+  "export_data": "အချက်အလက်ထုတ်ရန်",
+  "category": "အမျိုးအစား",
+  "buyer": "ဝယ်ယူသူ",
+  "product_details": "ထုတ်ကုန်",
+  "income": "ဝင်ငွေ",
+
+  "no": "စဉ်",
+  "name": "နာမည်",
+  "views": "ကြည့်ရှုနှုန်း",
+  "likes": "လိုက်ခ်",
+  "rating": "အဆင့်သက်မှတ်ချက်",
+  "date": "ရက်စွဲ",
+
+  "income_summary": "ဝင်ငွေအနှစ်ချုပ်",
+  "total_income": "စုစုပေါင်းဝင်ငွေ",
+  "yearly_income": "နှစ်စဉ်ဝင်ငွေ",
+  "monthly_income": "လစဉ်ဝင်ငွေ",
+  "daily_income": "နေ့စဉ်ဝင်ငွေ",
+
+    "date_range": "ရက်စွဲ",
+  "start_date": "စရက်",
+  "end_date": "ဆုံးရက်"
 }

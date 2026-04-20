@@ -10,6 +10,7 @@ import type { ReportFilters } from '../../types/response/report/authorReportResp
 import { AuthorReportComponent } from '../../components/Report/Author/author_report_component';
 import ReportCard from '../../components/common/report_card';
 import { Wallet } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function AuthorReport() {
     const [filters, setFilters] = useState<ReportFilters>({
@@ -17,6 +18,8 @@ export default function AuthorReport() {
         startDate: "", 
         endDate: ""    
     });
+
+    const { t } = useTranslation();
 
     const loginUser = decryptAuthData(localStorage.getItem("creator")!);
     const authorId = loginUser?.creator?.id;
@@ -108,29 +111,29 @@ export default function AuthorReport() {
             <div className="border border-dashed rounded-xl p-6 bg-card/50 hover:border-primary/50 transition-colors duration-300">
                 <div className='flex flex-row gap-3 items-center mb-3'>
                     <Wallet className='items-center text-primary ' />
-                    <h1 className="font-bold text-lg text-foreground tracking-wider">Income Summary</h1>
+                    <h1 className="font-bold text-lg text-foreground tracking-wider">{t('income_summary')}</h1>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <ReportCard
-                        title="Total Income"
+                        title={t('total_income')}
                         value={stats.totalIncome.toLocaleString()}
                         accent=""
                         sub='Lifetime/ Filtered'
                     />
                     <ReportCard
-                        title="Yearly Income"
+                        title={t('yearly_income')}
                         value={stats.yearlyIncome.toLocaleString()}
                         sub={currentYear}
                         accent=""
                     />
                     <ReportCard
-                        title="Monthly Income"
+                        title={t('monthly_income')}
                         value={stats.monthlyIncome.toLocaleString()}
                         sub={currentMonth + ", " + currentYear}
                         accent=""
                     />
                     <ReportCard
-                        title="Daily Income"
+                        title={t('daily_income')}
                         value={stats.dailyIncome.toLocaleString()}
                         sub={currentDay}
                         accent=""

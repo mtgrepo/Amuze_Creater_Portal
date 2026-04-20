@@ -38,7 +38,6 @@ export const useLoginCommand = () => {
       }
     },
     onError: (error: any) => {
-      // Handle actual network or server errors
       toast.error(error?.response?.data?.message || "Something went wrong");
     }
   });

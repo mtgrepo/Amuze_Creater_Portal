@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { NovelUpdateInput } from "../../../../types/input/novel/novelUpdateInput";
 import { updateNovelText } from "../../../../http/apis/entertainment/novel/novelApi";
 import { toast } from "sonner";
-import router from "../../../../router/routes";
 
 export const useNovelUpdateTextCommand = () => {
     const qc = useQueryClient();
@@ -16,7 +15,7 @@ export const useNovelUpdateTextCommand = () => {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["novels"] });
             toast.success("Novel updated successfully");
-            router.navigate("/entertainment/novel");
+            // navigate("/entertainment/novel");
         },
     })
     return {

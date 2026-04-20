@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 
 export default function MuseumDetails() {
   const { id } = useParams();
-  const { museumDetail, isDetailPending } = useMuseumDetailQuery(Number(id));
+  const { museumDetail } = useMuseumDetailQuery(Number(id));
 
   return (
     <div className="min-h-screen">

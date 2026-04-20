@@ -39,7 +39,6 @@ export function GradeComponent({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // console.log("data in table", data)
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
@@ -51,7 +50,6 @@ export function GradeComponent({
   const table = useReactTable({
     data,
     columns,
-    manualPagination: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -60,6 +58,7 @@ export function GradeComponent({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
@@ -135,32 +134,7 @@ React.useEffect(() => {
           </TableBody>
         </Table>
       </div>
-
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {total} total row(s)
-        </div>
-        {total > 0 && (
-          <div className="flex items-center gap-3">
-            <PageSizeComponent
-              pageSize={limit}
-              totalRows={total}
-              onChange={(size) =>
-                onPaginationChange(1, size === "all" ? total : size)
-              }
-            />
-            <Paginator
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={(pageNumber) =>
-                onPaginationChange(pageNumber, limit)
-              }
-              showPreviousNext
-            />
-          </div>
-        )}
-      </div> */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between py-4">
           <div className="text-muted-foreground flex-1 text-sm">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.

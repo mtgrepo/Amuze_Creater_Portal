@@ -28,7 +28,7 @@ export default function GradeColumn() {
         },
         {
             accessorKey: "name",
-            header: t('name'),
+            header: t('title'),
             cell: ({ row }) => {
                 const name = row.getValue("name") as string;
 

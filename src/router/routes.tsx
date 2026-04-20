@@ -37,6 +37,12 @@ import MuzeBoxEditEpisodePage from "@/features/Entertainment/MuzeBox/Episode/muz
 import MuzeBoxEpisodeDetails from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_details";
 import ProfileDetails from "@/features/Auth/profile_details";
 import Grades from "../features/Entertainment/Education/Grades/grades";
+import GradesCreate from "../features/Entertainment/Education/Grades/grades_create";
+import GradeUpdate from "../features/Entertainment/Education/Grades/grades_update";
+import GradeDetails from "../features/Entertainment/Education/Grades/grade_details";
+import CourseCreate from "../features/Entertainment/Education/Course/course_create";
+import CourseDetails from "../features/Entertainment/Education/Course/course_details";
+import CourseUpdate from "../features/Entertainment/Education/Course/course_update";
 
 const router = createBrowserRouter(
   [
@@ -332,6 +338,89 @@ const router = createBrowserRouter(
           path: "/entertainment/education",
           element: <Grades />,
           handle: { crumb: ["Entertainment", "Education", "Grades"] },
+        },
+        {
+          path: "/entertainment/education/grades/create",
+          element: <GradesCreate />,
+          handle: {
+            crumb: [
+              { label: "Entertainment" },
+              { label: "Education", href: "/entertainment/education" },
+              { label: "Grades", href: "/entertainment/education/grades" },
+              { label: "Create" },
+            ],
+          }
+        },
+        {
+          path: "/entertainment/education/grades/edit/:id",
+          element: <GradeUpdate />,
+          handle: {
+            crumb: ({location} : any) => {
+              return [
+                { label: "Entertainment" },
+                { label: "Education", href: "/entertainment/education" },
+                { label: location?.state?.grade, href: "/entertainment/education" },
+                { label: `Edit` },
+              ]
+            },
+          }
+        },
+        {
+          path: "/entertainment/education/grades/details/:id",
+          element: <GradeDetails />,
+          handle: {
+            crumb : ({location} : any) => {
+              return [
+                { label: "Entertainment" },
+                { label: "Education", href: "/entertainment/education" },
+                { label: location?.state?.grade},
+              ]
+            }
+          }
+        },
+        {
+          path: "/entertainment/education/courses/create/:id",
+          element: <CourseCreate />,
+          handle: {
+            crumb : ({location} : any) => {
+              return [
+                { label: "Entertainment" },
+                { label: "Education", href: "/entertainment/education" },
+                { label: location?.state?.titleName, href: `/entertainment/education/grades/details/${location?.state?.titleId}` },
+                { label: "Course" },
+              ]
+            }
+          }
+        },
+        {
+          path: "/entertainment/education/:titleId/courses/details/:id",
+          element: <CourseDetails />,
+          handle: {
+            crumb: ({location} : any) => {
+              const titleName = location?.state?.titleName
+              return [
+                { label: "Entertainment" },
+                { label: "Education", href: "/entertainment/education" },
+                { label: titleName, href: `/entertainment/education/grades/details/${location?.state?.titleId}` },
+                { label: location?.state?.course?.name},
+              ]
+            }
+          }
+        },
+        {
+          path: "/entertainment/education/:titleId/course/edit/:id",
+          element: <CourseUpdate />,
+          handle: {
+            crumb: ({location} : any) => {
+              const titleName = location?.state?.titleName
+              return [
+                { label: "Entertainment" },
+                { label: "Education", href: "/entertainment/education" },
+                { label: titleName, href: `/entertainment/education/grades/details/${location?.state?.titleId}` },
+                { label: `Edit ${location?.state?.course?.name}`},
+              ]
+            }
+          }
         },
         // story telling
         {

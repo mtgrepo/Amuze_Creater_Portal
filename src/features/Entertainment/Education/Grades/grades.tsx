@@ -1,21 +1,21 @@
 import * as React from "react";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, FileUp } from "lucide-react";
-import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
+import { CirclePlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../../../components/ui/input";
 import { useGradesQuery } from "../../../../composable/Query/Entertainment/Education/Grades/useGradesQuery";
 import { GradeComponent } from "../../../../components/Entertainment/Education/Grades/grade_component";
+import { decryptAuthData } from "../../../../lib/helper";
 
 export default function Grades() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  const creatorId = loginCreator?.creator?.id;
+  const creatorId = loginCreator?.creator?.id!;
+
 
     const queryParams = React.useMemo(() => {
       switch (tab) {
@@ -30,33 +30,10 @@ export default function Grades() {
 
 
 const { gradeList: apiData, isLoading} = useGradesQuery({
-  authorId: creatorId!,
-  ...queryParams,
+  approve_status: queryParams?.approve_status!,
+  authorId: creatorId
 })
 
-
-  const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
-    useComicsTitleExportCommand();
-
-  const handleExcelExport = async () => {
-    try {
-      const blob = await exportExcel();
-
-      if (!blob) return;
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "comics_titles.xlsx";
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Export failed", error);
-    }
-  };
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -75,20 +52,10 @@ const { gradeList: apiData, isLoading} = useGradesQuery({
             <Button
               size={"sm"}
               className="cursor-pointer"
-              onClick={() => navigate("/entertainment/novel/create")}
+              onClick={() => navigate("/entertainment/education/grades/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              {t("create_new_novel")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="cursor-pointer"
-              onClick={handleExcelExport}
-              disabled={isLoadingExcel}
-            >
-              <FileUp className="h-4 w-4" />
-             {t("export_data")}
+              {t("create_new_grade")}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -99,7 +66,7 @@ const { gradeList: apiData, isLoading} = useGradesQuery({
               }
               className="w-full my-5"
             >
-              <TabsList className="w-full grid grid-cols-3" variant={"line"}>
+              <TabsList className="w-full grid grid-cols-2" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
                   {t("all")}
                 </TabsTrigger>
@@ -110,11 +77,10 @@ const { gradeList: apiData, isLoading} = useGradesQuery({
 
               <TabsContent value="all"></TabsContent>
               <TabsContent value="approved" />
-              <TabsContent value="published" />
             </Tabs>
 
             <GradeComponent
-              data={apiData?.novels ?? []}
+              data={apiData ?? []}
               isFetching={isLoading}
               search={search}
               onSearchChange={setSearch}

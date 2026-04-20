@@ -17,22 +17,21 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { GradesResponse } from "../../../../types/response/entertainment/education/gradeResponse";
 
-export default function GradeActions(title: GradesResponse) {
+export default function GradeActions(grade: GradesResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/comics/details/${title.id}`, {
+    navigate(`/entertainment/education/grades/details/${grade.id}`, {
       state: {
-        titleName: title?.name
+        grade: grade?.name
       }
     });
   };
 
   const handleEditTitle = () => {
-    navigate(`/entertainment/comics/edit/${title.id}`, {
+    navigate(`/entertainment/education/grades/edit/${grade.id}`, {
       state: {
-        titleName: title?.name,
-        title
+        grade: grade?.name
       }
     });
   };

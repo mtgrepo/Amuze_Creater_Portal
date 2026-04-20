@@ -7,6 +7,7 @@ import {
   Loader2,
   XCircle,
   CircleCheckBig,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
@@ -52,7 +53,10 @@ export default function MuzeBoxTitleDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <Button variant="outline" onClick={() => navigate(-1)} className="cursor-pointer">
+          <ArrowLeft size={18} />
+        </Button>
         {/*  HEADER / BANNER AREA  */}
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
           {/* Background Image Layer */}

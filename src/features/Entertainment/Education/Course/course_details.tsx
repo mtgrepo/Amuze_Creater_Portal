@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
@@ -14,12 +14,14 @@ import { useCourseDetailsQuery } from "../../../../composable/Query/Entertainmen
 
 export default function CourseDetails() {
   const { id } = useParams();
+  const navigate = useNavigate(); 
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
 
   const { courseDetails, isLoading: isCourseDetailsLoading} = useCourseDetailsQuery(Number(id))
 
   const { commentsList, isLoading} = useCommentQuery('novel',Number(id))
+  const pdfUrl = courseDetails?.file;
 
   if (isCourseDetailsLoading || isLoading) {
     return (
@@ -38,11 +40,13 @@ export default function CourseDetails() {
     );
   }
 
-  const pdfUrl = courseDetails?.file;
 
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} />
+        </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div

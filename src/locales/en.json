@@ -5,6 +5,7 @@
   "all": "All",
   "approved": "Approved",
   "published": "Published",
+  "publish_status": "Publish Status",
 
   "thumbnail" : "Thumbnail",
   "title": "Title",
@@ -40,5 +41,12 @@
 
   "date_range": "Date Range",
   "start_date": "Start Date",
-  "end_date": "End Date"
+  "end_date": "End Date",
+
+  "add_new": "Add New",
+  "edit": "Edit",
+  "delete": "Delete",
+  "create": "Create",
+  "update": "Update",
+  "cancel": "Cancel"
 }

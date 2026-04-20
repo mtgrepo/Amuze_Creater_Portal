@@ -5,7 +5,6 @@ import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
 import Novel from "@/features/Entertainment/Novel/novel";
-import MainCategory from "@/features/Genre/MainCategory/main_category";
 import Comics from "@/features/Entertainment/Comics/comics";
 import TitleCreate from "@/features/Entertainment/Comics/comics_title_create";
 import EditTitlePage from "@/features/Entertainment/Comics/comics_title_update";
@@ -581,12 +580,6 @@ const router = createBrowserRouter(
               { label: "Details" },
             ],
           },
-        },
-        // Genres
-        {
-          path: "/features/main-category",
-          element: <MainCategory />,
-          handle: { crumb: ["Genres", "Main Category"] },
         },
         //Auth
         {

@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useNovelDetailsQuery } from "../../../composable/Query/Entertainment/Novel/useNovelDetailsQuery";
@@ -17,11 +17,16 @@ export default function NovelDetails() {
   const { id } = useParams();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
-  const { novelDetails, isNovelDetailsLoading } = useNovelDetailsQuery(
-    Number(id),
-  );
-  const { commentsList, isLoading} = useCommentQuery('novel',Number(id))
-  if (isNovelDetailsLoading || isLoading) {
+  const { novelDetails, isNovelDetailsLoading } = useNovelDetailsQuery(Number(id));
+
+  const { commentsList, isLoading } = useCommentQuery('novel', Number(id))
+
+
+
+  const pdfUrl = novelDetails?.file_path || novelDetails?.files_path?.[0]?.url;
+  const navigate = useNavigate();
+    
+  if ((isNovelDetailsLoading && !novelDetails) || (isLoading && !commentsList))  {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -38,11 +43,13 @@ export default function NovelDetails() {
     );
   }
 
-  const pdfUrl = novelDetails?.file_path || novelDetails?.files_path?.[0]?.url;
-
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* BACK BUTTON */}
+          <Button variant="outline" onClick={() => navigate(-1)} className="cursor-pointer">
+            <ArrowLeft size={18} />
+          </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div
@@ -182,7 +189,7 @@ export default function NovelDetails() {
         </div>
 
         <div className="bg-card rounded-3xl border border-border p-4 shadow-sm">
-          <CommentsSection commentsList={commentsList} category="novel"/>
+          <CommentsSection commentsList={commentsList} category="novel" />
         </div>
       </div>
     </div>

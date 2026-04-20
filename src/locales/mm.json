@@ -5,6 +5,7 @@
   "all": "အားလုံး",
   "approved": "အတည်ပြုပြီး",
   "published": "ထုတ်ဝေပြီး",
+  "publish_status": "ထုတ်ဝေမှု", 
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
@@ -36,7 +37,14 @@
   "monthly_income": "လစဉ်ဝင်ငွေ",
   "daily_income": "နေ့စဉ်ဝင်ငွေ",
 
-    "date_range": "ရက်စွဲ",
+  "date_range": "ရက်စွဲ",
   "start_date": "စရက်",
-  "end_date": "ဆုံးရက်"
+  "end_date": "ဆုံးရက်",
+
+  "add_new": "အသစ်ထည့်ရန်",
+  "edit": "အချက်အလက်ပြင်ဆင်ရန်",
+  "delete": "ဖျက်ရန်",
+  "create": "ပြုလုပ်ရန်",
+  "update": "ပြင်ဆင်ရန်",
+  "cancel": "ပြန်ထွက်ရန်"
 }

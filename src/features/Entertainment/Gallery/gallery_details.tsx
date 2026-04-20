@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Users,
   Banknote,
@@ -8,15 +8,17 @@ import {
   Loader2,
   TrendingUp,
   ImageIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useGalleryDetailsQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryDetailsQuery";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
+import { Button } from "../../../components/ui/button";
 
 export default function GalleryDetails() {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const { galleryDetails, isLoading } = useGalleryDetailsQuery(Number(id));
 
   const { commentsList, isLoading: isCommentsLoading } = useCommentQuery(
@@ -44,6 +46,10 @@ export default function GalleryDetails() {
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* BACK BUTTON */}
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} />
+        </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-100 dark:bg-zinc-900 shadow-xl">
           {/* Background Blur Effect */}
@@ -122,46 +128,7 @@ export default function GalleryDetails() {
           </p>
         </div>
 
-        {/* --- MEDIA ASSETS SECTION (Preview & Display) --- */}
-        <div className="pt-4 bg-card p-8 rounded-3xl shadow-sm">
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-            <ImageIcon className="text-primary" />
-            Marketing & Display Assets
-          </h3>
-          <div className="grid grid-cols-1  gap-6">
-            {/* Preview File */}
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">
-                Preview Thumbnail
-              </p>
-              <div className="aspect-video rounded-2xl w-full overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
-                {galleryDetails.preview_file ? (
-                  <img
-                    src={galleryDetails.preview_file}
-                    className="w-full h-full object-cover"
-                    alt="Preview"
-                  />
-                ) : (
-                  <span className="text-muted-foreground">
-                    No preview file uploaded
-                  </span>
-                )}
-              </div>
-            </div>
 
-            {/* Display File */}
-            {/* <div className="space-y-3">
-              <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">Banner / Display Asset</p>
-              <div className="aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
-                {galleryDetails.display_file ? (
-                  <img src={galleryDetails.display_file} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Display" />
-                ) : (
-                  <span className="text-muted-foreground">No display file uploaded</span>
-                )}
-              </div>
-            </div> */}
-          </div>
-        </div>
 
         {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,6 +174,35 @@ export default function GalleryDetails() {
           </div>
         </div>
 
+                {/* --- MEDIA ASSETS SECTION (Preview & Display) --- */}
+        <div className="pt-4 bg-card p-8 rounded-3xl shadow-sm">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <ImageIcon className="text-primary" />
+            Marketing & Display Assets
+          </h3>
+          <div className="grid grid-cols-1  gap-6">
+            {/* Preview File */}
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-muted-foreground uppercase ml-2">
+                Preview Thumbnail
+              </p>
+              <div className="aspect-video rounded-2xl w-full overflow-hidden border-2 border-dashed border-border bg-muted flex items-center justify-center group relative">
+                {galleryDetails.preview_file ? (
+                  <img
+                    src={galleryDetails.preview_file}
+                    className="w-full h-full object-cover"
+                    alt="Preview"
+                  />
+                ) : (
+                  <span className="text-muted-foreground">
+                    No preview file uploaded
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* COMMENTS SECTION */}
         <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
           <div className="mb-6">
@@ -217,7 +213,7 @@ export default function GalleryDetails() {
               See what others are saying about this novel.
             </p>
           </div>
-          <CommentsSection commentsList={commentsList} category="gallery"/>
+          <CommentsSection commentsList={commentsList} category="gallery" />
         </div>
       </div>
     </div>

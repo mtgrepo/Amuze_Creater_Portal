@@ -42,6 +42,7 @@ import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
 import { useBlocker, useNavigate } from "react-router-dom";
 import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import { useTranslation } from "react-i18next";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -77,7 +78,7 @@ export default function ComicTitleForm({
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id || "";
   const resetToken = useRef(defaultValues?.id);
-  
+
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(2);
   const [createDialog, setCreateDialog] = useState(false);
@@ -89,14 +90,14 @@ export default function ComicTitleForm({
     mode: "onBlur",
     reValidateMode: "onChange",
     values: mode === "edit" ? {
-    name: defaultValues?.name || "",
-    description: defaultValues?.description || "",
-    genres: defaultValues?.genres || [],
-    price: defaultValues?.price || 0,
-    thumbnail: defaultValues?.thumbnail || undefined,
-    horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-    created_by: creatorId,
-  } : undefined,
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      genres: defaultValues?.genres || [],
+      price: defaultValues?.price || 0,
+      thumbnail: defaultValues?.thumbnail || undefined,
+      horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+      created_by: creatorId,
+    } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -108,22 +109,24 @@ export default function ComicTitleForm({
     },
   });
 
-useEffect(() => {
-  if (
-    mode === "edit" &&
-    defaultValues &&
-    defaultValues.id !== resetToken.current
-  ) {
-    form.reset({
-      ...defaultValues,
-      created_by: creatorId,
-    });
+  useEffect(() => {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      form.reset({
+        ...defaultValues,
+        created_by: creatorId,
+      });
 
-    resetToken.current = defaultValues.id;
-  } else if (mode === "add") {
-    form.setValue("created_by", creatorId);
-  }
-}, [defaultValues, mode, creatorId]);
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
+    }
+  }, [defaultValues, mode, creatorId]);
+
+  const { t } = useTranslation();
 
   const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 
@@ -148,6 +151,7 @@ useEffect(() => {
 
   const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
   const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
+  
   const onSubmit = async (values: TitleFormValues) => {
     try {
       if (mode === "add") {
@@ -218,7 +222,7 @@ useEffect(() => {
           {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Series" : "Edit Series Details"}
+              {mode === "add" ? "Create New Series" : "Edit Series" }
             </h2>
             <p className="text-muted-foreground text-sm">
               Fill in the information for your comic title.
@@ -409,7 +413,7 @@ useEffect(() => {
                 navigate("/entertainment/comics");
               }}
             >
-              Cancel & Reset
+              {t("cancel")}
             </Button>
             <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
               <Button
@@ -428,7 +432,7 @@ useEffect(() => {
                 {(isPending || isThumbnailPending || isUpdatePending) && (
                   <Spinner className="mr-2 w-4 h-4" />
                 )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? t("create") : t("update")}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -458,15 +462,15 @@ useEffect(() => {
                     {isPending || isThumbnailPending || isUpdatePending ? (
                       <Spinner className="mr-2 w-4 h-4" />
                     ) : null}
-                    Confirm & {mode === "add" ? "Create" : "Save"}
+                    Confirm & {mode === "add" ? t("create") : t("update")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
 
           </div>
-            <NavigateConfirmDialog blocker={blocker} />
-          
+          <NavigateConfirmDialog blocker={blocker} />
+
         </form>
       </Form>
     </div>

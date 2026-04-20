@@ -17,9 +17,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ComicsTitleResponse } from "@/types/response/entertainment/comics/comicsTitleResponse";
-import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
+import Comicscolumn from "./column";
 
 export type ComicsTitleProps = {
   data: ComicsTitleResponse[];
@@ -53,6 +53,9 @@ export function ComicsTitleComponents({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
+  const columns = Comicscolumn();
+
   const table = useReactTable({
     data,
     columns,

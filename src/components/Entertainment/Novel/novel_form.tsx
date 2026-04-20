@@ -473,7 +473,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               variant="outline"
               onClick={() => navigate("/entertainment/novel")}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -495,7 +495,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                   isUpdatingText ||
                   isUpdatingThumbnail ||
                   isUpdatingPdf) && <Spinner className="mr-2 w-4 h-4" />}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? t("create") : t("update") }
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -535,7 +535,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
                       isUpdatingText ||
                       isUpdatingThumbnail ||
                       isUpdatingPdf) && <Spinner className="mr-2 w-4 h-4" />}
-                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                    Confirm & {mode === "add" ? t("create") : t("update") }
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

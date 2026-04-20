@@ -20,7 +20,7 @@ export default function GradeDetails() {
     Number(id),
   );
 
-  console.log("grade details", gradeDetails)
+  // console.log("grade details", gradeDetails)
 
   if (isLoading) {
     return (
@@ -44,6 +44,9 @@ const grade = gradeDetails?.grade;
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} />
+        </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div

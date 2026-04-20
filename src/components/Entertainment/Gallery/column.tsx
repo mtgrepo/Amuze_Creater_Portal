@@ -18,15 +18,6 @@ const columns: ColumnDef<GalleryResponse>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "thumbnail",
-  //   id: "thumbnail",
-  //   header: "Thumbnail",
-  //   cell: ({ row }) => {
-  //     const thumbnail = row.getValue("thumbnail") as string;
-  //     return <img src={thumbnail} alt="" className="w-20 h-12" />;
-  //   },
-  // },
 
   {
     accessorKey: "name",
@@ -47,7 +38,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
     cell: ({ row }) => {
       const name = row.getValue("description") as string;
 
-      return (
+      return ( 
         <div className="max-w-87.5 wrap-break-word whitespace-normal">
           {name}
         </div>

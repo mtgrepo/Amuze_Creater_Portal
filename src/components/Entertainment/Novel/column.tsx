@@ -163,7 +163,7 @@ export default function NovelColumn() {
         },
         {
             accessorKey: "is_published",
-            header: "Published",
+            header: t('publish_status'),
             cell: ({ row }) => {
                 const published = row.getValue("is_published") as boolean;
 

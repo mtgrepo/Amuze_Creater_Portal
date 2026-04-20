@@ -16,7 +16,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { formatDistanceToNowStrict, differenceInMinutes } from "date-fns";
+import { differenceInMinutes } from "date-fns";
 
 interface CommentSectionProps {
   type: string; 

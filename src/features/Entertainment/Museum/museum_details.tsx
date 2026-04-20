@@ -13,6 +13,10 @@ export default function MuseumDetails() {
   const { id } = useParams();
   const { museumDetail, isDetailPending } = useMuseumDetailQuery(Number(id));
 
+  if(isDetailPending){
+    <div>loading...</div>
+  }
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">

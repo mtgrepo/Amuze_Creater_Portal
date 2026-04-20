@@ -1,18 +1,28 @@
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import { Status } from "@/components/common/status";
-import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
+import EpisodeActions from "@/components/Entertainment/Museum/Episodes/episode_actions";
 import { Button } from "@/components/ui/button";
 import { useMuseumTitleDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumTitleDetailQuery";
 import router from "@/router/routes";
-import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
-import { useParams } from "react-router-dom"
+import { format } from "date-fns";
+import {
+  CircleCheckBig,
+  Eye,
+  Loader2,
+  Star,
+  ThumbsUp,
+  XCircle,
+} from "lucide-react";
+import { useParams } from "react-router-dom";
 
-export default function MuseumTitleDetails () {
-    const {id} = useParams();
-    const {titleDetails, isTitleLoading, error} = useMuseumTitleDetailsQuery(Number(id));
+export default function MuseumTitleDetails() {
+  const { museumId, titleId } = useParams();
+  const { titleDetails, isTitleLoading, error } = useMuseumTitleDetailsQuery(
+    Number(titleId),
+  );
 
-      if (isTitleLoading) {
+  if (isTitleLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
@@ -33,20 +43,16 @@ export default function MuseumTitleDetails () {
       </div>
     );
   }
-    return(
-        <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto space-y-6">
-        {/* Banner / Header Area */}
+  return (
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center dark:opacity-30 opacity-50"
-            style={{ backgroundImage:  "var(--card-foreground)"}}
-          >
-          </div>
+            style={{ backgroundImage: "var(--card-foreground)" }}
+          ></div>
           <div className="absolute inset-0 "></div>
-          {/* Content Overlay */}
           <div className="relative flex p-6 ">
-            {/* Vertical Poster */}
             <img
               src={titleDetails?.thumbnail}
               alt={titleDetails?.name}
@@ -59,21 +65,35 @@ export default function MuseumTitleDetails () {
               </h1>
 
               {/* Stats Bar */}
-               <div className="flex items-center gap-6 flex-wrap">
-                <Status icon={<Star size={16} />} value={titleDetails?.ratings} color={"yellow"} label={"Rating"} />
-                <Status icon={<Eye size={16} />} value={titleDetails?.views} color={"gray"} label={"Views"} />
-                <Status icon={<ThumbsUp size={16} />} value={titleDetails?.likes} color={"blue"} label={"Likes"} />
+              <div className="flex items-center gap-6 flex-wrap">
+                <Status
+                  icon={<Star size={16} />}
+                  value={titleDetails?.ratings}
+                  color={"yellow"}
+                  label={"Rating"}
+                />
+                <Status
+                  icon={<Eye size={16} />}
+                  value={titleDetails?.views}
+                  color={"gray"}
+                  label={"Views"}
+                />
+                <Status
+                  icon={<ThumbsUp size={16} />}
+                  value={titleDetails?.likes}
+                  color={"blue"}
+                  label={"Likes"}
+                />
               </div>
 
               <div className="flex gap-2">
                 <h3 className="text-sm">Description:</h3>
                 {titleDetails?.description ? (
-                    <LongText text={titleDetails?.description}/>
-                ): (
-                    <p className="text-sm italic">"No description"</p>
+                  <LongText text={titleDetails?.description} />
+                ) : (
+                  <p className="text-sm italic">"No description"</p>
                 )}
               </div>
-
             </div>
           </div>
         </div>
@@ -84,7 +104,9 @@ export default function MuseumTitleDetails () {
             <h2 className="text-2xl font-semibold">Episode Lists</h2>
             <Button
               onClick={() =>
-                router.navigate(`/entertainment/storytelling/${id}/episode/create`)
+                router.navigate(
+                  `/entertainment/museum/${museumId}/title/${titleId}/episode/create`,
+                )
               }
               className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors"
             >
@@ -93,8 +115,9 @@ export default function MuseumTitleDetails () {
           </div>
 
           <div className="space-y-3">
-            {titleDetails?.museum_episodes && titleDetails?.museum_episodes?.length > 0 ? (
-             titleDetails.museum_episodes.map((ep: any, index: number) => (
+            {titleDetails?.museum_episodes &&
+            titleDetails?.museum_episodes?.length > 0 ? (
+              titleDetails.museum_episodes.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
                   className="flex items-center  border border-border p-3 rounded-xl  transition-colors"
@@ -111,30 +134,50 @@ export default function MuseumTitleDetails () {
                     <h4 className="font-medium">
                       {ep.name || `Episode ${index + 1}`}
                     </h4>
-    
-                  </div>    
+                    <p className="text-xs text-gray-500">
+                      {format(new Date(ep.created_at), "yyyy-MM-dd")}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-gray-500 text-sm">
+                    <Eye size={16} className="opacity-70" />
+                    <span className="font-medium">{ep.views}</span>
+                  </div>
                   <div className="flex items-center gap-4 px-4">
-                    <span className="text-yellow-500 text-sm">
-                      🪙 {ep?.price}
-                    </span>
-                   
-                    <div className="text-green-500 text-xl">
-                      {ep?.approve_status === 0 ? (
-                        <IconWithTooltip
-                          tooltip="Unapproved"
-                          icon={<XCircle className="w-4 h-4 text-red-500" />}
-                        />
-                      ) : (
-                        <IconWithTooltip
-                          tooltip="Approved"
-                          icon={
+                    <div className="text-xl">
+                      {(() => {
+                        let tooltip = "";
+                        let icon = null;
+
+                        const approved = ep?.approve_status;
+                        const published = ep?.is_publish;
+
+                        if (approved === 1 && published) {
+                          tooltip = "Approved & Published";
+                          icon = (
                             <CircleCheckBig className="w-4 h-4 text-green-500" />
-                          }
-                        />
-                      )}
+                          );
+                        } else if (approved === 1 && !published) {
+                          tooltip = "Approved but Not Published";
+                          icon = (
+                            <CircleCheckBig className="w-4 h-4 text-yellow-500" />
+                          );
+                        } else if (approved === 0) {
+                          tooltip = "Not Approved";
+                          icon = <XCircle className="w-4 h-4 text-red-500" />;
+                        }
+
+                        return (
+                          <IconWithTooltip tooltip={tooltip} icon={icon} />
+                        );
+                      })()}
                     </div>
                     <button className="text-gray-500 hover:text-white">
-                      <EpisodeActions episode={ep} titleId={titleDetails?.id} />
+                      <EpisodeActions
+                        episode={ep}
+                        museumId={titleDetails.museum_id}
+                        titleId={titleDetails.id}
+                      />
                     </button>
                   </div>
                 </div>
@@ -149,6 +192,6 @@ export default function MuseumTitleDetails () {
           </div>
         </div>
       </div>
-        </div>
-    )
+    </div>
+  );
 }

@@ -19,7 +19,7 @@ export default function StoryTellingTitleDetails () {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading comic details...</p>
+        <p className="text-gray-400">Loading storytelling details...</p>
       </div>
     );
   }

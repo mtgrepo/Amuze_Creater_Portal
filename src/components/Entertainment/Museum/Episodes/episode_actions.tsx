@@ -11,35 +11,47 @@ import {
 import { ClipboardPenLine, Info, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import type { MuseumTitleDetailResponse } from "@/types/response/entertainment/museum/museumTitleDetailResponse";
+import type { MuseumEpisode } from "@/types/response/entertainment/museum/museumEpisodeResponse";
 
-interface TitleActionsProps {
-  title: MuseumTitleDetailResponse,
-  museumId: number,
+interface ActionsProps {
+  episode: MuseumEpisode;
+  museumId: number;
+  titleId: number;
 }
 
-export default function TitleActions({ title, museumId }: TitleActionsProps) {
+export default function EpisodeActions({
+  episode,
+  museumId,
+  titleId,
+}: ActionsProps) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/entertainment/museum/${museumId}/title/edit/${title?.id}`, {
-      state: { 
-       title,
-       museumId 
+    navigate(
+      `/entertainment/museum/${museumId}/title/${titleId}/episode/edit/${episode.id}`,
+      {
+        state: {
+          episode,
+          museumId,
+          titleId,
+        },
       },
-    });
+    );
   };
 
-  const handleViewDetails = () => {
-        navigate(`/entertainment/museum/${museumId}/title/details/${title?.id}`, {
+    const handleViewDetails = () => {
+        navigate(`/entertainment/museum/${museumId}/title/${titleId}/episode/details/${episode.id}`, {
       state: { 
-        title,
-        museumId 
+        episode,
+        museumId,
+        titleId
       },
     });
   }
 
+
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -51,14 +63,17 @@ export default function TitleActions({ title, museumId }: TitleActionsProps) {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onSelect={handleViewDetails}>
+        <DropdownMenuItem onSelect={handleEdit}>
+          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
+        </DropdownMenuItem>
+
+            <DropdownMenuItem onSelect={handleViewDetails}>
           <Info className="mr-2 h-4 w-4" /> View Details
         </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={handleEdit}>
-          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit Title
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    </>
   );
 }

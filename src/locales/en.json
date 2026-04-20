@@ -1,0 +1,44 @@
+{
+  "welcome": "Welcome",
+  "settings": "Settings",
+
+  "all": "All",
+  "approved": "Approved",
+  "published": "Published",
+
+  "thumbnail" : "Thumbnail",
+  "title": "Title",
+  "price": "Price",
+  "description": "Description",
+  "genres": "Genres",
+  "age_rating": "Age Rating",
+  "horizontal_thumbnail": "Horizontal Thumbnail",
+  "file_upload": "File Upload",
+  "preview": "Preview",
+  "create_new_novel": "Create New Novel",
+  "edit_novel": "Edit Novel",
+  "add_new_novel": "Add New Novel",
+  "export_data": "Export Data",
+  "category": "Category",
+  "buyer": "Buyer",
+  "product_details": "Product Details",
+  "income": "Income",
+
+
+  "no": "No",
+  "name": "Name",
+  "views": "Views",
+  "likes": "Likes",
+  "rating": "Rating",
+  "date": "Date",
+
+  "income_summary": "Income Summary",
+  "total_income": "Total Income",
+  "yearly_income": "Yearly Income",
+  "monthly_income": "Monthly Income",
+  "daily_income": "Daily Income",
+
+  "date_range": "Date Range",
+  "start_date": "Start Date",
+  "end_date": "End Date"
+}

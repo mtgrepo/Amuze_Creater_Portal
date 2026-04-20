@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,11 +32,14 @@ import ImageUpload from "@/components/common/image_upload";
 
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
-import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxCreateCommand";
+import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
-import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateTextCommand";
-import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/useMuzeBoxUpdateThumbnailCommand";
+import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateTextCommand";
+import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
+import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -60,18 +72,34 @@ interface MuzeBoxFormProps {
 }
 
 export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+
+  const resetToken = useRef(defaultValues?.id);
+
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
+  const [confirmDialog, setConfirmDialog] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    values: mode === "edit" ? {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      genres: defaultValues?.genres || [],
+      age_rating: defaultValues?.age_rating || 0,
+      thumbnail: defaultValues?.thumbnail || undefined,
+      horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+    } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       genres: defaultValues?.genres || [],
-      //   price: defaultValues?.price || 0,
       age_rating: defaultValues?.age_rating || 0,
-      //   preview: defaultValues?.preview || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
 
@@ -80,46 +108,48 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      console.log("enter edit mode")
       form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        // price: defaultValues.price ?? 0,
-        age_rating: defaultValues.age_rating ?? 0,
-        genres: defaultValues.genres || [],
-        // preview: defaultValues.preview ?? 0,
-        thumbnail: defaultValues.thumbnail,
-        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
+  }, [defaultValues, mode, creatorId]);
+ 
+  
+    const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+  
+    const blocker = useBlocker(
+      ({ currentLocation, nextLocation }) =>
+        isDirty &&
+        !isSubmitting && // Don't block while mutation is running
+        !isSubmitSuccessful && // Don't block if we just finished successfully
+        currentLocation.pathname !== nextLocation.pathname,
+    );
+  
+    useEffect(() => {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        if (isDirty) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
 
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [form]);
-
-  //   const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
-  //   const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
-  //   const { updateThumbnailMutation, isUpdatingThumbnail } =
-  //     useNovelUpdateThumbnailCommand();
-  //   const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
 
   const { muzeBoxCreateMutation, isPending } = useMuzeBoxCreateCommand();
-  const { muzeBoxTextUpdateMutation, isUpdateTextPending } =
-    useMuzeBoxUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdateThumbnailPending } =
-    useMuzeBoxUpdateThumbnailCommand();
+  const { muzeBoxTextUpdateMutation, isUpdateTextPending } = useMuzeBoxUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdateThumbnailPending } = useMuzeBoxUpdateThumbnailCommand();
 
   const onSubmit = async (values: MuzeBoxValues) => {
     try {
@@ -169,7 +199,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), // Convert strings back to numbers
+          genres: values.genres.map(Number),
           //   price: values.price,
         };
         await muzeBoxTextUpdateMutation({
@@ -189,7 +219,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
           {/* HEADER */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New Novel" : "Edit Novel"}
+              {mode === "add" ? "Create New MuzeBox" : "Edit MuzeBox"}
             </h2>
           </div>
 
@@ -201,7 +231,9 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
@@ -223,8 +255,13 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <Input {...field} />
+                      <FormLabel>
+                        <RequiredLabel label="Title" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter title..." />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -235,12 +272,17 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   name="age_rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Age Rating</FormLabel>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
+                      <FormLabel>
+                        <RequiredLabel label="Age Rating" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -252,8 +294,13 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea {...field} />
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Enter description..." />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -274,7 +321,9 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
 
                   return (
                     <FormItem>
-                      <FormLabel>Genres</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 border p-4 rounded-lg">
                         {genresList?.map((g: any) => {
                           const selected = field.value.includes(
@@ -306,13 +355,16 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 name="horizontal_thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Horizontal Thumbnail</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Horizontal Thumbnail" />
+                    </FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
                         onChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -325,24 +377,67 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => router.navigate("/entertainment/novel")}
+              onClick={() => navigate("/entertainment/muze-box")}
             >
               Cancel
             </Button>
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
 
-            <Button
-              type="submit"
-              className="w-full flex-1 cursor-pointer"
-              disabled={
-                isPending || isUpdateTextPending || isUpdateThumbnailPending
-              }
-            >
-              {(isPending ||
-                isUpdateTextPending ||
-                isUpdateThumbnailPending) && <Spinner />}
-              Submit
-            </Button>
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isPending || isUpdateTextPending || isUpdateThumbnailPending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader className="text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isPending || isUpdateTextPending || isUpdateThumbnailPending}
+                  >
+                    {(isPending ||
+                      isUpdateTextPending ||
+                      isUpdateThumbnailPending) && (
+                        <Spinner className="mr-2 w-4 h-4" />
+                      )}
+                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

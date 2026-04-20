@@ -4,20 +4,22 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../components/ui/input";
 import { useNovelQuery } from "../../../composable/Query/Entertainment/Novel/useNovelQuery";
 import { NovelComponent } from "../../../components/Entertainment/Novel/novel_component";
+import { useDebounce } from "use-debounce";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Novel() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(10);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
+  const [debouncedSearch] = useDebounce(search, 700);
 
     const queryParams = React.useMemo(() => {
       switch (tab) {
@@ -48,14 +50,6 @@ export default function Novel() {
     setPage(1);
   }, [debouncedSearch, tab]);
 
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(handler);
-  }, [search]);
-
   const handlePaginationChange = (newPage: number, newLimit: number) => {
     setPage(newPage);
     setLimit(newLimit);
@@ -84,6 +78,9 @@ export default function Novel() {
     }
   };
 
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
@@ -98,10 +95,10 @@ export default function Novel() {
             <Button
               size={"sm"}
               className="cursor-pointer"
-              onClick={() => router.navigate("/entertainment/novel/create")}
+              onClick={() => navigate("/entertainment/novel/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Novel
+              {t("create_new_novel")}
             </Button>
             <Button
               variant="outline"
@@ -111,7 +108,7 @@ export default function Novel() {
               disabled={isLoadingExcel}
             >
               <FileUp className="h-4 w-4" />
-              Export Data
+             {t("export_data")}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -124,13 +121,13 @@ export default function Novel() {
             >
               <TabsList className="w-full grid grid-cols-3" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
-                  All
+                  {t("all")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
-                  Approved
+                  {t("approved")}
                 </TabsTrigger>
                 <TabsTrigger value="published" className="w-full text-center">
-                  Published
+                  {t("published")}
                 </TabsTrigger>
               </TabsList>
 

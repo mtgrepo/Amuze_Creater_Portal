@@ -4,20 +4,23 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../../components/ui/input";
 import { useMuzeBoxQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxQuery";
 import { MuzeBoxComponents } from "@/components/Entertainment/MuzeBox/Title/muzeBox_component";
+import { useDebounce } from "use-debounce";
+import { useNavigate } from "react-router-dom";
 
 export default function MuzeBox() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(10);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
-  const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
+  const navigate = useNavigate();
+ 
+  const [text, setText] = React.useState("");
+  const [debounceText] = useDebounce(text, 700);
 
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -35,32 +38,16 @@ export default function MuzeBox() {
     setPage(1);
   }, [tab]);
 
-  //   const { novelData: apiData, totalPages, total, isLoading } = useNovelQuery({
-  //     authorId: creatorId!,
-  //     page,
-  //     pageSize: limit,
-  //     name: debouncedSearch,
-  //     ...queryParams,
-  //   })
-
   const { muzeBoxList: apiData, isLoading } = useMuzeBoxQuery({
     authorId: creatorId!,
     page,
     pageSize: limit,
-    name: debouncedSearch,
+    name: debounceText,
     ...queryParams,
   });
   React.useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, tab]);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(handler);
-  }, [search]);
+  }, [debounceText, tab]);
 
   const handlePaginationChange = (newPage: number, newLimit: number) => {
     setPage(newPage);
@@ -96,15 +83,15 @@ export default function MuzeBox() {
           <div className="flex flex-row justify-end gap-3">
             <Input
               placeholder="Filter name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
               className="max-w-sm"
             />
             <Button
               size={"sm"}
               className="cursor-pointer"
               onClick={() =>
-                router.navigate("/entertainment/muze-Box/title/create")
+                navigate("/entertainment/muze-Box/title/create")
               }
             >
               <CirclePlus className="w-4 h-4" />
@@ -154,8 +141,8 @@ export default function MuzeBox() {
               limit={limit}
               onPaginationChange={handlePaginationChange}
               isFetching={isLoading}
-              search={search}
-              onSearchChange={setSearch}
+              search={text}
+              onSearchChange={setText}
             />
           </div>
         </div>

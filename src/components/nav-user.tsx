@@ -26,6 +26,7 @@ import {
 import { useDispatch } from "react-redux";
 import { logoutAction } from "../redux/auth/authSlice";
 import { toast } from "sonner";
+import router from "@/router/routes";
 
 export function NavUser({
   creator
@@ -96,7 +97,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.navigate('/account/user-details')}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>

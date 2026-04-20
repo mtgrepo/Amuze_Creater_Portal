@@ -6,19 +6,20 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../components/ui/input";
+import { useDebounce } from "use-debounce";
+import { useNavigate } from "react-router-dom";
 
 export default function Comics() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(10);
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
-
+  const [debounceSearch] = useDebounce(search, 700);
+  const navigate = useNavigate();
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -45,7 +46,7 @@ export default function Comics() {
   } = useComicsTitleQuery(creatorId!, {
     page,
     pageSize: limit,
-    name: debouncedSearch,
+    name: debounceSearch,
     ...queryParams,
   });
 
@@ -55,15 +56,7 @@ export default function Comics() {
   };
   React.useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(handler);
-  }, [search]);
+  }, [debounceSearch]);
 
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();
@@ -102,7 +95,7 @@ export default function Comics() {
             <Button
               size={"sm"}
               className="cursor-pointer"
-              onClick={() => router.navigate("/entertainment/comics/title")}
+              onClick={() => navigate("/entertainment/comics/title")}
             >
               <CirclePlus className="w-4 h-4" />
               Add New Title

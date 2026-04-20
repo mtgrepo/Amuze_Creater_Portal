@@ -1,10 +1,11 @@
 import { createMuzeBox } from "@/http/apis/entertainment/muzeBox/muzeBoxApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useMuzeBoxCreateCommand = () => {
     const qc = useQueryClient();
+    const navigate = useNavigate();
 
     const muzeBoxCreateMutation = useMutation({
         mutationKey: ['createMuzeBox'],
@@ -14,7 +15,7 @@ export const useMuzeBoxCreateCommand = () => {
         },
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["muzeBoxList"] });
-            router.navigate('/entertainment/muze-box');
+            navigate('/entertainment/muze-box');
             toast.success("MuzeBox created successfully");
         }
     })

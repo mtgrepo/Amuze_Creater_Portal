@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +28,20 @@ import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
 import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
 import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
-import router from "@/router/routes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -60,12 +73,30 @@ export default function ComicTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+  const resetToken = useRef(defaultValues?.id);
+  
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(2);
+  const [createDialog, setCreateDialog] = useState(false);
+  const navigate = useNavigate();
   const { titleMutation, isPending } = useComicsTitleCreateCommand();
-  // 2. INITIALIZE FORM
+
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    values: mode === "edit" ? {
+    name: defaultValues?.name || "",
+    description: defaultValues?.description || "",
+    genres: defaultValues?.genres || [],
+    price: defaultValues?.price || 0,
+    thumbnail: defaultValues?.thumbnail || undefined,
+    horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+    created_by: creatorId,
+  } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -73,38 +104,47 @@ export default function ComicTitleForm({
       price: defaultValues?.price || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
-  // Inside ComicTitleForm...
-  useEffect(() => {
-    if (defaultValues) {
-      form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
-        genres: defaultValues.genres || [],
 
-        thumbnail: defaultValues.thumbnail,
-        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"),
-      });
-    }
-  }, [defaultValues, form]);
+useEffect(() => {
+  if (
+    mode === "edit" &&
+    defaultValues &&
+    defaultValues.id !== resetToken.current
+  ) {
+    form.reset({
+      ...defaultValues,
+      created_by: creatorId,
+    });
+
+    resetToken.current = defaultValues.id;
+  } else if (mode === "add") {
+    form.setValue("created_by", creatorId);
+  }
+}, [defaultValues, mode, creatorId]);
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, [form]);
-
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
   const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
@@ -123,14 +163,16 @@ export default function ComicTitleForm({
           }
         });
         await titleMutation(formData);
+        form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
 
         const isThumbnailUpdated =
           values.thumbnail instanceof File ||
           values.horizontal_thumbnail instanceof File;
-        
-          const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
+
+        const type =
+          values.thumbnail instanceof File ? "vertical" : "horizontal";
 
         if (isThumbnailUpdated) {
           const thumbData = new FormData();
@@ -138,22 +180,31 @@ export default function ComicTitleForm({
             thumbData.append("thumbnail", values.thumbnail);
           }
           if (values.horizontal_thumbnail instanceof File) {
-            thumbData.append("horizontal_thumbnail", values.horizontal_thumbnail);
+            thumbData.append(
+              "horizontal_thumbnail",
+              values.horizontal_thumbnail,
+            );
           }
 
-          await updateThumbnailMutation({ id: Number(defaultValues?.id), type: type, data: thumbData });
+          await updateThumbnailMutation({
+            id: Number(defaultValues?.id),
+            type: type,
+            data: thumbData,
+          });
         }
 
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), // Convert strings back to numbers
+          genres: values.genres.map(Number),
           price: values.price,
         };
 
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
+        navigate('/entertainment/comics');
+        form.reset(values);
       }
-      
+
       if (onSuccess) onSuccess();
     } catch (err: any) {
       toast.error(err.message);
@@ -183,7 +234,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label="Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -207,7 +258,9 @@ export default function ComicTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comics Title</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Comics Title" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. The Beginning After The End"
@@ -224,7 +277,9 @@ export default function ComicTitleForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price (Coins/Currency)</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coins/MMK)" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -245,7 +300,9 @@ export default function ComicTitleForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -274,7 +331,9 @@ export default function ComicTitleForm({
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
+                      <FormLabel className="text-base">
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -285,11 +344,10 @@ export default function ComicTitleForm({
                               <Badge
                                 key={g.id}
                                 variant={isSelected ? "default" : "outline"}
-                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${
-                                  isSelected
-                                    ? "scale-105 shadow-md"
-                                    : "hover:bg-muted"
-                                }`}
+                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${isSelected
+                                  ? "scale-105 shadow-md"
+                                  : "hover:bg-muted"
+                                  }`}
                                 onClick={() => toggleGenre(g.id.toString())}
                               >
                                 {g.name}
@@ -321,7 +379,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Banner / Horizontal Thumbnail (16:9 recommended)
+                      <RequiredLabel label="Horizontal Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">
@@ -339,6 +397,7 @@ export default function ComicTitleForm({
             </div>
           </div>
 
+
           {/* FORM ACTIONS */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
             <Button
@@ -347,16 +406,67 @@ export default function ComicTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                router.navigate("/entertainment/comics");
+                navigate("/entertainment/comics");
               }}
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 cursor-pointer" disabled={isPending || isThumbnailPending || isUpdatePending}>
-              {(isPending || isThumbnailPending || isUpdatePending) && <Spinner />}
-              {mode === "add" ? "Add Title" : "Save Changes"}
-            </Button>
+            <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setCreateDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isPending || isThumbnailPending || isUpdatePending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isPending || isThumbnailPending || isUpdatePending}
+                  >
+                    {isPending || isThumbnailPending || isUpdatePending ? (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    ) : null}
+                    Confirm & {mode === "add" ? "Create" : "Save"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
+            <NavigateConfirmDialog blocker={blocker} />
+          
         </form>
       </Form>
     </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FolderPlus, Image as ImageIcon, X, Plus } from "lucide-react";
+import { FolderPlus, Image as ImageIcon, X, Plus, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,11 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 import ImageUpload from "@/components/common/image_upload";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 
-// Hooks
 import { useComicsEpisodeCreateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeCreateCommand";
 import { useComicEpisodeUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsEpisodeUpdateCommand";
 import { useComicEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useEpisodeThumbnailUpdateCommand";
@@ -39,8 +37,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../../common/confirm_card";
+import RequiredLabel from "../../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
-// --- SCHEMA ---
+// schema
 function createEpisodeSchema(mode: "add" | "edit") {
   const fileSchema =
     mode === "add"
@@ -72,33 +74,58 @@ export default function ComicEpisodeForm({
   defaultValues,
   onSuccess,
 }: EpisodeFormProps) {
+    const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+    const resetToken = useRef(defaultValues?.id);
+  
   const formSchema = createEpisodeSchema(mode);
 
-  // INITIALIZE FORM
+  // initialize form
   const form = useForm<EpisodeFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       title_id: comicTitleId,
       price: defaultValues?.price ?? 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       images: defaultValues?.images || [],
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
-  // API COMMANDS
+    useEffect(() => {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      form.reset({
+        ...defaultValues,
+        created_by: creatorId, 
+      });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
+    }
+  }, [defaultValues, mode, creatorId]);
+
+  const [createDialog, setCreateDialog] = useState(false);
+  const navigate = useNavigate();
+  // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
   const { episodeMutation: updateMutation, isPending: updatePending } = useComicEpisodeUpdateCommand();
   const { episodeThumbnailMutation, isPending: thumbnailPending } = useComicEpisodeThumbnailUpdateCommand();
   const { deleteImageMutation, isPending: deletePending } = useEpisodeDeleteCommand();
 
-  //  HELPERS
+  //  helpers
   const removeImage = async (index: number) => {
     const currentImages = form.getValues("images");
     const imageToRemove = currentImages[index];
 
-    // Check if it's an existing image object from the server
+    // Check image
     const isExistingOnServer = imageToRemove?.id && !(imageToRemove instanceof File);
 
     if (mode === "edit" && isExistingOnServer) {
@@ -118,21 +145,28 @@ export default function ComicEpisodeForm({
     form.setValue("images", updatedImages, { shouldValidate: true });
   };
 
-  // AUTH SYNC
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth sync error:", error);
-    }
-  }, [form]);
+const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 
-  //  ONSUBMIT
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  //  btn submit
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
       const formData = new FormData();
@@ -154,7 +188,7 @@ export default function ComicEpisodeForm({
         }
         await episodeMutation(formData);
       } else {
-        // Edit Mode Logic
+        // Edit 
         if (values.thumbnail instanceof File) {
           formData.append("thumbnail", values.thumbnail);
           await episodeThumbnailMutation({
@@ -204,7 +238,7 @@ export default function ComicEpisodeForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center text-center">
                   <FormLabel className="text-sm uppercase font-bold tracking-widest text-muted-foreground mb-4">
-                    Episode Cover
+                   <RequiredLabel label="Episode Cover"/>
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -226,7 +260,7 @@ export default function ComicEpisodeForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Episode Name</FormLabel>
+                  <FormLabel className="font-bold "><RequiredLabel label="Episode Name"/></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g. Chapter 05: The Storm"
@@ -243,7 +277,9 @@ export default function ComicEpisodeForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Price (Coins)</FormLabel>
+                  <FormLabel className="font-bold ">
+                    <RequiredLabel label="Price (Coins)"/>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -263,7 +299,9 @@ export default function ComicEpisodeForm({
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2 ">
                 <ImageIcon size={20} className="text-primary" />
-                <h3 className="text-lg font-bold">Comic Pages</h3>
+                <h3 className="text-lg font-bold">
+                  <RequiredLabel label="Comic Pages" />
+                </h3>
                 <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-bold border border-primary/20">
                   {form.watch("images")?.length || 0} Pages
                 </span>
@@ -381,20 +419,66 @@ export default function ComicEpisodeForm({
               type="button"
               variant="outline"
               className="flex-1 cursor-pointer"
-              onClick={() => router.navigate(-1)}
+              onClick={() => navigate(-1)}
               disabled={createPending || updatePending || thumbnailPending}
             >
               Back to Series
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 cursor-pointer"
-              disabled={createPending || updatePending || thumbnailPending}
-            >
-              {(createPending || updatePending || thumbnailPending) && <Spinner className="mr-2" />}
-              {mode === "add" ? "Publish Episode" : "Update Episode"}
-            </Button>
+            <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
+              <Button
+                type="button"
+                className="flex-1 cursor-pointer"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setCreateDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(createPending || updatePending || thumbnailPending) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Title" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={createPending || updatePending || thumbnailPending}
+                  >
+                    {createPending || updatePending || thumbnailPending ? (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    ) : null}
+                    Confirm & {mode === "add" ? "Publish Episode" : "Update Episode"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

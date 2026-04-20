@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,29 +25,23 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { useGalleryCreateCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryCreateCommand";
 import { useGalleryUpdateTextCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateTextCommand";
 import { useGalleryUpdateThumbnailCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateThumbnailCommand";
-
-// function createFormSchema(mode: "add" | "edit") {
-//   const imageSchema =
-//     mode === "add"
-//       ? z.custom<File>((val) => val instanceof File, "Image is required")
-//       : z.union([z.instanceof(File), z.string()]).optional();
-
-//   return z.object({
-//     name: z.string().min(1, "Name is required."),
-//     description: z.string().min(1, "Description is required"),
-//     price: z.number().min(0, "Price must be 0 or greater"),
-//     generes: z.array(z.string()).min(1, "Select at least one genre"),
-//     thumbnail: imageSchema,
-//     actual_file: imageSchema,
-//     created_by: z.union([z.string(), z.number()]).optional(),
-//   });
-// }
-
-// ONLY showing changed parts clearly — rest is SAME as your code
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import ConfirmCard from "../../common/confirm_card";
+import RequiredLabel from "../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "../../common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -78,12 +72,34 @@ interface GalleryFormProps {
 }
 
 export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
+
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+
+  const resetToken = useRef(defaultValues?.id);
+
   const formSchema = createFormSchema(mode);
+  const [confirmDialog, setConfirmDialog] = useState(false);
+  const navigate = useNavigate();
   const { genresList } = useGenresQuery(6);
   const { createGalleryMutation, isPending } = useGalleryCreateCommand();
   //  INITIALIZE FORM
   const form = useForm<GalleryFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    values: mode === "edit" ? {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      generes: defaultValues?.generes || [],
+      price: defaultValues?.price || 0,
+      thumbnail: defaultValues?.thumbnail || undefined,
+      actual_file: defaultValues?.actual_file || undefined,
+      preview_file: defaultValues?.preview_file,
+      display_file: defaultValues?.display_file,
+      created_by: creatorId,
+    } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -93,44 +109,67 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
       actual_file: defaultValues?.actual_file || undefined,
       preview_file: defaultValues?.preview_file,
       display_file: defaultValues?.display_file,
-      created_by: "",
+      created_by: creatorId,
     },
   });
   // Inside ComicTitleForm...
+  // useEffect(() => {
+  //   if (defaultValues) {
+  //     form.reset({
+  //       name: defaultValues.name || "",
+  //       description: defaultValues.description || "",
+  //       price: defaultValues.price ?? 0,
+  //       generes: defaultValues.generes || [],
+
+  //       thumbnail: defaultValues.thumbnail,
+  //       actual_file: defaultValues.actual_file,
+  //       preview_file: defaultValues?.preview_file,
+  //       display_file: defaultValues?.display_file,
+  //       created_by: form.getValues("created_by"),
+  //     });
+  //   }
+  // }, [defaultValues, form]);
   useEffect(() => {
-    if (defaultValues) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      console.log("enter edit mode")
       form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
-        generes: defaultValues.generes || [],
-
-        thumbnail: defaultValues.thumbnail,
-        actual_file: defaultValues.actual_file,
-        preview_file: defaultValues?.preview_file,
-        display_file: defaultValues?.display_file,
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
+  }, [defaultValues, mode, creatorId]);
+
+
+  const { galleryUpdateTextMutation, isUpdatingText } = useGalleryUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdatingThumbnail } = useGalleryUpdateThumbnailCommand();
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, [form]);
-
-  const { galleryUpdateTextMutation, isUpdatingText } =
-    useGalleryUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdatingThumbnail } =
-    useGalleryUpdateThumbnailCommand();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: GalleryFormValues) => {
     try {
@@ -222,7 +261,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label="Thumbnail" />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -246,7 +285,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Title" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. The Beginning After The End"
@@ -263,7 +304,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price (Coins/Currency)</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label="Price (Coins/MMK)" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -284,7 +327,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label="Description" />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -313,7 +358,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
+                      <FormLabel className="text-base">
+                        <RequiredLabel label="Genres" />
+                      </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -324,11 +371,10 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                               <Badge
                                 key={g.id}
                                 variant={isSelected ? "default" : "outline"}
-                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${
-                                  isSelected
-                                    ? "scale-105 shadow-md"
-                                    : "hover:bg-muted"
-                                }`}
+                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${isSelected
+                                  ? "scale-105 shadow-md"
+                                  : "hover:bg-muted"
+                                  }`}
                                 onClick={() => toggleGenre(g.id.toString())}
                               >
                                 {g.name}
@@ -361,7 +407,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Banner / Actual Thumbnail (16:9 recommended)
+                        <RequiredLabel label="Banner" />
                       </FormLabel>
                       <FormControl>
                         <div className="mt-2">
@@ -425,22 +471,67 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                router.navigate("/entertainment/gallery");
+                navigate("/entertainment/gallery");
               }}
             >
               Cancel & Reset
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 cursor-pointer"
-              disabled={isPending || isUpdatingThumbnail || isUpdatingText}
-            >
-              {(isPending || isUpdatingThumbnail || isUpdatingText) && (
-                <Spinner />
-              )}
-              {mode === "add" ? "Add Gallery" : "Save Changes"}
-            </Button>
+            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                type="button"
+                className="flex-1 cursor-pointer"
+                disabled={isPending || isUpdatingThumbnail || isUpdatingText}
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isPending || isUpdatingThumbnail || isUpdatingText) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Add Gallery" : "Save Changes"}
+              </Button>
+              <AlertDialogContent className="max-w-md">
+                <AlertDialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <AlertDialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                {/* Review Card */}
+                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} description={form.getValues("description")} />
+
+                <AlertDialogFooter className="sm:justify-center gap-2">
+                  <AlertDialogCancel className="flex-1 cursor-pointer">
+                    Back to Edit
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1 cursor-pointer"
+                    disabled={isPending || isUpdatingThumbnail || isUpdatingText}
+                  >
+                    {isPending || isUpdatingThumbnail || isUpdatingText &&
+                      <Spinner className="mr-2 w-4 h-4" />
+                    }
+                    Confirm & {mode === "add" ? "Publish Episode" : "Update Episode"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </div>
+            <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

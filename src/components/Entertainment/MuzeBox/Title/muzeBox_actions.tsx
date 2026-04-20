@@ -21,12 +21,20 @@ export default function MuzeBoxActions(title: MuzeBoxDetailsResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/muze-box/title/details/${title.id}`);
+    navigate(`/entertainment/muze-box/title/details/${title.id}`, {
+      state: {
+        titleName: title?.name,
+        titleId: title?.id
+      }
+    });
   };
 
   const handleEditTitle = () => {
     navigate(`/entertainment/muze-box/title/edit/${title.id}`, {
-      state: title,
+      state: {
+        titleName: title?.name,
+        titleId: title?.id
+      },
     });
   };
 

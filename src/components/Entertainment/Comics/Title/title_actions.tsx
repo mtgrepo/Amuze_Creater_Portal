@@ -21,12 +21,19 @@ export default function TitleActions(title: ComicsTitleResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/comics/details/${title.id}`);
+    navigate(`/entertainment/comics/details/${title.id}`, {
+      state: {
+        titleName: title?.name
+      }
+    });
   };
 
   const handleEditTitle = () => {
     navigate(`/entertainment/comics/edit/${title.id}`, {
-      state: title,
+      state: {
+        titleName: title?.name,
+        title
+      }
     });
   };
 

@@ -10,7 +10,7 @@ import { ThemeProvider, useTheme } from './components/common/Themes/theme-provid
 import { toast } from 'sonner'
 import { Toaster } from './components/ui/sonner.tsx'
 import { TooltipProvider } from './components/ui/tooltip.tsx'
-
+import './i18n.ts'
 // Include Global Error Handler For Queries ( Mutation will be handled manually )
 const queryClient = new QueryClient(({
   queryCache: new QueryCache({

@@ -15,18 +15,24 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
+import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
 
 export default function NovelActions(novel: NovelResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/novel/details/${novel.id}`);
+    navigate(`/entertainment/novel/details/${novel.id}`, {
+      state: {
+        titleName: novel?.name
+      }
+    });
   };
 
   const handleEditTitle = () => {
     navigate(`/entertainment/novel/edit/${novel.id}`, {
-      state: novel,
+      state: {
+        titleName: novel?.name
+      },
     });
   };
 

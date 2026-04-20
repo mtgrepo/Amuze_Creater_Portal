@@ -21,12 +21,20 @@ export default function GalleryActions(title: GalleryResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/gallery/details/${title.id}`);
+    navigate(`/entertainment/gallery/details/${title.id}`, {
+      state: {
+        titleName: title?.name,
+        titleId: title?.id
+      }
+    });
   };
 
   const handleEditTitle = () => {
     navigate(`/entertainment/gallery/edit/${title.id}`, {
-      state: title,
+      state: {
+        titleName: title?.name,
+        titleId: title?.id
+      },
     });
   };
 

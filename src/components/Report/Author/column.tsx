@@ -1,9 +1,14 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { AuthorReportResponseDetails } from "../../../types/response/report/authorReportResponse";
+import { useTranslation } from "react-i18next";
 
-const columns: ColumnDef<AuthorReportResponseDetails>[] = [
+
+export default function AuthorReportColumn() {
+    const { t } = useTranslation();
+
+  const columns: ColumnDef<AuthorReportResponseDetails>[] = [
     {
-        header: "No",
+        header: t('no'),
         cell: ({ row, table }) => {
             const pageIndex = table.getState()?.pagination?.pageIndex || 0;
             const pageSize = table.getState()?.pagination?.pageSize || 10;
@@ -13,17 +18,17 @@ const columns: ColumnDef<AuthorReportResponseDetails>[] = [
     {
         // Matches API: "catetoryName"
         accessorKey: "catetoryName",
-        header: "Category",
+        header: t('category'),
         cell: ({ row }) => <div>{row.getValue("catetoryName") || "-"}</div>,
     },
     {
         accessorKey: "buyerName",
-        header: "Buyer",
+        header: t('buyer'),
         cell: ({ row }) => <div>{row.getValue("buyerName")}</div>,
     },
     {
         id: "productDetails",
-        header: "Product Details",
+        header: t('product_details'),
         cell: ({ row }) => {
             // Matches API: "productDetail" (singular)
             const product = row.original.productDetail;
@@ -44,7 +49,7 @@ const columns: ColumnDef<AuthorReportResponseDetails>[] = [
     },
     {
         accessorKey: "authorIncome",
-        header: "Income",
+        header: t('income'),
         cell: ({ row }) => {
             const income = row.getValue("authorIncome") as number;
             return <div>{income?.toLocaleString() ?? "0"}</div>;
@@ -52,12 +57,12 @@ const columns: ColumnDef<AuthorReportResponseDetails>[] = [
     },
     {
         accessorKey: "purchaseDate",
-        header: "Purchase Date",
+        header: t('date'),
         cell: ({ row }) => {
             const val = row.getValue("purchaseDate") as string;
             return <div>{val || "-"}</div>;
         },
     },
 ];
-
-export default columns;
+return columns
+}

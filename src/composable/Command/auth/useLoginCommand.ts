@@ -15,16 +15,16 @@ export const useLoginCommand = () => {
       return res; 
     },
     onSuccess: (res) => {
-      // 1. Basic check for valid response structure
+      //  Basic check for valid response structure
       if (res.status && res.data && res.token) {
         
-        // 2. SPECIFIC ROLE CHECK (role_id 4)
+        // SPECIFIC ROLE CHECK (role_id 4)
         if (res.data.role_id !== 4) {
           toast.error("Unauthorized: Access restricted to specific roles.");
           return; // Stop execution here
         }
 
-        // 3. If role is correct, update state and show success
+        //  If role is correct, update state and show success
         dispatch(
           loginSuccess({
             creator: res.data,
@@ -38,7 +38,6 @@ export const useLoginCommand = () => {
       }
     },
     onError: (error: any) => {
-      // Handle actual network or server errors
       toast.error(error?.response?.data?.message || "Something went wrong");
     }
   });

@@ -16,16 +16,18 @@ import type { ComicsTitleDetailsResponse } from "@/types/response/entertainment/
 interface EpisodeActionsProps {
   episode: ComicsTitleDetailsResponse;
   titleId?: number; 
+  titleName?: string
 }
 
-export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps) {
+export default function EpisodeActions({ episode, titleId, titleName }: EpisodeActionsProps) {
   const navigate = useNavigate();
 
   const handleEditEpisode = () => {
     navigate(`/entertainment/storytelling/${titleId}/episode/edit/${episode?.id}`, {
       state: { 
         episode, 
-        titleId 
+        titleId ,
+        titleName
       },
     });
   };
@@ -34,7 +36,8 @@ export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps
         navigate(`/entertainment/storytelling/${titleId}/episode/details/${episode?.id}`, {
       state: { 
         episode, 
-        titleId 
+        titleId ,
+        titleName
       },
     });
   }

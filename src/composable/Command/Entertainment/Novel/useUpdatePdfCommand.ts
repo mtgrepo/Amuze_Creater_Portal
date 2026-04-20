@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updateNovelPdf } from "../../../../http/apis/entertainment/novel/novelApi";
-import router from "../../../../router/routes";
 import { toast } from "sonner";
 
 export const useNovelUpdatePdfCommand = () => {
     const qc  = useQueryClient();
+
     const updatePdfMutation = useMutation({
         mutationKey: ["updateNovelPdf"],
         mutationFn: async ({ id, pdf }: { id: number, pdf: FormData }) => {
@@ -14,7 +14,7 @@ export const useNovelUpdatePdfCommand = () => {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["novels"] });
             toast.success("Novel updated successfully");
-            router.navigate("/entertainment/novel");
+            // navigate("/entertainment/novel");
         }
     })
     return {

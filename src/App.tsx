@@ -10,6 +10,7 @@ import {
 import { Separator } from "./components/ui/separator"
 import { ModeToggle } from "./components/common/Themes/mode-toggle"
 import BreadCrumbLayout from "./components/common/Layouts/bread_crumb_layout"
+import { LanguageToggle } from "./components/common/Language/language-toggle"
 
 type MatchType = {
   pathname: string
@@ -40,8 +41,10 @@ function App() {
             {/* Dynamic Breadcrumb */}
             <BreadCrumbLayout matches={matches}/>
           </div>
-
-          <ModeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ModeToggle />
+          </div>
         </header>
 
         {/* PAGE CONTENT */}

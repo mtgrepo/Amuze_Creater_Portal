@@ -15,27 +15,30 @@ import type { ComicsTitleDetailsResponse } from "@/types/response/entertainment/
 
 interface EpisodeActionsProps {
   episode: ComicsTitleDetailsResponse;
-  titleId: number; // This is received from the parent
+  titleId: number;
+  titleName: string
 }
 
-export default function EpisodeActions({ episode, titleId }: EpisodeActionsProps) {
+export default function EpisodeActions({ episode, titleId, titleName }: EpisodeActionsProps) {
   const navigate = useNavigate();
 
   const handleEditEpisode = () => {
     // We add titleId to the state object here
     navigate(`/entertainment/comics/${titleId}/episode/edit/${episode?.id}`, {
-      state: { 
-        episode, 
-        titleId // Now the EditPage can access location.state.titleId
+      state: {
+        episode,
+        titleId,
+        titleName
       },
     });
   };
 
   const handleViewDetails = () => {
-        navigate(`/entertainment/comics/${titleId}/episode/details/${episode?.id}`, {
-      state: { 
-        episode, 
-        titleId // Now the EditPage can access location.state.titleId
+    navigate(`/entertainment/comics/${titleId}/episode/details/${episode?.id}`, {
+      state: {
+        episode,
+        titleId,
+        titleName
       },
     });
   }

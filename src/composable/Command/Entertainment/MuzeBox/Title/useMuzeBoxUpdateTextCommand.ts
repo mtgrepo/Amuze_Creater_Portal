@@ -1,10 +1,11 @@
 import { updateMuzeBoxText, type MuzeBoxTextInput } from "@/http/apis/entertainment/muzeBox/muzeBoxApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useMuzeBoxUpdateTextCommand = () => {
     const qc = useQueryClient();
+    const navigate = useNavigate();
 
     const muzeBoxTextUpdateMutation = useMutation({
         mutationKey: ['updateMuzeBoxText'],
@@ -15,7 +16,7 @@ export const useMuzeBoxUpdateTextCommand = () => {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["muzeBoxList"] });
             toast.success("MuzeBox updated successfully");
-            router.navigate('/entertainment/muze-box');
+            navigate('/entertainment/muze-box');
         }
     })
     return {

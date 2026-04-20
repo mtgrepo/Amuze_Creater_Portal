@@ -16,14 +16,20 @@ export default function EditTitlePage() {
     roleId: roleId,
     userId: userId,
   };
-  
+
   // Fetch details in case the user refreshes the page and 'state' is lost
   const { titleDetails, isLoading } = useComicsTitleDetailsQuery(payload);
 
   // Merge state and API data, prioritizing API data once it arrives
   const title = titleDetails || state;
 
-  if (isLoading && !title) return <p>Loading...</p>;
+  if (isLoading && !title) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p>Loading comics data...</p>
+      </div>
+    );
+  }
   // console.log("edit data", title?.generes);
   return (
     <div className="p-6">
@@ -31,12 +37,12 @@ export default function EditTitlePage() {
         mode="edit"
         defaultValues={{
           id: id,
-          name: title?.name,
-          description: title?.description,
-          price: title?.price,
-          genres: title?.generes?.map((g: any) => g.id.toString()) || [],
-          thumbnail: title?.thumbnail,
-          horizontal_thumbnail: title?.horizontal_thumbnail,
+          name: title.name,
+          description: title.description,
+          price: title.price,
+          genres: title.generes?.map((g: any) => g.id.toString()) || [],
+          thumbnail: title.thumbnail,
+          horizontal_thumbnail: title.horizontal_thumbnail,
         }}
       />
     </div>

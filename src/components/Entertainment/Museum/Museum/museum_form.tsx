@@ -1,5 +1,4 @@
 import ImageUpload from "@/components/common/image_upload";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,28 +11,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { useStoryTellingTitleCreateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleCreateCommand";
-import { useStoryTellingTitleUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTellingTitleUpdateCommand";
-import { useStoryTellingTitleThumbnailUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useStoryTitleThumbnailUpdateCommand";
-import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQuery";
+import { useMuseumCreate } from "@/composable/Command/Entertainment/museum/useMuseumCreate";
+import { useMuseumThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumThumbnailUpdate";
+import { useMuseumUpdate } from "@/composable/Command/Entertainment/museum/useMuseumUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2 } from "lucide-react";
-import  { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import ConfirmCard from "../../../common/confirm_card";
+
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -43,7 +30,6 @@ function createFormSchema(mode: "add" | "edit") {
   return z.object({
     name: z.string().min(1, "Name is required."),
     description: z.string().min(1, "Description is required."),
-    genres: z.array(z.string()).min(1, "Select at least one genre"),
     thumbnail: imageSchema,
     horizontal_thumbnail: imageSchema,
     created_by: z.union([z.string(), z.number()]).optional(),
@@ -58,31 +44,26 @@ interface TitleFormProps {
   onSuccess?: () => void;
 }
 
-export default function StoryTellingTitleForm({
+export default function MuseumForm({
   mode,
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
   const formSchema = createFormSchema(mode);
-  const subcategory_id = 3;
-  const [confirmDialog, setConfirmDialog] = useState(false);
 
-  const { genresList } = useGenresBySubCategoryQuery(subcategory_id);
-  const { createTitleMutation, isStoryCreatePending } =
-    useStoryTellingTitleCreateCommand();
-  const { updateTitleMutation, isStoryTitleUpdatePending } =
-    useStoryTellingTitleUpdateCommand();
+  const { createMutation, isCreatePending } = useMuseumCreate();
+  const { updateMuseumMutation, isMuseumUpdatePending } = useMuseumUpdate();
   const { updateThumbnailMutation, isThumbnailUpdatePending } =
-    useStoryTellingTitleThumbnailUpdateCommand();
+    useMuseumThumbnailUpdate();
+
+  const isLoading =
+    isCreatePending || isMuseumUpdatePending || isThumbnailUpdatePending;
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
-    mode: "onBlur",
-    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      genres: defaultValues?.genres || [],
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
       created_by: "",
@@ -94,14 +75,13 @@ export default function StoryTellingTitleForm({
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
-        genres: defaultValues.genres || [],
         thumbnail: defaultValues.thumbnail,
         horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"), 
+        created_by: form.getValues("created_by"),
       });
     }
   }, [defaultValues]);
-  
+
   useEffect(() => {
     try {
       const storedData = localStorage.getItem("creator");
@@ -129,16 +109,15 @@ export default function StoryTellingTitleForm({
         }
       });
       if (mode === "add") {
-        await createTitleMutation(formData);
+        await createMutation(formData);
       } else {
         if (!defaultValues?.id) throw new Error("Id is required for update");
 
         const updateStoryTitlePayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number),
         };
-        await updateTitleMutation({
+        await updateMuseumMutation({
           id: Number(defaultValues.id),
           data: updateStoryTitlePayload,
         });
@@ -175,7 +154,8 @@ export default function StoryTellingTitleForm({
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
-        toast.success("Story updated successfully with thumbnails.");
+
+        toast.success("Museum updated successfully with thumbnails.");
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -189,12 +169,10 @@ export default function StoryTellingTitleForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add"
-                ? "Create New Storytelling Title"
-                : "Edit Storytelling Title Details"}
+              {mode === "add" ? "Create New Museum" : "Edit Museum Details"}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your storytelling title.
+              Fill in the information for your museum.
             </p>
           </div>
 
@@ -229,9 +207,9 @@ export default function StoryTellingTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Storytelling Title</FormLabel>
+                      <FormLabel>Museum</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Title Name" {...field} />
+                        <Input placeholder="Enter museum name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -255,55 +233,6 @@ export default function StoryTellingTitleForm({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-
-              <FormField
-                control={form.control}
-                name="genres"
-                render={({ field }) => {
-                  const toggleGenre = (id: string) => {
-                    const isSelected = field.value.includes(id);
-                    if (isSelected) {
-                      field.onChange(field.value.filter((g) => g !== id));
-                    } else {
-                      field.onChange([...field.value, id]);
-                    }
-                  };
-
-                  return (
-                    <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
-                      <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-25">
-                        {genresList?.length ? (
-                          genresList.map((g: any) => {
-                            const isSelected = field.value.includes(
-                              g.id.toString(),
-                            );
-                            return (
-                              <Badge
-                                key={g.id}
-                                variant={isSelected ? "default" : "outline"}
-                                className={`px-4 py-2 cursor-pointer transition-all select-none gap-2 flex items-center ${isSelected
-                                  ? "scale-105 shadow-md"
-                                  : "hover:bg-muted"
-                                  }`}
-                                onClick={() => toggleGenre(g.id.toString())}
-                              >
-                                {g.name}
-                                {isSelected ? <CheckCircle2 size={14} /> : null}
-                              </Badge>
-                            );
-                          })
-                        ) : (
-                          <p className="text-xs text-muted-foreground italic">
-                            Loading genres...
-                          </p>
-                        )}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
               />
             </div>
           </div>
@@ -346,65 +275,10 @@ export default function StoryTellingTitleForm({
             >
               Cancel & Reset
             </Button>
-
-            <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
-              <Button
-                className="flex-1 cursor-pointer"
-                type="button"
-                onClick={async () => {
-                  const isValid = await form.trigger();
-
-                  if (isValid) {
-                    setConfirmDialog(true);
-                  } else {
-                    toast.error("Please fill in all required fields correctly.");
-                  }
-                }}
-              >
-                {(isStoryCreatePending ||
-                  isStoryTitleUpdatePending ||
-                  isThumbnailUpdatePending) && (
-                    <Spinner className="mr-2 w-4 h-4" />
-                  )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
-              </Button>
-              <AlertDialogContent className="max-w-md">
-                <AlertDialogHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
-                    <CheckCircle2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <AlertDialogTitle className="text-center text-xl">
-                    Confirm {mode === "add" ? "Creation" : "Changes"}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-center">
-                    Please review the details below before proceeding.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-
-                {/* Review Card */}
-                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
-
-                <AlertDialogFooter className="sm:justify-center gap-2">
-                  <AlertDialogCancel className="flex-1 cursor-pointer">
-                    Back to Edit
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={form.handleSubmit(onSubmit)}
-                    className="flex-1 cursor-pointer"
-                    disabled={isStoryCreatePending ||
-                      isStoryTitleUpdatePending ||
-                      isThumbnailUpdatePending}
-                  >
-                    {(isStoryCreatePending ||
-                      isStoryTitleUpdatePending ||
-                      isThumbnailUpdatePending) && (
-                        <Spinner className="mr-2 w-4 h-4" />
-                      )}
-                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button type="submit" className="flex-1 " disabled={isLoading}>
+              {isLoading && <Spinner />}
+              {mode === "add" ? "Add Museum" : "Save Changes"}
+            </Button>
           </div>
         </form>
       </Form>

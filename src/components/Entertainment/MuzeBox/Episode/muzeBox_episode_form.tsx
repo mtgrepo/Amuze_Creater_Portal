@@ -117,11 +117,6 @@ export default function MuzeBoxEpisodeForm({
   });
 
   useEffect(() => {
-    console.log("mode", mode),
-      console.log("default id", defaultValues?.id);
-    console.log("ref id", resetToken?.current);
-    console.log("id check", defaultValues?.id !== resetToken?.current)
-    console.log("default values", defaultValues)
     if (
       mode === "edit" &&
       defaultValues &&

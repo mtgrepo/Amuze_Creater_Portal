@@ -43,6 +43,7 @@ export function encryptAuthData(data: AuthData): string {
 /**
  * Decrypt AuthData from localStorage string
  */
+
 export function decryptAuthData(dataStr: string): AuthData | null {
   try {
     const binaryString = atob(dataStr);

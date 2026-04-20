@@ -1,5 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import type { StoryTellingTitleResponse } from "@/types/response/entertainment/storytelling/storytellingResponse";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
@@ -11,14 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { CircleCheckBig, Eye, MoreHorizontal, Pencil, XCircle } from "lucide-react";
 import router from "../../../../router/routes";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card"
 import { format } from "date-fns";
+import type { Museum } from "@/types/response/entertainment/museum/museumResponse";
 
-export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
+export const columns: ColumnDef<Museum>[] = [
   {
     header: "No",
     cell: ({ row, table }) => {
@@ -57,74 +51,20 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
     },
   },
   {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => {
-      const price = row.getValue("price") as number;
-      return <div>{price ? price.toLocaleString() : "0"}</div>;
-    },
-  },
-  {
-    accessorFn: (row) => row?.generes,
-    id: "generes",
-    header: "Genres",
-    cell: ({ row }) => {
-      const genres = row.getValue("generes") as {
-        id: number;
-        name: string;
-      }[];
-
-      // Show at most 2
-      const visibleGenres = genres.slice(0, 2);
-      const hiddenGenres = genres.slice(2);
-      const hasMore = hiddenGenres.length > 0;
-
-      return (
-        <div className="flex flex-wrap gap-2">
-          {visibleGenres?.length === 0 && "N/A"}
-          {visibleGenres.map((genre) => (
-            <Badge key={genre.id}>{genre?.name}</Badge>
-          ))}
-          {hasMore &&
-            <HoverCard openDelay={100} closeDelay={200}>
-              <HoverCardTrigger className="cursor-pointer">
-                <span className="text-gray-800 dark:text-gray-400 font-semibold italic">+ {hiddenGenres.length} more</span>
-              </HoverCardTrigger>
-              <HoverCardContent side="right">
-                <div className="flex flex-wrap gap-2 max-w-xs">
-                  {hiddenGenres.map((genre) => (
-                    <Badge key={genre.id}>
-                      {genre.name}
-                    </Badge>
-                  ))}
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-          }
-        </div>
-      );
-    },
-  },
-  {
     accessorFn: (row) => ({
       approved: row.approve_status,
-      published: row.is_publish
     }),
     id: "status",
     header: "Status",
     cell: ({ row }) => {
       const approved = row.original.approve_status as number;
-      const published = row.original.is_publish as boolean;
 
       let tooltip = "";
       let icon = null;
 
-      if (approved === 1 && published) {
-        tooltip = "Approved & Published";
+      if (approved === 1) {
+        tooltip = "Approved";
         icon = <CircleCheckBig className="text-green-500 w-4 h-4" />;
-      } else if (approved === 1 && !published) {
-        tooltip = "Approved but Not Published";
-        icon = <CircleCheckBig className="text-yellow-500 w-4 h-4" />;
       } else if (approved === 0) {
         tooltip = "Not Approved";
         icon = <XCircle className="text-red-500 w-4 h-4" />;
@@ -153,23 +93,13 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const title = row.original;
+      const museum= row.original;
 
       const handleViewDetails = () => {
-        router.navigate(`/entertainment/storytelling/details/${title.id}`, {
-          state: {
-            titleName: title?.name,
-            titleId: title?.id
-          }
-        })
+        router.navigate(`/entertainment/museum/details/${museum.id}`)
       }
       const handleEditTitle = () => {
-        router.navigate(`/entertainment/storytelling/edit/${title.id}`, {
-          state: {
-            titleName: title?.name,
-            titleId: title?.id
-          },
-        })
+        router.navigate(`/entertainment/museum/edit/${museum.id}`)
       }
       return (
         <DropdownMenu>
@@ -182,7 +112,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem onClick={handleEditTitle}>
-              <Pencil /> Edit Title
+              <Pencil /> Edit Museum
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleViewDetails}>
               <Eye /> View Details

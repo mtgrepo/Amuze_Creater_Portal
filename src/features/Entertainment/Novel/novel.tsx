@@ -4,13 +4,13 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../components/ui/input";
 import { useNovelQuery } from "../../../composable/Query/Entertainment/Novel/useNovelQuery";
 import { NovelComponent } from "../../../components/Entertainment/Novel/novel_component";
 import { useDebounce } from "use-debounce";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Novel() {
   const [page, setPage] = React.useState(1);
@@ -79,6 +79,7 @@ export default function Novel() {
   };
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <SidebarInset>
@@ -94,10 +95,10 @@ export default function Novel() {
             <Button
               size={"sm"}
               className="cursor-pointer"
-              onClick={() => router.navigate("/entertainment/novel/create")}
+              onClick={() => navigate("/entertainment/novel/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              {t("add_new_novel")}
+              {t("create_new_novel")}
             </Button>
             <Button
               variant="outline"

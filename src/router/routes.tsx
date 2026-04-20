@@ -35,6 +35,7 @@ import MuzeBoxTitleDetails from "@/features/Entertainment/MuzeBox/Title/muzeBox_
 import  MuzeBoxEpisodeCreate from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_create";
 import MuzeBoxEditEpisodePage from "@/features/Entertainment/MuzeBox/Episode/muzeBox_episode_update";
 import MuzeBoxEpisodeDetails from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_details";
+import ProfileDetails from "@/features/Auth/profile_details";
 
 const router = createBrowserRouter(
   [
@@ -416,6 +417,16 @@ const router = createBrowserRouter(
           element: <MainCategory />,
           handle: { crumb: ["Genres", "Main Category"] },
         },
+        //Auth
+        {
+          path: "/account/user-details",
+          element: <ProfileDetails />,
+          handle: { crumb: [
+            {label: 'Account'},
+            {label: "Details"}
+          ]}
+        },
+        
       ],
     },
     {

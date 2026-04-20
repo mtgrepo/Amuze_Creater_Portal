@@ -21,10 +21,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { useSubCategoryQuery } from "../../../composable/Query/Genre/useSubCategoryQuery";
-import columns from "./column";
 import type { AuthorReportResponseDetails, ReportFilters } from "../../../types/response/report/authorReportResponse";
 import { PageSizeComponent } from "../../common/Pagination/page-number";
 import Paginator from "../../common/Pagination/paginator";
+import AuthorReportColumn from "./column";
+import { useTranslation } from "react-i18next";
 
 interface AuthorReportProps {
     data: AuthorReportResponseDetails[];
@@ -49,6 +50,8 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
         pageIndex: 0,
         pageSize: 10,
     });
+
+    const columns = AuthorReportColumn();
 
     const table = useReactTable({
         data,
@@ -78,17 +81,17 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
     };
 
     const totalRows = table.getFilteredRowModel().rows.length;
-
+    const { t } = useTranslation();
     return (
         <div className="space-y-6">
             <div className="rounded-xl border-2 p-6 bg-card shadow-sm flex flex-col gap-8">
 
-                {/* 1. Date Range Section */}
+                {/* Date Range Section */}
                 <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase  mb-4">Date Range</p>
+                    <p className="text-xs font-bold text-muted-foreground uppercase  mb-4">{t('date_range')}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">Start Date</label>
+                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">{t('start_date')}</label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" className={cn("w-full justify-start border-2  rounded-lg", !filters.startDate && "text-muted-foreground")}>
@@ -107,7 +110,7 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
                         </div>
 
                         <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">End Date</label>
+                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">{t('end_date')}</label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" className={cn("w-full justify-start border-2  rounded-lg", !filters.endDate && "text-muted-foreground")}>
@@ -128,7 +131,7 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
                     </div>
                 </div>
 
-                {/* 2. Category Section */}
+                {/* Category Section */}
                 <div>
                     <p className="text-xs font-bold text-muted-foreground uppercase mb-4">Category Filters</p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -149,48 +152,6 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
                     </div>
                 </div>
 
-                {/* 3. View Section */}
-                {/* <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">View</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">Select Month</label>
-                            <Select value={viewMonth} onValueChange={(v) => handleViewChange('month', v)}>
-                                <SelectTrigger className="w-full border-2 rounded-lg">
-                                    <SelectValue placeholder="Select Month" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Array.from({ length: 12 }).map((_, i) => (
-                                        <SelectItem key={i} value={i.toString()}>{format(new Date(0, i), "MMMM")}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">Select Year</label>
-                            <Select value={viewYear} onValueChange={(v) => handleViewChange('year', v)}>
-                                <SelectTrigger className="w-full border-2 rounded-lg">
-                                    <SelectValue placeholder="Select Year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Array.from({ length: 5 }).map((_, i) => {
-                                        const year = (new Date().getFullYear() - i).toString();
-                                        return <SelectItem key={year} value={year}>{year}</SelectItem>;
-                                    })}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </div> */}
-
-                {/* Reset Action */}
-                {/* <div className="flex justify-end pt-2">
-                    <Button variant="ghost" onClick={handleReset} className="text-destructive hover:bg-destructive/10 gap-2 h-10">
-                        <Trash2 className="h-4 w-4" />
-                        Remove Filters
-                    </Button>
-                </div> */}
             </div>
 
             {/* Table */}

@@ -19,11 +19,26 @@
   "edit_novel": "Edit Novel",
   "add_new_novel": "Add New Novel",
   "export_data": "Export Data",
+  "category": "Category",
+  "buyer": "Buyer",
+  "product_details": "Product Details",
+  "income": "Income",
+
 
   "no": "No",
   "name": "Name",
   "views": "Views",
   "likes": "Likes",
   "rating": "Rating",
-  "date": "Date"
+  "date": "Date",
+
+  "income_summary": "Income Summary",
+  "total_income": "Total Income",
+  "yearly_income": "Yearly Income",
+  "monthly_income": "Monthly Income",
+  "daily_income": "Daily Income",
+
+  "date_range": "Date Range",
+  "start_date": "Start Date",
+  "end_date": "End Date"
 }

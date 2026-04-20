@@ -6,10 +6,10 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../components/ui/input";
 import { useDebounce } from "use-debounce";
+import { useNavigate } from "react-router-dom";
 
 export default function Comics() {
   const [page, setPage] = React.useState(1);
@@ -18,8 +18,8 @@ export default function Comics() {
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-const [debounceSearch] = useDebounce(search, 700);
-
+  const [debounceSearch] = useDebounce(search, 700);
+  const navigate = useNavigate();
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -95,7 +95,7 @@ const [debounceSearch] = useDebounce(search, 700);
             <Button
               size={"sm"}
               className="cursor-pointer"
-              onClick={() => router.navigate("/entertainment/comics/title")}
+              onClick={() => navigate("/entertainment/comics/title")}
             >
               <CirclePlus className="w-4 h-4" />
               Add New Title

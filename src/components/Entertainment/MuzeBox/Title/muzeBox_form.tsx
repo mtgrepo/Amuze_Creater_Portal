@@ -32,13 +32,13 @@ import ImageUpload from "@/components/common/image_upload";
 
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { useMuzeBoxCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxCreateCommand";
 import { Spinner } from "@/components/ui/spinner";
 import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateTextCommand";
 import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
 import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
+import { useNavigate } from "react-router-dom";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -74,6 +74,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
   const [confirmDialog, setConfirmDialog] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
@@ -123,17 +124,10 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
     }
   }, [form]);
 
-  //   const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
-  //   const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();
-  //   const { updateThumbnailMutation, isUpdatingThumbnail } =
-  //     useNovelUpdateThumbnailCommand();
-  //   const { updatePdfMutation, isUpdatingPdf } = useNovelUpdatePdfCommand();
 
   const { muzeBoxCreateMutation, isPending } = useMuzeBoxCreateCommand();
-  const { muzeBoxTextUpdateMutation, isUpdateTextPending } =
-    useMuzeBoxUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdateThumbnailPending } =
-    useMuzeBoxUpdateThumbnailCommand();
+  const { muzeBoxTextUpdateMutation, isUpdateTextPending } = useMuzeBoxUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdateThumbnailPending } = useMuzeBoxUpdateThumbnailCommand();
 
   const onSubmit = async (values: MuzeBoxValues) => {
     try {
@@ -183,7 +177,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), // Convert strings back to numbers
+          genres: values.genres.map(Number), 
           //   price: values.price,
         };
         await muzeBoxTextUpdateMutation({
@@ -361,7 +355,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => router.navigate("/entertainment/muze-box")}
+              onClick={() => navigate("/entertainment/muze-box")}
             >
               Cancel
             </Button>

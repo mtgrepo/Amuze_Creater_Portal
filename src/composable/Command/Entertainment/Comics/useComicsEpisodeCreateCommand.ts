@@ -1,9 +1,10 @@
 import { createComicsEpisode } from "@/http/apis/entertainment/comics/comicsEpisodeApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useComicsEpisodeCreateCommand = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const episodeMutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -13,7 +14,7 @@ export const useComicsEpisodeCreateCommand = () => {
       queryClient.invalidateQueries({ queryKey: ["comicsEpisodesList"] });
       queryClient.invalidateQueries({ queryKey: ["comicsTitleDetails"] });
       toast.success(`Added new comics episode successfully`);
-      router.navigate(-1);
+      navigate(-1);
     },
   });
 

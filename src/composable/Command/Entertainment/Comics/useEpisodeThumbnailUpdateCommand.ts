@@ -1,11 +1,11 @@
 import { updateEpisodeThumbnail } from "@/http/apis/entertainment/comics/comicsEpisodeApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useComicEpisodeThumbnailUpdateCommand = () => {
   const qc = useQueryClient();
-
+  const navigate = useNavigate();
   const episodeThumbnailMutation = useMutation({
     mutationKey: ["updateEpisode"],
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
@@ -17,7 +17,7 @@ export const useComicEpisodeThumbnailUpdateCommand = () => {
       qc.invalidateQueries({ queryKey: ["comicsEpisodesList"] });
       qc.invalidateQueries({ queryKey: ["comicsTitleDetails"] });
       toast.success("Comics episode update successfully");
-      router.navigate(-1);
+      navigate(-1);
     },
   });
   return {

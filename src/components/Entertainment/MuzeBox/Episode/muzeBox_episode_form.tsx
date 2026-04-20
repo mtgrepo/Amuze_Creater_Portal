@@ -21,8 +21,7 @@ import ImageUpload from "@/components/common/image_upload";
 
 import { decryptAuthData } from "@/lib/helper";
 import { getPresignedUploadUrl } from "../../../../http/apis/entertainment/muzeBox/muzeBoxEpisodeApi";
-import router from "../../../../router/routes";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMuzeBoxEpisodeCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeCreateCommand";
 import { useMuzeBoxEpisodeTextUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeTextUpdateCommand";
 import { useMuzeBoxEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeThumbnailCommand";
@@ -81,7 +80,8 @@ export default function MuzeBoxEpisodeForm({
   const { id } = useParams();
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
-  // Placeholder loading states - replace these with your actual mutation hooks
+  const navigate = useNavigate();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<MuzeBoxValues>({
@@ -405,7 +405,7 @@ export default function MuzeBoxEpisodeForm({
               type="button"
               variant="outline"
               onClick={() =>
-                router.navigate(
+                navigate(
                   `/entertainment/muze-box/title/details/${titleId}`,
                   {
                     state: {

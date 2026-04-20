@@ -4,12 +4,12 @@ import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
-import router from "@/router/routes";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
 import { Input } from "../../../../components/ui/input";
 import { useMuzeBoxQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxQuery";
 import { MuzeBoxComponents } from "@/components/Entertainment/MuzeBox/Title/muzeBox_component";
 import { useDebounce } from "use-debounce";
+import { useNavigate } from "react-router-dom";
 
 export default function MuzeBox() {
   const [page, setPage] = React.useState(1);
@@ -17,9 +17,10 @@ export default function MuzeBox() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
-
-const [text, setText] = React.useState("");
-const [debounceText] = useDebounce(text, 700);
+  const navigate = useNavigate();
+ 
+  const [text, setText] = React.useState("");
+  const [debounceText] = useDebounce(text, 700);
 
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -36,7 +37,6 @@ const [debounceText] = useDebounce(text, 700);
   React.useEffect(() => {
     setPage(1);
   }, [tab]);
-
 
   const { muzeBoxList: apiData, isLoading } = useMuzeBoxQuery({
     authorId: creatorId!,
@@ -91,7 +91,7 @@ const [debounceText] = useDebounce(text, 700);
               size={"sm"}
               className="cursor-pointer"
               onClick={() =>
-                router.navigate("/entertainment/muze-Box/title/create")
+                navigate("/entertainment/muze-Box/title/create")
               }
             >
               <CirclePlus className="w-4 h-4" />

@@ -25,7 +25,6 @@ import ImageUpload from "@/components/common/image_upload";
 import { useGenresQuery } from "@/composable/Query/Genre/useGenresQuery";
 import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { useGalleryCreateCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryCreateCommand";
 import { useGalleryUpdateTextCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateTextCommand";
 import { useGalleryUpdateThumbnailCommand } from "@/composable/Command/Entertainment/Gallery/useGalleryUpdateThumbnailCommand";
@@ -41,6 +40,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../common/confirm_card";
 import RequiredLabel from "../../common/required_label";
+import { useNavigate } from "react-router-dom";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -73,7 +73,7 @@ interface GalleryFormProps {
 export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
-
+  const navigate = useNavigate();
   const { genresList } = useGenresQuery(6);
   const { createGalleryMutation, isPending } = useGalleryCreateCommand();
   //  INITIALIZE FORM
@@ -429,7 +429,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                router.navigate("/entertainment/gallery");
+                navigate("/entertainment/gallery");
               }}
             >
               Cancel & Reset

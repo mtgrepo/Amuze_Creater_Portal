@@ -2,13 +2,13 @@ import {
   updateGalleryText,
   type GalleryTextInput,
 } from "@/http/apis/entertainment/gallery/galleryApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useGalleryUpdateTextCommand = () => {
   const qc = useQueryClient();
-
+  const navigate = useNavigate();
   const galleryUpdateTextMutation = useMutation({
     mutationKey: ["updateGalleryText"],
     mutationFn: async ({
@@ -24,7 +24,7 @@ export const useGalleryUpdateTextCommand = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["galleryList"] });
       toast.success("Gallery text content updated successfully");
-      router.navigate("/entertainment/gallery");
+      navigate("/entertainment/gallery");
     },
   });
   return {

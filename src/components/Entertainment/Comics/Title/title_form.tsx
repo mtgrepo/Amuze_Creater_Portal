@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +28,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { decryptAuthData } from "@/lib/helper";
 import { useComicsTitleUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsTitleUpdateCommand";
 import { useComicsThumbnailUpdateCommand } from "@/composable/Command/Entertainment/Comics/useComicsThumbnailUpdateCommand";
-import router from "@/router/routes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +40,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -72,16 +73,30 @@ export default function ComicTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+  const resetToken = useRef(defaultValues?.id);
+  
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(2);
   const [createDialog, setCreateDialog] = useState(false);
-
+  const navigate = useNavigate();
   const { titleMutation, isPending } = useComicsTitleCreateCommand();
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
+    values: mode === "edit" ? {
+    name: defaultValues?.name || "",
+    description: defaultValues?.description || "",
+    genres: defaultValues?.genres || [],
+    price: defaultValues?.price || 0,
+    thumbnail: defaultValues?.thumbnail || undefined,
+    horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+    created_by: creatorId,
+  } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -89,40 +104,47 @@ export default function ComicTitleForm({
       price: defaultValues?.price || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
 
   useEffect(() => {
-    if (defaultValues) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
       form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
-        genres: defaultValues.genres || [],
-
-        thumbnail: defaultValues.thumbnail,
-        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId, 
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
+  }, [defaultValues, mode, creatorId]);
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-          if (id) form.setValue("created_by", id, { shouldDirty: false }); 
-
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, [form]);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const { updateTitleMutation, isPending: isUpdatePending } = useComicsTitleUpdateCommand();
   const { updateThumbnailMutation, isPending: isThumbnailPending } = useComicsThumbnailUpdateCommand();
@@ -141,6 +163,7 @@ export default function ComicTitleForm({
           }
         });
         await titleMutation(formData);
+        form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
 
@@ -178,6 +201,8 @@ export default function ComicTitleForm({
         };
 
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
+        navigate('/entertainment/comics');
+        form.reset(values);
       }
 
       if (onSuccess) onSuccess();
@@ -381,7 +406,7 @@ export default function ComicTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                router.navigate("/entertainment/comics");
+                navigate("/entertainment/comics");
               }}
             >
               Cancel & Reset
@@ -440,6 +465,8 @@ export default function ComicTitleForm({
             </AlertDialog>
 
           </div>
+            <NavigateConfirmDialog blocker={blocker} />
+          
         </form>
       </Form>
     </div>

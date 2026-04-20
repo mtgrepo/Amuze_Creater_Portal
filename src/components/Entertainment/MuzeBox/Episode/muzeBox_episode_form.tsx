@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +21,7 @@ import ImageUpload from "@/components/common/image_upload";
 
 import { decryptAuthData } from "@/lib/helper";
 import { getPresignedUploadUrl } from "../../../../http/apis/entertainment/muzeBox/muzeBoxEpisodeApi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import { useMuzeBoxEpisodeCreateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeCreateCommand";
 import { useMuzeBoxEpisodeTextUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeTextUpdateCommand";
 import { useMuzeBoxEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeThumbnailCommand";
@@ -40,6 +40,7 @@ import {
 import ConfirmCard from "../../../common/confirm_card";
 import { CheckCircle2 } from "lucide-react";
 import RequiredLabel from "../../../common/required_label";
+import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
 
 type UploadedPart = {
   partNumber: number;
@@ -77,17 +78,33 @@ export default function MuzeBoxEpisodeForm({
   titleId,
   titleName,
 }: MuzeBoxFormProps) {
+
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+
+  const resetToken = useRef(defaultValues?.id);
+
+
   const { id } = useParams();
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
   const navigate = useNavigate();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const form = useForm<MuzeBoxValues>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
+    values: mode === "edit" ? {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      price: defaultValues?.price ?? 0,
+      thumbnail: defaultValues?.thumbnail,
+      video: defaultValues?.video,
+      created_by: creatorId,
+    } : undefined,
     defaultValues: {
       id: defaultValues?.id ? Number(defaultValues.id) : undefined,
       name: defaultValues?.name || "",
@@ -100,31 +117,47 @@ export default function MuzeBoxEpisodeForm({
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    console.log("mode", mode),
+      console.log("default id", defaultValues?.id);
+    console.log("ref id", resetToken?.current);
+    console.log("id check", defaultValues?.id !== resetToken?.current)
+    console.log("default values", defaultValues)
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      console.log("enter edit mode")
       form.reset({
-        id: defaultValues.id ? Number(defaultValues.id) : undefined,
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
-        thumbnail: defaultValues.thumbnail,
-        video: defaultValues.video,
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
+  }, [defaultValues, mode, creatorId]);
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Failed to load creator data:", error);
-    }
-  }, [form]);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   async function getChunkPresignedUploadUrl(
     file: File,
@@ -200,7 +233,7 @@ export default function MuzeBoxEpisodeForm({
     useMuzeBoxEpisodeVideoUpdateCommand();
 
   const onSubmit = async (values: MuzeBoxValues) => {
-    setIsSubmitting(true);
+    setIsSubmit(true);
     try {
       const videoFile = values.video as File;
       const fileSizeMB = bytesToMB(videoFile.size);
@@ -283,7 +316,7 @@ export default function MuzeBoxEpisodeForm({
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmit(false);
     }
   };
 
@@ -433,7 +466,7 @@ export default function MuzeBoxEpisodeForm({
                   }
                 }}
               >
-                {(isSubmitting ||
+                {(isSubmit ||
                   isPending ||
                   isTextUpdating ||
                   isThumbnailUpdating ||
@@ -466,13 +499,13 @@ export default function MuzeBoxEpisodeForm({
                   <AlertDialogAction
                     onClick={form.handleSubmit(onSubmit)}
                     className="flex-1 cursor-pointer"
-                    disabled={isSubmitting ||
+                    disabled={isSubmit ||
                       isPending ||
                       isTextUpdating ||
                       isThumbnailUpdating ||
                       isVideoUpdating}
                   >
-                    {isSubmitting ||
+                    {isSubmit ||
                       isPending ||
                       isTextUpdating ||
                       isThumbnailUpdating ||
@@ -488,6 +521,7 @@ export default function MuzeBoxEpisodeForm({
             </AlertDialog>
 
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

@@ -2,7 +2,7 @@ import IconWithTooltip from "@/components/common/IconWithTooltip";
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
 import { CircleCheckBig, XCircle } from "lucide-react";
-import type { NovelResponse } from "../../../types/response/entertainment/comics/novelResponse";
+import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
 import NovelActions from "./novel_actions";
 import {
     HoverCard,

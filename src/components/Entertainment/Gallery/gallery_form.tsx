@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +40,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../common/confirm_card";
 import RequiredLabel from "../../common/required_label";
-import { useNavigate } from "react-router-dom";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "../../common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -71,6 +72,13 @@ interface GalleryFormProps {
 }
 
 export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
+
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+
+  const resetToken = useRef(defaultValues?.id);
+
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
   const navigate = useNavigate();
@@ -81,6 +89,17 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
+    values: mode === "edit" ? {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      generes: defaultValues?.generes || [],
+      price: defaultValues?.price || 0,
+      thumbnail: defaultValues?.thumbnail || undefined,
+      actual_file: defaultValues?.actual_file || undefined,
+      preview_file: defaultValues?.preview_file,
+      display_file: defaultValues?.display_file,
+      created_by: creatorId,
+    } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
@@ -90,44 +109,67 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
       actual_file: defaultValues?.actual_file || undefined,
       preview_file: defaultValues?.preview_file,
       display_file: defaultValues?.display_file,
-      created_by: "",
+      created_by: creatorId,
     },
   });
   // Inside ComicTitleForm...
+  // useEffect(() => {
+  //   if (defaultValues) {
+  //     form.reset({
+  //       name: defaultValues.name || "",
+  //       description: defaultValues.description || "",
+  //       price: defaultValues.price ?? 0,
+  //       generes: defaultValues.generes || [],
+
+  //       thumbnail: defaultValues.thumbnail,
+  //       actual_file: defaultValues.actual_file,
+  //       preview_file: defaultValues?.preview_file,
+  //       display_file: defaultValues?.display_file,
+  //       created_by: form.getValues("created_by"),
+  //     });
+  //   }
+  // }, [defaultValues, form]);
   useEffect(() => {
-    if (defaultValues) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      console.log("enter edit mode")
       form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        price: defaultValues.price ?? 0,
-        generes: defaultValues.generes || [],
-
-        thumbnail: defaultValues.thumbnail,
-        actual_file: defaultValues.actual_file,
-        preview_file: defaultValues?.preview_file,
-        display_file: defaultValues?.display_file,
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
+  }, [defaultValues, mode, creatorId]);
+
+
+  const { galleryUpdateTextMutation, isUpdatingText } = useGalleryUpdateTextCommand();
+  const { updateThumbnailMutation, isUpdatingThumbnail } = useGalleryUpdateThumbnailCommand();
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && // Don't block while mutation is running
+      !isSubmitSuccessful && // Don't block if we just finished successfully
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
       }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, [form]);
-
-  const { galleryUpdateTextMutation, isUpdatingText } =
-    useGalleryUpdateTextCommand();
-  const { updateThumbnailMutation, isUpdatingThumbnail } =
-    useGalleryUpdateThumbnailCommand();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: GalleryFormValues) => {
     try {
@@ -489,6 +531,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
             </AlertDialog>
 
           </div>
+            <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

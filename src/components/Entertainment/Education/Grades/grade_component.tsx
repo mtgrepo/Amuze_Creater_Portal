@@ -18,16 +18,11 @@ import {
 } from "@/components/ui/table";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
-import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
-import NovelColumn from "./column";
+import type { GradesResponse } from "../../../../types/response/entertainment/education/gradeResponse";
+import GradeColumn from "./column";
 
-export type NovelProps = {
-  data: NovelResponse[];
-  total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-  onPaginationChange: (page: number, limit: number) => void;
+export type GradesProps = {
+  data: GradesResponse[];
   isFetching?: boolean;
   onExport?: () => void;
   isExporting?: boolean;
@@ -35,16 +30,11 @@ export type NovelProps = {
   onSearchChange: (value: string) => void;
 };
 
-export function NovelComponent({
+export function GradeComponent({
   data,
-  totalPages,
   isFetching = false,
-  total,
-  page,
-  limit,
   search,
-  onPaginationChange,
-}: NovelProps) {
+}: GradesProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -53,8 +43,11 @@ export function NovelComponent({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-
-  const columns = NovelColumn();
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const columns = GradeColumn();
   const table = useReactTable({
     data,
     columns,
@@ -72,15 +65,13 @@ export function NovelComponent({
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: page - 1,
-        pageSize: limit,
-      },
+      pagination
     },
   });
 React.useEffect(() => {
   table.getColumn("name")?.setFilterValue(search);
 }, [search, table]);
+  const totalRows = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="w-full">
@@ -145,7 +136,7 @@ React.useEffect(() => {
         </Table>
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
           {total} total row(s)
         </div>
@@ -168,7 +159,36 @@ React.useEffect(() => {
             />
           </div>
         )}
-      </div>
+      </div> */}
+      <div className="flex items-center justify-between">
+          <div className="text-muted-foreground flex-1 text-sm">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+
+          {totalRows > 0 && (
+            <div className="flex items-center gap-3">
+              <PageSizeComponent
+                pageSize={pagination.pageSize}
+                totalRows={totalRows}
+                onChange={(size) =>
+                  setPagination(() => ({
+                    pageIndex: 0,
+                    pageSize: size === "all" ? totalRows : size,
+                  }))
+                }
+              />
+              <Paginator
+                currentPage={table.getState().pagination.pageIndex + 1}
+                totalPages={table.getPageCount()}
+                onPageChange={(pageNumber) =>
+                  table.setPageIndex(pageNumber - 1)
+                }
+                showPreviousNext
+              />
+            </div>
+          )}
+        </div>
     </div>
   );
 }

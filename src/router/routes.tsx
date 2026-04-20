@@ -36,6 +36,7 @@ import  MuzeBoxEpisodeCreate from "../features/Entertainment/MuzeBox/Episode/muz
 import MuzeBoxEditEpisodePage from "@/features/Entertainment/MuzeBox/Episode/muzeBox_episode_update";
 import MuzeBoxEpisodeDetails from "../features/Entertainment/MuzeBox/Episode/muzeBox_episode_details";
 import ProfileDetails from "@/features/Auth/profile_details";
+import Grades from "../features/Entertainment/Education/Grades/grades";
 
 const router = createBrowserRouter(
   [
@@ -224,7 +225,7 @@ const router = createBrowserRouter(
           handle: {
             crumb: [
               { label: "Entertainment" },
-              { label: ["Gallery"], href: "/entertainment/gallery" },
+              { label: "Gallery", href: "/entertainment/gallery" },
               { label: "Create" },
             ],
           },
@@ -325,6 +326,12 @@ const router = createBrowserRouter(
               { label: `${location?.state?.episode?.name}` },
             ]
           }
+        },
+        // education
+        {
+          path: "/entertainment/education",
+          element: <Grades />,
+          handle: { crumb: ["Entertainment", "Education", "Grades"] },
         },
         // story telling
         {

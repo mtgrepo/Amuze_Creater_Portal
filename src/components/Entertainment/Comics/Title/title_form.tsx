@@ -108,22 +108,22 @@ export default function ComicTitleForm({
     },
   });
 
+useEffect(() => {
+  if (
+    mode === "edit" &&
+    defaultValues &&
+    defaultValues.id !== resetToken.current
+  ) {
+    form.reset({
+      ...defaultValues,
+      created_by: creatorId,
+    });
 
-  useEffect(() => {
-    if (
-      mode === "edit" &&
-      defaultValues &&
-      defaultValues.id !== resetToken.current
-    ) {
-      form.reset({
-        ...defaultValues,
-        created_by: creatorId, 
-      });
-      resetToken.current = defaultValues.id;
-    } else if (mode === "add") {
-      form.setValue("created_by", creatorId);
-    }
-  }, [defaultValues, mode, creatorId]);
+    resetToken.current = defaultValues.id;
+  } else if (mode === "add") {
+    form.setValue("created_by", creatorId);
+  }
+}, [defaultValues, mode, creatorId]);
 
   const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,7 +38,8 @@ import { useMuzeBoxUpdateTextCommand } from "@/composable/Command/Entertainment/
 import { useMuzeBoxUpdateThumbnailCommand } from "@/composable/Command/Entertainment/MuzeBox/Title/useMuzeBoxUpdateThumbnailCommand";
 import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
-import { useNavigate } from "react-router-dom";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -71,6 +72,12 @@ interface MuzeBoxFormProps {
 }
 
 export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+
+  const resetToken = useRef(defaultValues?.id);
+
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
   const [confirmDialog, setConfirmDialog] = useState(false);
@@ -80,13 +87,19 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
+    values: mode === "edit" ? {
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      genres: defaultValues?.genres || [],
+      age_rating: defaultValues?.age_rating || 0,
+      thumbnail: defaultValues?.thumbnail || undefined,
+      horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
+    } : undefined,
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       genres: defaultValues?.genres || [],
-      //   price: defaultValues?.price || 0,
       age_rating: defaultValues?.age_rating || 0,
-      //   preview: defaultValues?.preview || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
 
@@ -95,34 +108,48 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    console.log("mode", mode),
+    console.log("default id", defaultValues?.id);
+    console.log("ref id", resetToken?.current);
+    console.log("id check", defaultValues?.id !== resetToken?.current)
+    console.log("default values", defaultValues)
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
+      console.log("enter edit mode")
       form.reset({
-        name: defaultValues.name || "",
-        description: defaultValues.description || "",
-        // price: defaultValues.price ?? 0,
-        age_rating: defaultValues.age_rating ?? 0,
-        genres: defaultValues.genres || [],
-        // preview: defaultValues.preview ?? 0,
-        thumbnail: defaultValues.thumbnail,
-        horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-
-        created_by: form.getValues("created_by"),
+        ...defaultValues,
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, form]);
-
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [form]);
+  }, [defaultValues, mode, creatorId]);
+ 
+  
+    const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+  
+    const blocker = useBlocker(
+      ({ currentLocation, nextLocation }) =>
+        isDirty &&
+        !isSubmitting && // Don't block while mutation is running
+        !isSubmitSuccessful && // Don't block if we just finished successfully
+        currentLocation.pathname !== nextLocation.pathname,
+    );
+  
+    useEffect(() => {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        if (isDirty) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
 
 
   const { muzeBoxCreateMutation, isPending } = useMuzeBoxCreateCommand();
@@ -177,7 +204,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
         const textPayload = {
           name: values.name,
           description: values.description,
-          genres: values.genres.map(Number), 
+          genres: values.genres.map(Number),
           //   price: values.price,
         };
         await muzeBoxTextUpdateMutation({
@@ -237,7 +264,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                         <RequiredLabel label="Title" />
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter title..."/>
+                        <Input {...field} placeholder="Enter title..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -255,10 +282,10 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                       </FormLabel>
                       <FormControl>
                         <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
+                          type="number"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -276,7 +303,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                       <RequiredLabel label="Description" />
                     </FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Enter description..."/>
+                      <Textarea {...field} placeholder="Enter description..." />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -415,6 +442,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
             </AlertDialog>
 
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

@@ -15,24 +15,25 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
+import type { GradesResponse } from "../../../../types/response/entertainment/education/gradeResponse";
 
-export default function NovelActions(novel: NovelResponse) {
+export default function GradeActions(title: GradesResponse) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/novel/details/${novel.id}`, {
+    navigate(`/entertainment/comics/details/${title.id}`, {
       state: {
-        titleName: novel?.name
+        titleName: title?.name
       }
     });
   };
 
   const handleEditTitle = () => {
-    navigate(`/entertainment/novel/edit/${novel.id}`, {
+    navigate(`/entertainment/comics/edit/${title.id}`, {
       state: {
-        titleName: novel?.name
-      },
+        titleName: title?.name,
+        title
+      }
     });
   };
 
@@ -47,7 +48,7 @@ export default function NovelActions(novel: NovelResponse) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Novel Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>Grade Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleViewDetails}>
             <Info /> View Details

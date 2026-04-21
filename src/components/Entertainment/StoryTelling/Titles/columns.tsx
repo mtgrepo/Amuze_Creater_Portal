@@ -10,20 +10,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CircleCheckBig, Eye, MoreHorizontal, Pencil, XCircle } from "lucide-react";
-import router from "../../../../router/routes";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
+import i18n from "../../../../i18n";
+import { useNavigate } from "react-router-dom";
 
-export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
+export default function StoryTellingColumns(){
+  const {t} = useTranslation();
+  const navigate = useNavigate();
+const columns: ColumnDef<StoryTellingTitleResponse>[] = [
   {
     header: "No",
     cell: ({ row, table }) => {
       const pageIndex = table.getState().pagination.pageIndex;
       const pageSize = table.getState().pagination.pageSize;
+      if(i18n.language === 'en'){
+        <div>{pageIndex * pageSize + row.index + 1}</div>
+      }
 
       return <div>{pageIndex * pageSize + row.index + 1}</div>;
     },
@@ -74,7 +81,6 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
         name: string;
       }[];
 
-      // Show at most 2
       const visibleGenres = genres.slice(0, 2);
       const hiddenGenres = genres.slice(2);
       const hasMore = hiddenGenres.length > 0;
@@ -105,6 +111,30 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
       );
     },
   },
+  {
+            accessorKey: "views",
+            header: t('views'),
+            cell: ({ row }) => {
+                const views = row.getValue("views") as number;
+                return <div>{views ? views.toLocaleString() : "0"}</div>;
+            },
+        },
+        {
+            accessorKey: "likes",
+            header: t('likes'),
+            cell: ({ row }) => {
+                const likes = row.getValue("likes") as number;
+                return <div>{likes ? likes.toLocaleString() : "0"}</div>;
+            },
+        },
+        {
+            accessorKey: "ratings",
+            header: t('rating'),
+            cell: ({ row }) => {
+                const ratings = row.getValue("ratings") as number;
+                return <div>{ratings ? ratings.toLocaleString() : "0"}</div>;
+            },
+        },
   {
     accessorFn: (row) => ({
       approved: row.approve_status,
@@ -146,7 +176,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
     header: "Date",
     cell: ({ row }) => {
       const val = row.getValue("created_at") as string | null;
-      return <div>{val ? format(new Date(val), "yyyy-MM-dd") : "-"}</div>;
+      return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
     },
   },
   {
@@ -156,7 +186,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
       const title = row.original;
 
       const handleViewDetails = () => {
-        router.navigate(`/entertainment/storytelling/details/${title.id}`, {
+        navigate(`/entertainment/storytelling/details/${title.id}`, {
           state: {
             titleName: title?.name,
             titleId: title?.id
@@ -164,7 +194,7 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
         })
       }
       const handleEditTitle = () => {
-        router.navigate(`/entertainment/storytelling/edit/${title.id}`, {
+        navigate(`/entertainment/storytelling/edit/${title.id}`, {
           state: {
             titleName: title?.name,
             titleId: title?.id
@@ -181,16 +211,19 @@ export const columns: ColumnDef<StoryTellingTitleResponse>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handleEditTitle}>
-              <Pencil /> Edit Title
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleViewDetails}>
+                        <DropdownMenuItem onClick={handleViewDetails}>
               <Eye /> View Details
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEditTitle}>
+              <Pencil /> Edit
+            </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       );
     },
   }
 
-]
+];
+return columns;
+}

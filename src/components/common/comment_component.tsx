@@ -208,9 +208,6 @@ const CommentsSection = ({commentsList, category } : {commentsList: any, categor
     );
   };
 
-  // if (isLoading) {
-  //   return <div className="text-center p-10 text-gray-500">Loading...</div>;
-  // }
 
   const comments = commentsList || [];
 

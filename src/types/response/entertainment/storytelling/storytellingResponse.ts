@@ -53,6 +53,7 @@ export interface StoryEpisodeResponse {
     created_by: number | null;
     sorting: number;
     created_at: Date | null;
+    file_path: string;
 }
 
 export interface Generes {

@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CircleCheckBig, Eye, MoreHorizontal, Pencil, XCircle } from "lucide-react";
-import router from "../../../../router/routes";
-import { format } from "date-fns";
 import type { Museum } from "@/types/response/entertainment/museum/museumResponse";
+import { useNavigate } from "react-router-dom";
 
-export const columns: ColumnDef<Museum>[] = [
+export default function MuseumColumns () {
+  const navigate = useNavigate();
+const columns: ColumnDef<Museum>[] = [
   {
     header: "No",
     cell: ({ row, table }) => {
@@ -86,7 +87,7 @@ export const columns: ColumnDef<Museum>[] = [
     header: "Date",
     cell: ({ row }) => {
       const val = row.getValue("created_at") as string | null;
-      return <div>{val ? format(new Date(val), "yyyy-MM-dd") : "-"}</div>;
+      return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
     },
   },
   {
@@ -96,10 +97,10 @@ export const columns: ColumnDef<Museum>[] = [
       const museum= row.original;
 
       const handleViewDetails = () => {
-        router.navigate(`/entertainment/museum/details/${museum.id}`)
+        navigate(`/entertainment/museum/details/${museum.id}`)
       }
       const handleEditTitle = () => {
-        router.navigate(`/entertainment/museum/edit/${museum.id}`)
+        navigate(`/entertainment/museum/edit/${museum.id}`)
       }
       return (
         <DropdownMenu>
@@ -111,16 +112,19 @@ export const columns: ColumnDef<Museum>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handleEditTitle}>
-              <Pencil /> Edit Museum
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleViewDetails}>
+                        <DropdownMenuItem onClick={handleViewDetails}>
               <Eye /> View Details
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEditTitle}>
+              <Pencil /> Edit
+            </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       );
     },
   }
 
-]
+];
+return columns;
+}

@@ -1,13 +1,12 @@
-import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import { StoryTellingTable } from "@/components/Entertainment/StoryTelling/Titles/storytelling_table";
 import { Button } from "@/components/ui/button";
 import { useStoryTellingTitleQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleQuery";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { CirclePlus, Search } from "lucide-react";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 
 export default function StoryTellingLayout() {
@@ -17,6 +16,7 @@ export default function StoryTellingLayout() {
     const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
     const creatorId = loginCreator?.creator?.id;
     const [search, setSearch] = React.useState("");
+    const navigate = useNavigate();
 
 
     const queryParams = React.useMemo(() => {
@@ -49,49 +49,12 @@ export default function StoryTellingLayout() {
 
     return (
         <div className="flex flex-1 flex-col gap-4 px-4">
-            <div className="flex justify-between">
-                <div>
-                    <h2 className="text-xl font-semibold">Story Telling Titles</h2>
-                    <h3 className="text-sm text-muted-foreground">
-                        Manage and organize your storytelling titles
-                    </h3>
-                </div>
-                <Button onClick={() => router.navigate('/entertainment/storytelling/title')}>
-                    <CirclePlus className="mr-2 h-4 w-4" />Add New Title
-                </Button>
-            </div>
-
-            <div className="border p-3 rounded-lg space-y-3">
-                <Tabs
-                    value={tab}
-                    onValueChange={(val) =>
-                        setTab(val as "all" | "approved" | "published")
-                    }
-                    className="w-full"
-                >
-                    <TabsList className="w-full grid grid-cols-3 border-b" variant={"line"}>
-                        <TabsTrigger value="all" className="w-full text-center">
-                            All
-                        </TabsTrigger>
-                        <TabsTrigger value="approved" className="w-full text-center">
-                            Approved
-                        </TabsTrigger>
-                        <TabsTrigger value="published" className="w-full text-center">
-                            Published
-                        </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="all"></TabsContent>
-                    <TabsContent value="approved" />
-                    <TabsContent value="published" />
-                </Tabs>
-
-                <div className="flex justify-between">
-
+            <div className="w-full mt-5">
+                <div className="flex flex-row justify-end gap-3">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
-                            placeholder="Filter title name..."
+                            placeholder="Filter name..."
                             className="pl-10 w-full"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -112,16 +75,37 @@ export default function StoryTellingLayout() {
                         )}
                     </div>
 
-                    {total > 0 && (
-                        <PageSizeComponent
-                            pageSize={pageSize}
-                            totalRows={total}
-                            onChange={(size) =>
-                                handlePaginationChange(1, size === "all" ? total : size)
-                            }
-                        />
-                    )}
+                    <Button size="sm" className="cursor-pointer" onClick={() => navigate('/entertainment/storytelling/title')}>
+                        <CirclePlus className="h-4 w-4" />Create Storytelling
+                    </Button>
                 </div>
+            </div>
+
+            <div className="border p-3 rounded-lg space-y-3">
+                <Tabs
+                    value={tab}
+                    onValueChange={(val) =>
+                        setTab(val as "all" | "approved" | "published")
+                    }
+                    className="w-full my-5"
+                >
+                    <TabsList className="w-full grid grid-cols-3 border-b" variant={"line"}>
+                        <TabsTrigger value="all" className="w-full text-center">
+                            All
+                        </TabsTrigger>
+                        <TabsTrigger value="approved" className="w-full text-center">
+                            Approved
+                        </TabsTrigger>
+                        <TabsTrigger value="published" className="w-full text-center">
+                            Published
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="all"></TabsContent>
+                    <TabsContent value="approved" />
+                    <TabsContent value="published" />
+                </Tabs>
+
                 <StoryTellingTable
                     data={storyTellingTitleList}
                     total={total}

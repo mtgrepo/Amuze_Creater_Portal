@@ -1,4 +1,5 @@
 import ImageUpload from "@/components/common/image_upload";
+import { MuseumImageUploader } from "@/components/common/museum_image_upload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,15 +12,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { useMuseumTitleCreate } from "@/composable/Command/Entertainment/museum/useMuseumTitleCreate";
-import { useMuseumTitleThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumTitleThumbnailUpdate";
-import { useMuseumTitleUpdate } from "@/composable/Command/Entertainment/museum/useMuseumTitleUpdate";
+import { useMuseumEpisodeCreate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeCreate";
+import { useMuseumEpisodeThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeThumbnailUpdate";
+import { useMuseumEpisodeUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+
+const FileItemSchema = (mode: "add" | "edit") =>
+  z
+    .object({
+      image:
+        mode === "add"
+          ? z.custom<File>((file) => file instanceof File, {
+              message: "Image is required.",
+            })
+          : z.union([z.instanceof(File), z.string(), z.null()]).optional(),
+
+      label: z.string().optional(),
+      description: z.string().optional(),
+    })
+    .refine((file) => mode === "edit" || file.image !== null, {
+      message: "Image is required.",
+      path: ["image"],
+    });
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -28,10 +47,11 @@ function createFormSchema(mode: "add" | "edit") {
       : z.union([z.instanceof(File), z.string()]).optional();
 
   return z.object({
-    museum_id: z.union([z.string(), z.number()]),
+    titleId: z.union([z.string(), z.number()]),
     name: z.string().min(1, "Name is required."),
     description: z.string().min(1, "Description is required."),
     thumbnail: imageSchema,
+    museum_file: z.array(FileItemSchema(mode)).optional(),
     created_by: z.union([z.string(), z.number()]).optional(),
   });
 }
@@ -40,14 +60,14 @@ type TitleFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 interface TitleFormProps {
   mode: "add" | "edit";
-  museumId: number;
+  titleId: number;
   defaultValues?: Partial<TitleFormValues> & { id?: string };
   onSuccess?: () => void;
 }
 
-export default function MuseumTitleForm({
+export default function MuseumEpisodeForm({
   mode,
-  museumId,
+  titleId,
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
@@ -56,29 +76,31 @@ export default function MuseumTitleForm({
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      museum_id: museumId,
+      titleId,
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
+      museum_file: [],
       created_by: "",
     },
   });
 
-  const { createTitleMutation, isCreateTitlePending } = useMuseumTitleCreate();
-  const { updateTitleMutation, isUpdatePending } = useMuseumTitleUpdate();
-  const { updateTitleThumbnailMutation, isThumbnailUpdatePending } =
-    useMuseumTitleThumbnailUpdate();
+  const { createMutation, isCreatePending } = useMuseumEpisodeCreate();
+  const { updateEpisodeMutation, isUpdatePending } = useMuseumEpisodeUpdate();
+  const { updateThumbnailMutation, isThumbnailUpdatePending } =
+    useMuseumEpisodeThumbnailUpdate();
 
   const isLoading =
-    isCreateTitlePending || isUpdatePending || isThumbnailUpdatePending;
+    isCreatePending || isUpdatePending || isThumbnailUpdatePending;
 
-      useEffect(() => {
+  useEffect(() => {
     if (defaultValues) {
       form.reset({
-        museum_id: defaultValues.museum_id,
+        titleId: defaultValues.titleId,
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
+        museum_file: defaultValues.museum_file,
         created_by: form.getValues("created_by"),
       });
     }
@@ -101,7 +123,7 @@ export default function MuseumTitleForm({
     try {
       if (mode === "add") {
         const formData = new FormData();
-        formData.append("museum_id", String(values.museum_id));
+        formData.append("museum_title_id", String(values.titleId));
         formData.append("name", values.name);
         formData.append("description", values.description);
         if (values.created_by) {
@@ -110,23 +132,45 @@ export default function MuseumTitleForm({
         if (values.thumbnail instanceof File) {
           formData.append("thumbnail", values.thumbnail);
         }
-        await createTitleMutation(formData);
+        (values.museum_file || []).forEach((file, index) => {
+          formData.append(`file[${index}]['images']`, file.image!);
+          formData.append(`file[${index}]['label']`, file.label || "");
+          formData.append(
+            `file[${index}]['description']`,
+            file.description || "",
+          );
+        });
+        await createMutation(formData);
       }
 
-      const updateTitlePayload = {
-        name: values.name,
-        description: values.description,
-      };
       if (mode === "edit" && defaultValues?.id) {
-        await updateTitleMutation({
-          titleId: Number(defaultValues.id),
-          data: updateTitlePayload,
+        const formData = new FormData();
+
+        formData.append("name", values.name);
+        formData.append("description", values.description);
+
+        (values.museum_file || []).forEach((file, index) => {
+          if (file.image instanceof File) {
+            formData.append(`file[${index}]['images']`, file.image);
+          }
+
+          formData.append(`file[${index}]['label']`, file.label || "");
+          formData.append(
+            `file[${index}]['description']`,
+            file.description || "",
+          );
         });
+
+        await updateEpisodeMutation({
+          episodeId: Number(defaultValues.id),
+          data: formData,
+        });
+
         if (values.thumbnail instanceof File) {
           const thumbnailData = new FormData();
-          thumbnailData.append("thumbnail", values.thumbnail);
+          formData.append("thumbnail", values.thumbnail);
 
-          await updateTitleThumbnailMutation({
+          await updateThumbnailMutation({
             id: Number(defaultValues.id),
             thumbnail: thumbnailData,
           });
@@ -145,11 +189,11 @@ export default function MuseumTitleForm({
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {mode === "add"
-                ? "Create New Museum Title"
-                : "Edit Museum Title Details"}
+                ? "Create New Museum Episode"
+                : "Edit Museum Episode Details"}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your museum title.
+              Fill in the information for your museum episode.
             </p>
           </div>
 
@@ -186,7 +230,10 @@ export default function MuseumTitleForm({
                     <FormItem>
                       <FormLabel>Museum</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter museum title name" {...field} />
+                        <Input
+                          placeholder="Enter museum title name"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -214,6 +261,32 @@ export default function MuseumTitleForm({
             </div>
           </div>
 
+          <div className="grid grid-cols-1 gap-2">
+            <FormField
+              control={form.control}
+              name="museum_file"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Create Image, Label, and Description</FormLabel>
+                    <FormControl>
+                      <MuseumImageUploader
+                        value={(field.value || []).map((item) => ({
+                          localId: crypto.randomUUID(),
+                          ...item,
+                        }))}
+                        onChange={field.onChange}
+                        control={form.control}
+                        name="museum_file"
+                        errors={form.formState.errors.museum_file as any}
+                      />
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
             <Button
               type="button"
@@ -228,7 +301,7 @@ export default function MuseumTitleForm({
             </Button>
             <Button type="submit" className="flex-1 " disabled={isLoading}>
               {isLoading && <Spinner />}
-              {mode === "add" ? "Add Museum" : "Save Changes"}
+              {mode === "add" ? "Add Episode" : "Save Changes"}
             </Button>
           </div>
         </form>

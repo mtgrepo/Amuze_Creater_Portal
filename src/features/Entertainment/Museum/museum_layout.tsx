@@ -12,7 +12,7 @@ export default function MuseumLayout() {
   const [tab, setTab] = React.useState<"all" | "approved">("all");
   const [search, setSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(5);
+  const [pageSize, setPageSize] = React.useState(10);
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
 
@@ -30,43 +30,9 @@ export default function MuseumLayout() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4">
-      <div className="flex justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Museum</h2>
-          <h3 className="text-sm text-muted-foreground">
-            Manage and organize your museum
-          </h3>
-        </div>
-        <Button onClick={() => router.navigate("/entertainment/museum/create")}>
-          <CirclePlus className="mr-2 h-4 w-4" />
-          Add New Museum
-        </Button>
-      </div>
-
-      <div className="border p-3 rounded-lg space-y-3">
-        <Tabs
-          value={tab}
-          onValueChange={(val) => setTab(val as "all" | "approved")}
-          className="w-full"
-        >
-          <TabsList
-            className="w-full grid grid-cols-2 border-b"
-            variant={"line"}
-          >
-            <TabsTrigger value="all" className="w-full text-center">
-              All
-            </TabsTrigger>
-            <TabsTrigger value="approved" className="w-full text-center">
-              Approved
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all"></TabsContent>
-          <TabsContent value="approved" />
-        </Tabs>
-
-        <div className="flex justify-between">
-          <div className="relative">
+      <div className="w-full mt-5">
+        <div className="flex flex-row justify-end gap-3">
+<div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Filter title name..."
@@ -89,7 +55,36 @@ export default function MuseumLayout() {
               </button>
             )}
           </div>
+ <Button size="sm" className="cursor-pointer" onClick={() => router.navigate("/entertainment/museum/create")}>
+          <CirclePlus className="mr-2 h-4 w-4" />
+          Create Museum
+        </Button>
         </div>
+      </div>
+
+
+      <div className="border p-3 rounded-lg space-y-3">
+        <Tabs
+          value={tab}
+          onValueChange={(val) => setTab(val as "all" | "approved")}
+          className="w-full my-5"
+        >
+          <TabsList
+            className="w-full grid grid-cols-2 border-b"
+            variant={"line"}
+          >
+            <TabsTrigger value="all" className="w-full text-center">
+              All
+            </TabsTrigger>
+            <TabsTrigger value="approved" className="w-full text-center">
+              Approved
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all"></TabsContent>
+          <TabsContent value="approved" />
+        </Tabs>
+
         <MuseumTable
           data={museumList}
           total={total}

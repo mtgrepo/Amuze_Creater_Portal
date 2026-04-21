@@ -5,10 +5,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { CircleCheckBig, XCircle } from "lucide-react";
 import TitleActions from "./title_actions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../../ui/hover-card";
+import { useTranslation } from "react-i18next";
 
-const columns: ColumnDef<ComicsTitleResponse>[] = [
+
+export default function Comicscolumn() {
+  const { t } = useTranslation();
+  const columns: ColumnDef<ComicsTitleResponse>[] = [
   {
-    header: "No",
+    header: t('no'),
     cell: ({ row, table }) => {
       const pageIndex = table.getState().pagination.pageIndex;
       const pageSize = table.getState().pagination.pageSize;
@@ -30,7 +34,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
 
   {
     accessorKey: "name",
-    header: "Name",
+    header: t('title'),
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
 
@@ -43,7 +47,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: t('description'),
     cell: ({ row }) => {
       const name = row.getValue("description") as string;
 
@@ -56,7 +60,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: t('price'),
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
       return <div>{price ? price.toLocaleString() : "0"}</div>;
@@ -65,7 +69,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   {
     accessorFn: (row) => row?.generes,
     id: "generes",
-    header: "Genres",
+    header: t('genres'),
     cell: ({ row }) => {
       const genres = row.getValue("generes") as {
         id: number;
@@ -108,7 +112,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "views",
-    header: "Viwes",
+    header: t('views'),
     cell: ({ row }) => {
       const views = row.getValue("views") as number;
       return <div>{views ? views.toLocaleString() : "0"}</div>;
@@ -116,7 +120,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "likes",
-    header: "Likes",
+    header: t('likes'),
     cell: ({ row }) => {
       const likes = row.getValue("likes") as number;
       return <div>{likes ? likes.toLocaleString() : "0"}</div>;
@@ -124,7 +128,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "ratings",
-    header: "Rating",
+    header: t('rating'),
     cell: ({ row }) => {
       const ratings = row.getValue("ratings") as number;
       return <div>{ratings ? ratings.toLocaleString() : "0"}</div>;
@@ -132,7 +136,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "is_publish",
-    header: "Published",
+    header: t('publish_status'),
     cell: ({ row }) => {
       const published = row.getValue("is_publish") as boolean;
 
@@ -145,7 +149,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Date",
+    header: t('date'),
     cell: ({ row }) => {
       const val = row.getValue("created_at") as string | null;
       return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
@@ -163,5 +167,7 @@ const columns: ColumnDef<ComicsTitleResponse>[] = [
     },
   },
 ];
+  return columns;
+}
 
-export default columns;
+

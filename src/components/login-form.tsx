@@ -45,7 +45,7 @@ export function LoginForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await loginMutation(values);
-      console.log("form values", values);
+      // console.log("form values", values);
     } catch (error) {
       toast.error(`${error}`);
     }

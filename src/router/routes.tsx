@@ -5,7 +5,6 @@ import NotFound from "@/components/not-found";
 import { ProtectedRoute, PublicRoute } from "./guard";
 import LoginPage from "@/features/Auth/login";
 import Novel from "@/features/Entertainment/Novel/novel";
-import MainCategory from "@/features/Genre/MainCategory/main_category";
 import Comics from "@/features/Entertainment/Comics/comics";
 import TitleCreate from "@/features/Entertainment/Comics/comics_title_create";
 import EditTitlePage from "@/features/Entertainment/Comics/comics_title_update";
@@ -48,6 +47,7 @@ import MuseumUpdate from "@/features/Entertainment/Museum/museum_update";
 import MuseumTitleCreate from "@/features/Entertainment/Museum/museum_title_create";
 import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 import MuseumTitleDetails from "@/features/Entertainment/Museum/museum_title_details";
+import NotificationPage from "@/features/Notification/notification";
 import TitleUpdatePage from "@/features/Entertainment/Museum/museum_title_update";
 import MuseumEpisodeCreate from "@/features/Entertainment/Museum/museum_episode_create";
 import MuseumEpisodeUpdatePage from "@/features/Entertainment/Museum/museum_episode_update";
@@ -585,6 +585,7 @@ const router = createBrowserRouter(
             ],
           },
         },
+        //notification
         {
           path: "/entertainment/museum/:museumId/title/:titleId/episode/create",
           element: <MuseumEpisodeCreate/>,
@@ -654,9 +655,11 @@ const router = createBrowserRouter(
 
         // Genres
         {
-          path: "/features/main-category",
-          element: <MainCategory />,
-          handle: { crumb: ["Genres", "Main Category"] },
+          path: "/notifications",
+          element: <NotificationPage />,
+          handle: {
+            crumb: ["Notifications"],
+          }
         },
         //Auth
         {

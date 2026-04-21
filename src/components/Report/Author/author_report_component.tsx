@@ -155,7 +155,7 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
             </div>
 
             {/* Table */}
-            <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="rounded-md border overflow-hidden">
                 <Table>
                     <TableHeader className="bg-muted/50">
                         {table.getHeaderGroups().map(hg => (

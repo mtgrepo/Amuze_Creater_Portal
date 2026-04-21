@@ -6,11 +6,10 @@ import {
     ArrowLeft,
     Loader2,
     TrendingUp,
-    Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useMuzeBoxEpisodeDetailsQuery } from "../../../../composable/Query/Entertainment/MuzeBox/Episode/useMuzeBoxEpisodeDetailsQuery";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../components/ui/card";
 
 export default function MuzeBoxEpisodeDetails() {
     const { id } = useParams();
@@ -41,8 +40,12 @@ export default function MuzeBoxEpisodeDetails() {
     const video = episodeDetails?.video || '';
 
     return (
-        <div className="min-h-screen p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
+        <div className="min-h-screen ">
+            <div className="max-w-7xl mx-auto space-y-6 px-6">
+                <Button variant="ghost" onClick={() => navigate(-1)} className="cursor-pointer">
+                    <ArrowLeft size={18} />
+                    Back to {location?.state?.titleName}
+                </Button>
                 {/* HERO CARD */}
                 <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
                     <div
@@ -83,37 +86,6 @@ export default function MuzeBoxEpisodeDetails() {
                                     </div>
                                 </div>
 
-                                {/* IMAGE VIEWER DIALOG */}
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button className="cursor-pointer">
-                                            <Video />
-                                            Show Video
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="w-full lg:max-w-4xl! max-h-xl!  p-0 border-border flex flex-col overflow-hidden">
-                                        <DialogHeader className="p-5 border-b">
-                                            <DialogTitle>{episodeDetails.name} (Video)</DialogTitle>
-                                        </DialogHeader>
-                                        {/* Viewer Header */}
-                                        <div className="flex items-center justify-between border-b border-border shrink-0">
-
-                                            <div className="flex items-start justify-center p-4 min-h-full">
-                                                {video ? (
-                                                    <video
-                                                        src={video}
-                                                        controls className="max-w-full h-auto shadow-2xl"
-                                                    />
-                                                ) : (
-                                                    <div className="h-full flex items-center justify-center text-zinc-500">
-                                                        No video available
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="w-6" /> {/* Spacer */}
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
                             </div>
                         </div>
                     </div>
@@ -156,13 +128,29 @@ export default function MuzeBoxEpisodeDetails() {
                     </div>
                 </div>
 
-                {/* BACK BUTTON */}
-                <div className="pt-4">
-                    <Button variant="outline" onClick={() => navigate(-1)} className="cursor-pointer">
-                        <ArrowLeft className="mr-2" size={18} />
-                        Back
-                    </Button>
-                </div>
+                {/* IMAGE VIEWER DIALOG */}
+
+                <Card className="mt-6">
+                    <CardHeader>
+                        <CardTitle>Muze Box Video</CardTitle>
+                        <CardDescription>Watch the latest episode of Muze Box</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-start justify-center p-4 min-h-full">
+                            {video ? (
+                                <video
+                                    src={video}
+                                    controls className="max-w-full h-auto shadow-2xl"
+                                />
+                            ) : (
+                                <div className="h-full flex items-center justify-center text-zinc-500">
+                                    No video available
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
             </div>
         </div>
     );

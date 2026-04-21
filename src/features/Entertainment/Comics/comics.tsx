@@ -10,6 +10,7 @@ import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/
 import { Input } from "../../../components/ui/input";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Comics() {
   const [page, setPage] = React.useState(1);
@@ -20,6 +21,7 @@ export default function Comics() {
   const creatorId = loginCreator?.creator?.id;
   const [debounceSearch] = useDebounce(search, 700);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -98,7 +100,7 @@ export default function Comics() {
               onClick={() => navigate("/entertainment/comics/title")}
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Title
+              {t("create_new_comic")}
             </Button>
             <Button
               variant="outline"
@@ -108,7 +110,7 @@ export default function Comics() {
               disabled={isLoadingExcel}
             >
               <FileUp className="h-4 w-4" />
-              Export Data
+              {t('export_data')}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -121,13 +123,13 @@ export default function Comics() {
             >
               <TabsList className="w-full grid grid-cols-3" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
-                  All
+                  {t("all")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
-                  Approved
+                  {t("approved")}
                 </TabsTrigger>
                 <TabsTrigger value="published" className="w-full text-center">
-                  Published
+                  {t("published")}
                 </TabsTrigger>
               </TabsList>
 

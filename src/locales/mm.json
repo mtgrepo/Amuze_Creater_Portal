@@ -5,6 +5,8 @@
   "all": "အားလုံး",
   "approved": "အတည်ပြုပြီး",
   "published": "ထုတ်ဝေပြီး",
+  "publish_status": "ထုတ်ဝေမှု", 
+  "approve_status": "အတည်ပြုမှူ",
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
@@ -36,7 +38,25 @@
   "monthly_income": "လစဉ်ဝင်ငွေ",
   "daily_income": "နေ့စဉ်ဝင်ငွေ",
 
-    "date_range": "ရက်စွဲ",
+  "date_range": "ရက်စွဲ",
   "start_date": "စရက်",
-  "end_date": "ဆုံးရက်"
+  "end_date": "ဆုံးရက်",
+
+  "add_new": "အသစ်ထည့်ရန်",
+  "edit": "အချက်အလက်ပြင်ဆင်ရန်",
+  "delete": "ဖျက်ရန်",
+  "create": "ပြုလုပ်ရန်",
+  "update": "ပြင်ဆင်ရန်",
+  "cancel": "ပြန်ထွက်ရန်",
+
+  "create_new_comic": "Comics အသစ်ထည့်ရန်",
+  "add_new_episode": "အပိုင်းသစ်ထည့်ရန်",
+  "create_new_gallery": "ပုံထည့်ရန်",
+  "create_new_muze_box": "MuzeBox အသစ်ထည့်ရန်",
+  "create_new_grade": "Grade အသစ်ထည့်ရန်",
+  "add_new_course": "မေးခွန်းအသစ်ထည့်ရန်",
+  "comments": "မှတ်ချက်များ",
+
+  "total_sales": "စုစုပေါင်းရောင်းရငွေ",
+  "total_revenue": "စုစုပေါင်းဝင်ငွေ"
 }

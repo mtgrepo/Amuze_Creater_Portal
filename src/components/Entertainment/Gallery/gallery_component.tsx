@@ -16,10 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 import type { GalleryResponse } from "@/types/response/entertainment/gallery/galleryResponse";
+import GalleryColumn from "./column";
 
 export type GalleryProps = {
   data: GalleryResponse[];
@@ -53,6 +53,8 @@ export function GalleryTitleComponent({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const columns = GalleryColumn();
+
   const table = useReactTable({
     data,
     columns,
@@ -85,7 +87,7 @@ React.useEffect(() => {
 
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

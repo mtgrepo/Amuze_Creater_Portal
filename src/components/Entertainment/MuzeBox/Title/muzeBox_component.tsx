@@ -16,10 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import columns from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 import type { MuzeBoxDetailsResponse } from "@/types/response/entertainment/muzeBox/muzeBoxResponse";
+import MuzeBoxColumn from "./column";
 
 export type MuzeBoxProps = {
   data: MuzeBoxDetailsResponse[];
@@ -53,6 +53,7 @@ export function MuzeBoxComponents({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const columns = MuzeBoxColumn();
   const table = useReactTable({
     data,
     columns,
@@ -85,7 +86,7 @@ React.useEffect(() => {
 
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

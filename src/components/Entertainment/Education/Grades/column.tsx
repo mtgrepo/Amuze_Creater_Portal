@@ -41,7 +41,7 @@ export default function GradeColumn() {
         },
         {
             accessorKey: "is_old_question",
-            header: "Status",
+            header: t('category'),
             cell: ({ row }) => {
                 const status = row.getValue("is_old_question");
 
@@ -58,7 +58,7 @@ export default function GradeColumn() {
         },
         {
             accessorKey: "is_published",
-            header: "Published",
+            header: t('publish_status'),
             cell: ({ row }) => {
                 const published = row.getValue("is_published") as boolean;
 

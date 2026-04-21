@@ -5,6 +5,8 @@
   "all": "All",
   "approved": "Approved",
   "published": "Published",
+  "publish_status": "Publish Status",
+  "approve_status": "Approve Status",
 
   "thumbnail" : "Thumbnail",
   "title": "Title",
@@ -24,7 +26,6 @@
   "product_details": "Product Details",
   "income": "Income",
 
-
   "no": "No",
   "name": "Name",
   "views": "Views",
@@ -40,5 +41,23 @@
 
   "date_range": "Date Range",
   "start_date": "Start Date",
-  "end_date": "End Date"
+  "end_date": "End Date",
+
+  "add_new": "Add New",
+  "edit": "Edit",
+  "delete": "Delete",
+  "create": "Create",
+  "update": "Update",
+  "cancel": "Cancel",
+
+  "create_new_comic": "Create New Comic",
+  "add_new_episode": "Add New Episode",
+  "create_new_gallery": "Create New Gallery",
+  "create_new_muze_box": "Create New MuzeBox",
+  "create_new_grade": "Create New Grade",
+  "add_new_course": "Add New Course",
+  "comments": "Comments",
+
+  "total_sales": "Total Sales",
+  "total_revenue": "Total Revenue"
 }

@@ -10,6 +10,7 @@ import { useGalleryQuery } from "@/composable/Query/Entertainment/Gallery/useGal
 import { GalleryTitleComponent } from "@/components/Entertainment/Gallery/gallery_component";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export default function GalleryMain() {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
@@ -51,6 +52,8 @@ export default function GalleryMain() {
     setPage(1);
   }, [debouncedSearch]);
 
+  const { t } = useTranslation();
+
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();
 
@@ -91,7 +94,7 @@ export default function GalleryMain() {
               onClick={() => navigate("/entertainment/gallery/create")}
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Gallery
+              {t('create_new_gallery')}
             </Button>
             <Button
               variant="outline"
@@ -101,7 +104,7 @@ export default function GalleryMain() {
               disabled={isLoadingExcel}
             >
               <FileUp className="h-4 w-4" />
-              Export Data
+              {t('export_data')}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -114,13 +117,13 @@ export default function GalleryMain() {
             >
               <TabsList className="w-full grid grid-cols-3" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
-                  All
+                  {t('all')}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
-                  Approved
+                  {t('approved')}
                 </TabsTrigger>
                 <TabsTrigger value="published" className="w-full text-center">
-                  Published
+                  {t('published')}
                 </TabsTrigger>
               </TabsList>
 

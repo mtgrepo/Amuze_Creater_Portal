@@ -16,24 +16,21 @@ export default function Grades() {
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id!;
 
+  const queryParams = React.useMemo(() => {
+    switch (tab) {
+      case "approved":
+        return { approve_status: 1 };
+      case "published":
+        return { is_published: true };
+      default:
+        return {};
+    }
+  }, [tab]);
 
-    const queryParams = React.useMemo(() => {
-      switch (tab) {
-        case "approved":
-          return { approve_status: 1 };
-        case "published":
-          return { is_published: true };
-        default:
-          return {};
-      }
-    }, [tab]);
-
-
-const { gradeList: apiData, isLoading} = useGradesQuery({
-  approve_status: queryParams?.approve_status!,
-  authorId: creatorId
-})
-
+  const { gradeList: apiData, isLoading } = useGradesQuery({
+    approve_status: queryParams?.approve_status!,
+    authorId: creatorId,
+  });
 
   const { t } = useTranslation();
   const navigate = useNavigate();

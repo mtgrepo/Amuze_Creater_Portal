@@ -1,12 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  DollarSign,
   Star,
   Eye,
   ThumbsUp,
   Loader2,
   XCircle,
   CircleCheckBig,
+  ArrowLeft,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
@@ -15,10 +16,13 @@ import { useMuzeBoxTitleDetailsQuery } from "@/composable/Query/Entertainment/Mu
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 import EpisodeActions from "@/components/Entertainment/MuzeBox/Episode/muzeBox_episode_actions";
+import Stat from "@/components/common/details_stat";
+import { useTranslation } from "react-i18next";
 
 export default function MuzeBoxTitleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { commentsList, isLoading: isCommentsLoading } = useCommentQuery(
     "muze-box",
@@ -52,64 +56,77 @@ export default function MuzeBoxTitleDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
+        <Button variant="ghost" onClick={() => navigate('/entertainment/muze-box')} className="cursor-pointer">
+          <ArrowLeft size={18} />
+          Back to MuzeBox 
+        </Button>
         {/*  HEADER / BANNER AREA  */}
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
-          {/* Background Image Layer */}
+        <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
+          {/* Background Image Layer - Increased blur for readability */}
           <div
-            className="absolute inset-0 opacity-40 blur-md scale-105 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${titleDetails.horizontal_thumbnail})`,
-            }}
+            className="absolute inset-0  bg-cover bg-center scale-105"
+            style={{ backgroundImage: `url(${titleDetails.horizontal_thumbnail})` }}
           />
-          {/* Gradient Overlay for Readability */}
-          <div className="absolute inset-0 bg-linear-to-t from-card via-card/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80" />
 
-          {/* Content Wrapper */}
-          <div className="relative flex flex-col md:flex-row gap-8 p-6 md:p-10 items-center md:items-end min-h-80">
-            <div className="shrink-0 group">
-              <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 transition-transform group-hover:scale-[1.02] duration-300">
-                <img
-                  src={titleDetails?.thumbnail}
-                  alt={titleDetails?.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          {/* Dark Gradient Overlay - Vital for text contrast */}
+          <div
+            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
+          />
+          {/* Content Wrapper - items-center fixes the vertical alignment */}
+          <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+            {/* Thumbnail Image */}
+            <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
+              <img
+                src={titleDetails.thumbnail}
+                alt={titleDetails.name}
+                className="w-full h-full object-cover"
+              />
             </div>
 
             {/* Info Section */}
-            <div className="flex-1 space-y-4 text-center md:text-left w-full items-center">
-              <h1 className="text-xl lg:text-2xl font-black tracking-tight text-foreground drop-shadow-sm leading-tight">
-                {titleDetails?.name}
-              </h1>
+            <div className="flex-1 space-y-6 text-center md:text-left">
+              <div className="space-y-4">
+                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase drop-shadow-md">
+                  {titleDetails.name || `MuzeBox ${id}`}
+                </h1>
 
-              <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                {titleDetails?.genres?.map((genre: any) => (
-                  <Badge
-                    key={genre?.id}
-                    className="bg-primary text-white border-none"
-                  >
-                    {genre.name}
-                  </Badge>
-                ))}
+                {/* Genre Tags */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-2 py-2">
+                  {titleDetails?.generes?.map((genre: any) => (
+                    <Badge
+                      key={genre?.id}
+                      className="bg-primary text-xs"
+                    >
+                      {genre.name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              {/* Stats Bar */}
-              <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
+
+              {/* Stats Bar - Refactored to Grid for perfect alignment */}
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-2 rounded-2xl">
                 <Stat
-                  icon={<DollarSign className="text-blue-500" />}
-                  value={`${titleDetails?.price ?? 0} Kyats`}
+                  icon={<Banknote className="text-emerald-400" size={20} />}
+                  value={`${titleDetails?.price ?? 0} Ks`}
+                  label="Price"
                 />
                 <Stat
-                  icon={<Star className="text-yellow-500 fill-yellow-500" />}
-                  value={`${titleDetails?.rating ?? 0} Rating`}
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={titleDetails?.rating ?? "0"}
+                  label="Rating"
                 />
                 <Stat
-                  icon={<Eye className="text-blue-500" />}
-                  value={`${titleDetails?.views ?? 0} Views`}
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(titleDetails?.views ?? 0).toLocaleString()}
+                  label="Views"
                 />
                 <Stat
-                  icon={<ThumbsUp className="text-red-500" />}
-                  value={`${titleDetails?.likes ?? 0} Likes`}
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={titleDetails?.likes ?? "0"}
+                  label="Likes"
                 />
               </div>
             </div>
@@ -147,7 +164,7 @@ export default function MuzeBoxTitleDetails() {
               }
               className="rounded-full shadow-lg"
             >
-              Add Episode
+              {t("add_new_episode")}
             </Button>
           </div>
 
@@ -225,7 +242,7 @@ export default function MuzeBoxTitleDetails() {
 
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
+          {/* <h3 className="text-xl font-bold mb-6">Reader Feedback</h3> */}
           <CommentsSection commentsList={commentsList} category="muze-box" />
         </div>
       </div>
@@ -233,14 +250,3 @@ export default function MuzeBoxTitleDetails() {
   );
 }
 
-// Small helper component for header stats
-function Stat({ icon, value }: { icon: React.ReactNode; value: string }) {
-  return (
-    <div className="flex items-center gap-2 px-2 first:pl-0">
-      <div className="p-1 rounded-md">{icon}</div>
-      <span className="text-xs md:text-sm font-bold whitespace-nowrap">
-        {value}
-      </span>
-    </div>
-  );
-}

@@ -5,10 +5,13 @@ import { CircleCheckBig, XCircle } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../ui/hover-card";
 import type { GalleryResponse } from "@/types/response/entertainment/gallery/galleryResponse";
 import GalleryActions from "./gallery_actions";
+import { useTranslation } from "react-i18next";
 
-const columns: ColumnDef<GalleryResponse>[] = [
+export default function GalleryColumn() {
+  const { t } = useTranslation();
+  const columns: ColumnDef<GalleryResponse>[] = [
   {
-    header: "No",
+    header: t("no"),
     cell: ({ row, table }) => {
       const pageIndex = table.getState().pagination.pageIndex;
       const pageSize = table.getState().pagination.pageSize;
@@ -18,19 +21,10 @@ const columns: ColumnDef<GalleryResponse>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "thumbnail",
-  //   id: "thumbnail",
-  //   header: "Thumbnail",
-  //   cell: ({ row }) => {
-  //     const thumbnail = row.getValue("thumbnail") as string;
-  //     return <img src={thumbnail} alt="" className="w-20 h-12" />;
-  //   },
-  // },
 
   {
     accessorKey: "name",
-    header: "Name",
+    header: t("title"),
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
 
@@ -43,11 +37,11 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: t('description'),
     cell: ({ row }) => {
       const name = row.getValue("description") as string;
 
-      return (
+      return ( 
         <div className="max-w-87.5 wrap-break-word whitespace-normal">
           {name}
         </div>
@@ -56,7 +50,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: t("price"),
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
       return <div>{price ? price.toLocaleString() : "0"}</div>;
@@ -65,7 +59,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   {
     accessorFn: (row) => row?.generes,
     id: "generes",
-    header: "Genres",
+    header: t("genres"),
     cell: ({ row }) => {
       const genres = row.getValue("generes") as {
         id: number;
@@ -108,7 +102,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "views",
-    header: "Viwes",
+    header: t("views"),
     cell: ({ row }) => {
       const views = row.getValue("views") as number;
       return <div>{views ? views.toLocaleString() : "0"}</div>;
@@ -116,7 +110,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "likes",
-    header: "Likes",
+    header: t("likes"),
     cell: ({ row }) => {
       const likes = row.getValue("likes") as number;
       return <div>{likes ? likes.toLocaleString() : "0"}</div>;
@@ -124,7 +118,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "ratings",
-    header: "Rating",
+    header: t("rating"),
     cell: ({ row }) => {
       const ratings = row.getValue("ratings") as number;
       return <div>{ratings ? ratings.toLocaleString() : "0"}</div>;
@@ -133,7 +127,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   {
     accessorFn: (row) => row?.purchaseGalleryByUser,
     id: "purchaseGalleryByUser",
-    header: "Purchased",
+    header: t('buyer'),
     cell: ({ row }) => {
       const users = row.getValue("purchaseGalleryByUser") as {
         id: number;
@@ -176,16 +170,16 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "approve_status",
-    header: "Approve",
+    header: t('approve_status'),
     cell: ({ row }) => {
       const approve = row.getValue("approve_status") as number;
         if (approve === 1) {
           return (
-            <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
+            <p className="text-green-500 ">Approved</p>
           );
         } else if (approve === 0) {
           return (
-            <IconWithTooltip tooltip="Rejected" icon={<XCircle className="text-red-500 w-4 h-4" />} />
+            <p className="text-red-500 ">Rejected</p>
           );
         }
       
@@ -193,7 +187,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "is_published",
-    header: "Published",
+    header: t('publish_status'),
     cell: ({ row }) => {
       const published = row.getValue("is_published") as boolean;
 
@@ -206,7 +200,7 @@ const columns: ColumnDef<GalleryResponse>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Date",
+    header: t('date'),
     cell: ({ row }) => {
       const val = row.getValue("created_at") as string | null;
       return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
@@ -224,5 +218,5 @@ const columns: ColumnDef<GalleryResponse>[] = [
     },
   },
 ];
-
-export default columns;
+  return columns;
+}

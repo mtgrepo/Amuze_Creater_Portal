@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {  Layers,  Newspaper, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking, LayoutList, ListTree } from "lucide-react"
+import {  Layers, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "../redux/store/store"
 
@@ -107,28 +107,6 @@ const data = {
             }
         ]
     },
-    {
-      title: "Features & Genres",
-      url: "/features/genres",
-      icon: Settings,
-      items: [
-        {
-          title: "Genres",
-          url: "/features/genres",
-          icon: Newspaper,
-        },
-        {
-          title: "Main Category",
-          url: "/features/main-category",
-          icon: LayoutList,
-        },
-        {
-          title: "Sub Category",
-          url: "/features/sub-category",
-          icon: ListTree,
-        }
-      ],
-    }
   ],
   projects: [
     {

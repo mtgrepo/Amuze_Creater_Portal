@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/table";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
-import type { NovelResponse } from "../../../types/response/entertainment/novel/novelResponse";
-import NovelColumn from "./column";
+import type { Notification } from "@/types/response/notification/notificationResponse";
+import NotificationColumn from "./column";
 
-export type NovelProps = {
-  data: NovelResponse[];
+export type NotificationProps = {
+  data: Notification[];
   total: number;
   totalPages: number;
   page: number;
@@ -35,7 +35,7 @@ export type NovelProps = {
   onSearchChange: (value: string) => void;
 };
 
-export function NovelComponent({
+export function NotificationComponent({
   data,
   totalPages,
   isFetching = false,
@@ -44,7 +44,7 @@ export function NovelComponent({
   limit,
   search,
   onPaginationChange,
-}: NovelProps) {
+}: NotificationProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -54,7 +54,7 @@ export function NovelComponent({
     []
   )
 
-  const columns = NovelColumn();
+  const columns = NotificationColumn();
   const table = useReactTable({
     data,
     columns,
@@ -79,7 +79,7 @@ export function NovelComponent({
     },
   });
 React.useEffect(() => {
-  table.getColumn("name")?.setFilterValue(search);
+  table.getColumn("title")?.setFilterValue(search);
 }, [search, table]);
 
   return (

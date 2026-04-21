@@ -6,6 +6,7 @@
   "approved": "အတည်ပြုပြီး",
   "published": "ထုတ်ဝေပြီး",
   "publish_status": "ထုတ်ဝေမှု", 
+  "approve_status": "အတည်ပြုမှူ",
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
@@ -46,5 +47,16 @@
   "delete": "ဖျက်ရန်",
   "create": "ပြုလုပ်ရန်",
   "update": "ပြင်ဆင်ရန်",
-  "cancel": "ပြန်ထွက်ရန်"
+  "cancel": "ပြန်ထွက်ရန်",
+
+  "create_new_comic": "Comics အသစ်ထည့်ရန်",
+  "add_new_episode": "အပိုင်းသစ်ထည့်ရန်",
+  "create_new_gallery": "ပုံထည့်ရန်",
+  "create_new_muze_box": "MuzeBox အသစ်ထည့်ရန်",
+  "create_new_grade": "Grade အသစ်ထည့်ရန်",
+  "add_new_course": "မေးခွန်းအသစ်ထည့်ရန်",
+  "comments": "မှတ်ချက်များ",
+
+  "total_sales": "စုစုပေါင်းရောင်းရငွေ",
+  "total_revenue": "စုစုပေါင်းဝင်ငွေ"
 }

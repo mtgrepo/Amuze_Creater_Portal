@@ -103,7 +103,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
 
-      created_by: "",
+      created_by: creatorId,
     },
   });
 

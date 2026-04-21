@@ -100,7 +100,7 @@ export default function Comics() {
               onClick={() => navigate("/entertainment/comics/title")}
             >
               <CirclePlus className="w-4 h-4" />
-              {t("add_new")}
+              {t("create_new_comic")}
             </Button>
             <Button
               variant="outline"

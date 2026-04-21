@@ -75,8 +75,6 @@ interface MuzeBoxFormProps {
 export default function MuzeBoxEpisodeForm({
   mode,
   defaultValues,
-  titleId,
-  titleName,
 }: MuzeBoxFormProps) {
 
   const storedData = localStorage.getItem("creator");
@@ -112,7 +110,7 @@ export default function MuzeBoxEpisodeForm({
       price: defaultValues?.price || 0,
       thumbnail: defaultValues?.thumbnail || undefined,
       video: defaultValues?.video || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
@@ -433,15 +431,7 @@ export default function MuzeBoxEpisodeForm({
               type="button"
               variant="outline"
               onClick={() =>
-                navigate(
-                  `/entertainment/muze-box/title/details/${titleId}`,
-                  {
-                    state: {
-                      titleName,
-                      titleId,
-                    },
-                  },
-                )
+                navigate(-1)
               }
             >
               Cancel

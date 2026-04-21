@@ -10,6 +10,7 @@ import { useMuzeBoxQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/
 import { MuzeBoxComponents } from "@/components/Entertainment/MuzeBox/Title/muzeBox_component";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function MuzeBox() {
   const [page, setPage] = React.useState(1);
@@ -37,6 +38,9 @@ export default function MuzeBox() {
   React.useEffect(() => {
     setPage(1);
   }, [tab]);
+
+  const { t } = useTranslation();
+
 
   const { muzeBoxList: apiData, isLoading } = useMuzeBoxQuery({
     authorId: creatorId!,
@@ -95,7 +99,7 @@ export default function MuzeBox() {
               }
             >
               <CirclePlus className="w-4 h-4" />
-              Add New Title
+              {t('create_new_muze_box')}
             </Button>
             <Button
               variant="outline"
@@ -105,7 +109,7 @@ export default function MuzeBox() {
               disabled={isLoadingExcel}
             >
               <FileUp className="h-4 w-4" />
-              Export Data
+              {t('export_data')}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
@@ -118,13 +122,13 @@ export default function MuzeBox() {
             >
               <TabsList className="w-full grid grid-cols-3" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
-                  All
+                  {t("all")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
-                  Approved
+                  {t("approved")}
                 </TabsTrigger>
                 <TabsTrigger value="published" className="w-full text-center">
-                  Published
+                  {t("published")}
                 </TabsTrigger>
               </TabsList>
 

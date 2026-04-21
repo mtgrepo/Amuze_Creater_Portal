@@ -17,7 +17,7 @@ export default function Stat({
       
       <div className="flex flex-col items-start">
         {/* Data */}
-        <span className="text-sm  font-black text-white leading-none">
+        <span className="text-sm  font-black leading-none">
           {value}
         </span>
         {/* Label */}

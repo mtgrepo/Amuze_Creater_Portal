@@ -24,6 +24,7 @@ import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 import Stat from "@/components/common/details_stat";
 import { useTheme } from "@/components/common/Themes/theme-provider";
+import { useTranslation } from "react-i18next";
 
 export default function NovelDetails() {
   const { id } = useParams();
@@ -40,7 +41,8 @@ export default function NovelDetails() {
 
   //get current theme
   const { theme } = useTheme();
-  
+  const { t } = useTranslation();
+
   if (
     (isNovelDetailsLoading && !novelDetails) ||
     (isLoading && !commentsList)
@@ -77,12 +79,16 @@ export default function NovelDetails() {
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
           {/* Background Image Layer - Increased blur for readability */}
           <div
-            className="absolute inset-0 opacity-40 blur-xl scale-110 bg-cover bg-center"
-            style={{ backgroundImage: `url(${novelDetails.thumbnail})` }}
+            className="absolute inset-0  bg-cover bg-center scale-105"
+            style={{
+              backgroundImage: `url(${novelDetails.horizontal_thumbnail})`,
+            }}
           />
 
           {/* Dark Gradient Overlay - Vital for text contrast */}
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-transparent" />
+          <div
+            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
+          />
 
           {/* Content Wrapper - items-center fixes the vertical alignment */}
           <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
@@ -98,7 +104,7 @@ export default function NovelDetails() {
             {/* Info Section */}
             <div className="flex-1 space-y-6 text-center md:text-left">
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase text-white drop-shadow-md">
+                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase  drop-shadow-md">
                   {novelDetails.name || `Novel ${id}`}
                 </h1>
 
@@ -107,7 +113,7 @@ export default function NovelDetails() {
                   {novelDetails?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
-                      className="bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md px-3 py-1 text-xs font-bold"
+                      className="bg-primary text-xs"
                     >
                       {genre.name}
                     </Badge>
@@ -116,7 +122,7 @@ export default function NovelDetails() {
               </div>
 
               {/* Stats Bar - Refactored to Grid for perfect alignment */}
-              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8 px-8 py-2 rounded-2xl bg-white/3 border border-white/10 backdrop-blur-xl shadow-2xl">
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-2 rounded-2xl">
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${novelDetails?.price ?? 0} Ks`}
@@ -184,7 +190,7 @@ export default function NovelDetails() {
           <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
             <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
               <span className="w-1 h-6 bg-primary rounded-full" />
-              Description
+              {t("description")}
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               {novelDetails?.description ||
@@ -204,7 +210,7 @@ export default function NovelDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Total Community Sales
+                  {t("total_sales")}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {novelDetails.total_sales || 0}
@@ -223,7 +229,7 @@ export default function NovelDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Estimated Revenue
+                  {t("total_revenue")}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {(novelDetails.total_sales_amount || 0).toLocaleString()}{" "}
@@ -244,32 +250,3 @@ export default function NovelDetails() {
   );
 }
 
-// function Stat({
-//   icon,
-//   value,
-//   label
-// }: {
-//   icon: React.ReactNode;
-//   value: string | number;
-//   label: string
-// }) {
-//   return (
-//     <div className="flex items-center gap-3 px-2 first:pl-0 group/stat">
-//       {/* Icon Container with a subtle background on hover */}
-//       <div className="p-2 rounded-xl bg-white/5 group-hover/stat:bg-white/10 transition-colors">
-//         {icon}
-//       </div>
-
-//       <div className="flex flex-col items-start">
-//         {/* The Actual Data */}
-//         <span className="text-sm  font-black text-white leading-none">
-//           {value}
-//         </span>
-//         {/* The Label - Small and muted to keep focus on the number */}
-//         <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">
-//           {label}
-//         </span>
-//       </div>
-//     </div>
-//   );
-// }

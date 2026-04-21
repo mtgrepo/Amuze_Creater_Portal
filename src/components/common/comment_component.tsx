@@ -19,11 +19,13 @@ import { useCommentStoreCommand } from "@/composable/Command/Comment/useCommentS
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "../ui/scroll-area";
+import { useTranslation } from "react-i18next";
 
 const CommentsSection = ({commentsList, category } : {commentsList: any, category: string}) => {
   const { id } = useParams();
   const comicId = Number(id!);
-
+  const { t } = useTranslation();
+ 
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
   const [newComment, setNewComment] = useState("");
@@ -213,7 +215,7 @@ const CommentsSection = ({commentsList, category } : {commentsList: any, categor
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h2 className="text-xl font-bold mb-4">Comments ({comments.length})</h2>
+      <h2 className="text-xl font-bold mb-4">{t("comments")} ({comments.length})</h2>
 
       <div className="mb-6 border rounded-lg p-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 text-sm text-gray-400">

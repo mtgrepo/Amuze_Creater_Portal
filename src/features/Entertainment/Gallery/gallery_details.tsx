@@ -50,7 +50,11 @@ export default function GalleryDetails() {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-6 space-y-6">
         {/* BACK BUTTON */}
-        <Button variant="ghost" onClick={() => navigate("/entertainment/gallery")} className="cursor-pointer">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/entertainment/gallery")}
+          className="cursor-pointer"
+        >
           <ArrowLeft size={18} />
           Back to Gallery
         </Button>
@@ -63,8 +67,9 @@ export default function GalleryDetails() {
           />
 
           {/* Dark Gradient Overlay - Vital for text contrast */}
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-transparent" />
-
+          <div
+            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
+          />
           {/* Content Wrapper - items-center fixes the vertical alignment */}
           <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
             {/* Thumbnail Image */}
@@ -88,7 +93,7 @@ export default function GalleryDetails() {
                   {galleryDetails?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
-                      className="bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md px-3 py-1 text-xs font-bold"
+                      className="bg-primary text-xs"
                     >
                       {genre.name}
                     </Badge>
@@ -97,7 +102,7 @@ export default function GalleryDetails() {
               </div>
 
               {/* Stats Bar - Refactored to Grid for perfect alignment */}
-              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8 px-8 py-2 rounded-2xl bg-white/3 border border-white/10 backdrop-blur-xl shadow-2xl">
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-2 rounded-2xl">
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${galleryDetails?.price ?? 0} Ks`}
@@ -126,54 +131,52 @@ export default function GalleryDetails() {
         </div>
         {/* --- DESCRIPTION SECTION --- */}
         <div className="bg-card border border-border p-8 rounded-3xl shadow-sm">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
-            <span className="w-1.5 h-6 bg-primary rounded-full" />
+          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+            <span className="w-1 h-6 bg-primary rounded-full" />
             Description
           </h3>
-          <p className="text-muted-foreground leading-relaxed text-lg italic">
-            "
+          <p className="text-muted-foreground leading-relaxed">
             {galleryDetails?.description ||
               "No description available for this title."}
-            "
           </p>
         </div>
 
         {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-xl">
-            <div className="absolute -top-6 -right-6 p-4 text-primary opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-              <TrendingUp size={160} />
+          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
+            <div className="absolute top-0 right-0 p-4 text-primary opacity-5 group-hover:opacity-10 transition-opacity">
+              <TrendingUp size={120} />
             </div>
-            <div className="flex items-center gap-6 relative">
+            <div className="flex items-center gap-6">
               <div className="bg-primary/10 p-5 rounded-2xl text-primary ring-1 ring-primary/20">
-                <Users size={40} />
+                <Users size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-bold text-sm uppercase">
-                  Total Copies Sold
+                <p className="text-muted-foreground font-medium">
+                  Total Community Sales
                 </p>
-                <h3 className="text-5xl font-black text-foreground tracking-tighter">
+                <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {galleryDetails.total_sales || 0}
                 </h3>
               </div>
             </div>
           </div>
 
-          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-green-500/50 hover:shadow-xl">
-            <div className="absolute -top-6 -right-6 p-4 text-green-500 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-              <Banknote size={160} />
+          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-green-500/50 hover:shadow-lg">
+            <div className="absolute top-0 right-0 p-4 text-green-500 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Banknote size={120} />
             </div>
-            <div className="flex items-center gap-6 relative z-10">
+            <div className="flex items-center gap-6">
               <div className="bg-green-500/10 p-5 rounded-2xl text-green-500 ring-1 ring-green-500/20">
-                <Banknote size={40} />
+                <Banknote size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-bold text-sm uppercase">
-                  Estimated Gross Revenue
+                <p className="text-muted-foreground font-medium">
+                  Estimated Revenue
                 </p>
-                <h3 className="text-5xl font-black text-foreground tracking-tighter">
+                <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {(galleryDetails.total_sales_amount || 0).toLocaleString()}{" "}
-                  <span className="text-xl font-medium text-muted-foreground">
+                  <span className="text-lg font-normal text-muted-foreground">
                     Ks
                   </span>
                 </h3>
@@ -182,7 +185,7 @@ export default function GalleryDetails() {
           </div>
         </div>
 
-                {/* --- MEDIA ASSETS SECTION (Preview & Display) --- */}
+        {/* --- MEDIA ASSETS SECTION (Preview & Display) --- */}
         <div className="pt-4 bg-card p-8 rounded-3xl shadow-sm">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
             <ImageIcon className="text-primary" />
@@ -213,18 +216,10 @@ export default function GalleryDetails() {
 
         {/* COMMENTS SECTION */}
         <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
-          <div className="mb-6">
-            <h3 className="text-xl font-bold flex items-center gap-2">
-              Community Discussion
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              See what others are saying about this novel.
-            </p>
-          </div>
+          {/* <h3 className="text-xl font-bold mb-6">Reader Feedback</h3> */}
           <CommentsSection commentsList={commentsList} category="gallery" />
         </div>
       </div>
     </div>
   );
 }
-

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useGradeDetailsQuery } from "../../../../composable/Query/Entertainment/Education/Grades/useGradeDetailsQuery";
 import IconWithTooltip from "../../../../components/common/IconWithTooltip";
 import CourseActions from "../../../../components/Entertainment/Education/Course/course_actions";
+import { useTranslation } from "react-i18next";
 
 export default function GradeDetails() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ export default function GradeDetails() {
   // Viewer State
 
   const { gradeDetails, isLoading } = useGradeDetailsQuery(Number(id));
+  const { t } = useTranslation();
 
   // console.log("grade details", gradeDetails)
 
@@ -107,7 +109,7 @@ export default function GradeDetails() {
               }
               className="rounded-full shadow-lg"
             >
-              Add Course
+              {t('add_new_course')}
             </Button>
           </div>
 

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 import Stat from "@/components/common/details_stat";
+import { useTranslation } from "react-i18next";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -32,6 +33,8 @@ export default function ComicsTitleDetails() {
     roleId: Number(creator?.role_id) || 0,
     userId: Number(creator?.id) || 0,
   };
+
+  const { t } = useTranslation();
 
   // const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
   const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('comic', Number(id));
@@ -73,12 +76,14 @@ export default function ComicsTitleDetails() {
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
           {/* Background Image Layer - Increased blur for readability */}
           <div
-            className="absolute inset-0 opacity-40 blur-xl scale-110 bg-cover bg-center"
-            style={{ backgroundImage: `url(${comic.thumbnail})` }}
+            className="absolute inset-0  bg-cover bg-center scale-105"
+            style={{ backgroundImage: `url(${comic.horizontal_thumbnail})` }}
           />
 
           {/* Dark Gradient Overlay - Vital for text contrast */}
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-transparent" />
+          <div
+            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
+          />
 
           {/* Content Wrapper - items-center fixes the vertical alignment */}
           <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
@@ -94,7 +99,7 @@ export default function ComicsTitleDetails() {
             {/* Info Section */}
             <div className="flex-1 space-y-6 text-center md:text-left">
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase text-white drop-shadow-md">
+                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase drop-shadow-md">
                   {comic.name || `Novel ${id}`}
                 </h1>
 
@@ -103,7 +108,7 @@ export default function ComicsTitleDetails() {
                   {comic?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
-                      className="bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md px-3 py-1 text-xs font-bold"
+                      className="bg-primary text-xs"
                     >
                       {genre.name}
                     </Badge>
@@ -112,7 +117,7 @@ export default function ComicsTitleDetails() {
               </div>
 
               {/* Stats Bar - Refactored to Grid for perfect alignment */}
-              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8 px-8 py-2 rounded-2xl bg-white/3 border border-white/10 backdrop-blur-xl shadow-2xl">
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-2 rounded-2xl">
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${comic?.price ?? 0} Ks`}
@@ -164,7 +169,7 @@ export default function ComicsTitleDetails() {
               })}
               className="rounded-full shadow-lg"
             >
-              Add Episode
+              {t('add_new_episode')}
             </Button>
           </div>
 
@@ -212,7 +217,7 @@ export default function ComicsTitleDetails() {
 
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-6">Reader Feedback</h3>
+          {/* <h3 className="text-xl font-bold mb-6">Reader Feedback</h3> */}
           <CommentsSection commentsList={commentsList} category="comic"/>
         </div>
       </div>

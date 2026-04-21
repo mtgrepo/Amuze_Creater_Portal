@@ -16,7 +16,6 @@ export default function Grades() {
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id!;
 
-
     const queryParams = React.useMemo(() => {
       switch (tab) {
         case "approved":

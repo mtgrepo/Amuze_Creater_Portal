@@ -13,7 +13,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
 import { Separator } from "../../../components/ui/separator";
 
 export default function ComicEpisodeDetails() {
@@ -63,12 +69,16 @@ export default function ComicEpisodeDetails() {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen px-6">
       <div className="max-w-7xl mx-auto space-y-6">
-          {/* BACK BUTTON */}
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            <ArrowLeft size={18} />
-          </Button>
+        <Button 
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="cursor-pointer"
+          >
+            <ArrowLeft className=" h-4 w-4" />
+            Back to {location.state?.titleName}
+            </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div
@@ -93,7 +103,9 @@ export default function ComicEpisodeDetails() {
 
                 <div className="flex flex-wrap justify-center md:justify-start gap-6 my-6">
                   <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Price</span>
+                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
+                      Price
+                    </span>
                     <div className="flex items-center gap-2 text-green-400 font-bold text-xl">
                       <Banknote size={20} />
                       <span>{episodeDetails.price ?? 0} Ks</span>
@@ -101,20 +113,23 @@ export default function ComicEpisodeDetails() {
                   </div>
                   <div className="h-10 w-px bg-white/10 hidden md:block" />
                   <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Views</span>
+                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
+                      Views
+                    </span>
                     <div className="flex items-center gap-2 text-primary dark:text-blue-400 font-bold text-xl">
                       <Eye size={20} />
-                      <span>{(episodeDetails.views ?? 0).toLocaleString()}</span>
+                      <span>
+                        {(episodeDetails.views ?? 0).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
         </div>
 
-                {/* STATS GRID */}
+        {/* STATS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
             <div className="absolute top-0 right-0 p-4 text-primary opacity-5 group-hover:opacity-10 transition-opacity">
@@ -125,7 +140,9 @@ export default function ComicEpisodeDetails() {
                 <Users size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-medium">Total Community Sales</p>
+                <p className="text-muted-foreground font-medium">
+                  Total Community Sales
+                </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {episodeDetails.total_sales || 0}
                 </h3>
@@ -142,110 +159,67 @@ export default function ComicEpisodeDetails() {
                 <Banknote size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-medium">Estimated Revenue</p>
+                <p className="text-muted-foreground font-medium">
+                  Estimated Revenue
+                </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
-                  {(episodeDetails.total_sales_amount || 0).toLocaleString()} <span className="text-lg font-normal text-muted-foreground">Ks</span>
+                  {(episodeDetails.total_sales_amount || 0).toLocaleString()}{" "}
+                  <span className="text-lg font-normal text-muted-foreground">
+                    Ks
+                  </span>
                 </h3>
               </div>
             </div>
           </div>
         </div>
-{/* 
-        <div className="border border-border rounded-[1.5rem] p-4">
-
-          <div className="flex items-center justify-between p-4  border-b border-border shrink-0">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handlePrev}
-                disabled={currentImageIndex === 0}
-              >
-                <ChevronLeft size={20} />
-              </Button>
-
-              <span className="text-sm font-medium min-w-25 text-center">
-                Page {currentImageIndex + 1} of {images.length}
-              </span>
-
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleNext}
-                disabled={currentImageIndex === images.length - 1}
-              >
-                <ChevronRight size={20} />
-              </Button>
-            </div>
-            <div className="w-6" />
-          </div>
-
-          <ScrollArea className="flex-1 w-full ">
-            <div className="flex items-start justify-center p-4 min-h-full">
-              {images.length > 0 ? (
-                <img
-                  src={images[currentImageIndex].url}
-                  alt={`Page ${currentImageIndex + 1}`}
-                  className="max-w-full h-[50vh] max-xl:h-[calc(100vh-60rem)] shadow-2xl"
-                />
-              ) : (
-                <div className="h-full flex items-center justify-center text-zinc-500">
-                  No pages available
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </div> */}
 
         <Card>
           <CardHeader>
             <CardTitle>Comics Pages</CardTitle>
             <Separator />
             <CardDescription>
-                          <div className="flex items-center gap-4">
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handlePrev}
-                disabled={currentImageIndex === 0}
-              >
-                <ChevronLeft size={20} />
-              </Button>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handlePrev}
+                  disabled={currentImageIndex === 0}
+                >
+                  <ChevronLeft size={20} />
+                </Button>
 
-              <span className="text-sm font-medium min-w-25 text-center">
-                Page {currentImageIndex + 1} of {images.length}
-              </span>
+                <span className="text-sm font-medium min-w-25 text-center">
+                  Page {currentImageIndex + 1} of {images.length}
+                </span>
 
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleNext}
-                disabled={currentImageIndex === images.length - 1}
-              >
-                <ChevronRight size={20} />
-              </Button>
-            </div>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleNext}
+                  disabled={currentImageIndex === images.length - 1}
+                >
+                  <ChevronRight size={20} />
+                </Button>
+              </div>
             </CardDescription>
             <CardContent>
-                      <ScrollArea className="flex-1 w-full ">
-            <div className="flex items-start justify-center p-4 min-h-full">
-              {images.length > 0 ? (
-                <img
-                  src={images[currentImageIndex].url}
-                  alt={`Page ${currentImageIndex + 1}`}
-                  className="max-w-full h-[50vh] max-xl:h-[calc(100vh-60rem)] shadow-2xl"
-                />
-              ) : (
-                <div className="h-full flex items-center justify-center text-zinc-500">
-                  No pages available
+              <ScrollArea className="flex-1 w-full ">
+                <div className="flex items-start justify-center p-4 min-h-full">
+                  {images.length > 0 ? (
+                    <img
+                      src={images[currentImageIndex].url}
+                      alt={`Page ${currentImageIndex + 1}`}
+                      className="max-w-full h-[50vh] max-xl:h-[calc(100vh-60rem)] shadow-2xl"
+                    />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-zinc-500">
+                      No pages available
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </ScrollArea>
+              </ScrollArea>
             </CardContent>
           </CardHeader>
         </Card>

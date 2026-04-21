@@ -18,10 +18,11 @@ import {
 } from "@/components/ui/table";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
-import NovelColumn from "./column";
+import type { Notification } from "@/types/response/notification/notificationResponse";
+import NotificationColumn from "./column";
 
-export type NovelProps = {
-  data: NovelResponse[];
+export type NotificationProps = {
+  data: Notification[];
   total: number;
   totalPages: number;
   page: number;
@@ -43,7 +44,7 @@ export function NotificationComponent({
   limit,
   search,
   onPaginationChange,
-}: NovelProps) {
+}: NotificationProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -53,7 +54,7 @@ export function NotificationComponent({
     []
   )
 
-  const columns = NovelColumn();
+  const columns = NotificationColumn();
   const table = useReactTable({
     data,
     columns,
@@ -78,14 +79,14 @@ export function NotificationComponent({
     },
   });
 React.useEffect(() => {
-  table.getColumn("name")?.setFilterValue(search);
+  table.getColumn("title")?.setFilterValue(search);
 }, [search, table]);
 
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

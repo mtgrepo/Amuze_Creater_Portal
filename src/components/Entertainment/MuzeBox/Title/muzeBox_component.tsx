@@ -85,7 +85,7 @@ React.useEffect(() => {
 
       <div className="overflow-hidden rounded-md border grid grid-cols-1 gap-3">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

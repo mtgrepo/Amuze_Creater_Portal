@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -15,8 +15,8 @@ import { useCourseDetailsQuery } from "../../../../composable/Query/Entertainmen
 export default function CourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate(); 
+  const location = useLocation();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
 
   const { courseDetails, isLoading: isCourseDetailsLoading} = useCourseDetailsQuery(Number(id))
 
@@ -42,10 +42,11 @@ export default function CourseDetails() {
 
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <Button variant="outline" onClick={() => navigate(-1)}>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
+        <Button variant="ghost" onClick={() => navigate(-1)}>
           <ArrowLeft size={18} />
+          Back to {location?.state?.titleName}
         </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
@@ -54,7 +55,7 @@ export default function CourseDetails() {
             style={{ backgroundImage: `url(${courseDetails.thumbnail})` }}
           />
 
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center md:items-start">
+          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center">
             <div className="w-40 h-56 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
               <img
                 src={courseDetails.thumbnail}
@@ -63,12 +64,11 @@ export default function CourseDetails() {
               />
             </div>
 
-            <div className="flex-1 space-y-6 text-center md:text-left">
+            <div className="flex-1 space-y-6 text-center items-center md:text-left">
               <div>
                 <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase text-white">
                   {courseDetails.name || `Course ${id}`}
                 </h1>
-                
 
                 <div className="flex flex-wrap justify-center md:justify-start gap-6">
                   <div className="flex flex-col items-center md:items-start">

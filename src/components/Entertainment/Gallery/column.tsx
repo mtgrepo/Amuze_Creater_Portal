@@ -172,11 +172,11 @@ const columns: ColumnDef<GalleryResponse>[] = [
       const approve = row.getValue("approve_status") as number;
         if (approve === 1) {
           return (
-            <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
+            <p className="text-green-500 ">Approved</p>
           );
         } else if (approve === 0) {
           return (
-            <IconWithTooltip tooltip="Rejected" icon={<XCircle className="text-red-500 w-4 h-4" />} />
+            <p className="text-red-500 ">Rejected</p>
           );
         }
       

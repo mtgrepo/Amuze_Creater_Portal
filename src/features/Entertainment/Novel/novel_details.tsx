@@ -1,5 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Users, Banknote, Eye, Loader2, TrendingUp, BookOpen, ArrowLeft } from "lucide-react";
+import {
+  Users,
+  Banknote,
+  Eye,
+  Loader2,
+  TrendingUp,
+  BookOpen,
+  ArrowLeft,
+  ThumbsUp,
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useNovelDetailsQuery } from "../../../composable/Query/Entertainment/Novel/useNovelDetailsQuery";
@@ -12,21 +22,29 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
+import Stat from "@/components/common/details_stat";
+import { useTheme } from "@/components/common/Themes/theme-provider";
 
 export default function NovelDetails() {
   const { id } = useParams();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
-  const { novelDetails, isNovelDetailsLoading } = useNovelDetailsQuery(Number(id));
+  const { novelDetails, isNovelDetailsLoading } = useNovelDetailsQuery(
+    Number(id),
+  );
 
-  const { commentsList, isLoading } = useCommentQuery('novel', Number(id))
-
-
+  const { commentsList, isLoading } = useCommentQuery("novel", Number(id));
 
   const pdfUrl = novelDetails?.file_path || novelDetails?.files_path?.[0]?.url;
   const navigate = useNavigate();
-    
-  if ((isNovelDetailsLoading && !novelDetails) || (isLoading && !commentsList))  {
+
+  //get current theme
+  const { theme } = useTheme();
+  
+  if (
+    (isNovelDetailsLoading && !novelDetails) ||
+    (isLoading && !commentsList)
+  ) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -44,21 +62,32 @@ export default function NovelDetails() {
   }
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl  px-6 mx-auto space-y-6">
         {/* BACK BUTTON */}
-          <Button variant="outline" onClick={() => navigate(-1)} className="cursor-pointer">
-            <ArrowLeft size={18} />
-          </Button>
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/entertainment/novel")}
+          className="cursor-pointer"
+        >
+          <ArrowLeft size={18} /> Back to Novel
+        </Button>
+
         {/* HERO CARD */}
-        <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
+        <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
+          {/* Background Image Layer - Increased blur for readability */}
           <div
-            className="absolute inset-0 opacity-30  dark:grayscale-[0.5] blur-sm bg-cover bg-center"
+            className="absolute inset-0 opacity-40 blur-xl scale-110 bg-cover bg-center"
             style={{ backgroundImage: `url(${novelDetails.thumbnail})` }}
           />
 
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center md:items-start">
-            <div className="w-40 h-56 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
+          {/* Dark Gradient Overlay - Vital for text contrast */}
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-transparent" />
+
+          {/* Content Wrapper - items-center fixes the vertical alignment */}
+          <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+            {/* Thumbnail Image */}
+            <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
               <img
                 src={novelDetails.thumbnail}
                 alt={novelDetails.name}
@@ -66,52 +95,63 @@ export default function NovelDetails() {
               />
             </div>
 
+            {/* Info Section */}
             <div className="flex-1 space-y-6 text-center md:text-left">
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase text-white">
+              <div className="space-y-4">
+                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase text-white drop-shadow-md">
                   {novelDetails.name || `Novel ${id}`}
                 </h1>
 
-                {/* Genre Tags - Fixed with relative/z-10 and data check */}
-                <div className="relative  flex flex-wrap justify-center md:justify-start gap-2 my-6">
+                {/* Genre Tags */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-2 py-2">
                   {novelDetails?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
-                      className="bg-primary text-white border-none"
+                      className="bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md px-3 py-1 text-xs font-bold"
                     >
-                      {genre.name || genre.name_eng}
+                      {genre.name}
                     </Badge>
                   ))}
                 </div>
+              </div>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-6">
-                  <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Price</span>
-                    <div className="flex items-center gap-2 text-green-400 font-bold text-xl">
-                      <Banknote size={20} />
-                      <span>{novelDetails.price ?? 0} Ks</span>
-                    </div>
-                  </div>
-                  <div className="h-10 w-px bg-white/10 hidden md:block" />
-                  <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">Views</span>
-                    <div className="flex items-center gap-2 text-primary dark:text-blue-400 font-bold text-xl">
-                      <Eye size={20} />
-                      <span>{(novelDetails.views ?? 0).toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
+              {/* Stats Bar - Refactored to Grid for perfect alignment */}
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8 px-8 py-2 rounded-2xl bg-white/3 border border-white/10 backdrop-blur-xl shadow-2xl">
+                <Stat
+                  icon={<Banknote className="text-emerald-400" size={20} />}
+                  value={`${novelDetails?.price ?? 0} Ks`}
+                  label="Price"
+                />
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={novelDetails?.rating ?? "0"}
+                  label="Rating"
+                />
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(novelDetails?.views ?? 0).toLocaleString()}
+                  label="Views"
+                />
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={novelDetails?.likes ?? "0"}
+                  label="Likes"
+                />
+              </div>
 
+              {/* Action Button */}
+              <div className="pt-2">
                 <Dialog>
-                  <DialogTrigger asChild className="my-6">
-                    <Button className="cursor-pointer py-3 ">
-                      <BookOpen />
+                  <DialogTrigger asChild>
+                    <Button className="cursor-pointer">
+                      <BookOpen className="mr-2 h-4 w-4" />
                       Read PDF
                     </Button>
                   </DialogTrigger>
 
                   <DialogContent className="max-w-[80vw]! w-full h-[90vh] p-0 border-border flex flex-col overflow-hidden">
-                    {" "}
                     <div className="flex items-center justify-between p-4 border-b border-border bg-background shrink-0">
                       <h2 className="text-sm font-medium">
                         PDF Viewer: {novelDetails.name}
@@ -123,6 +163,7 @@ export default function NovelDetails() {
                           <Viewer
                             fileUrl={pdfUrl}
                             plugins={[defaultLayoutPluginInstance]}
+                            theme={theme === "dark" ? "dark" : "light"}
                           />
                         </Worker>
                       ) : (
@@ -133,7 +174,6 @@ export default function NovelDetails() {
                     </div>
                   </DialogContent>
                 </Dialog>
-
               </div>
             </div>
           </div>
@@ -147,7 +187,8 @@ export default function NovelDetails() {
               Description
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              {novelDetails?.description || "No description available for this title."}
+              {novelDetails?.description ||
+                "No description available for this title."}
             </p>
           </div>
         </div>
@@ -162,7 +203,9 @@ export default function NovelDetails() {
                 <Users size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-medium">Total Community Sales</p>
+                <p className="text-muted-foreground font-medium">
+                  Total Community Sales
+                </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {novelDetails.total_sales || 0}
                 </h3>
@@ -179,9 +222,14 @@ export default function NovelDetails() {
                 <Banknote size={32} />
               </div>
               <div>
-                <p className="text-muted-foreground font-medium">Estimated Revenue</p>
+                <p className="text-muted-foreground font-medium">
+                  Estimated Revenue
+                </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
-                  {(novelDetails.total_sales_amount || 0).toLocaleString()} <span className="text-lg font-normal text-muted-foreground">Ks</span>
+                  {(novelDetails.total_sales_amount || 0).toLocaleString()}{" "}
+                  <span className="text-lg font-normal text-muted-foreground">
+                    Ks
+                  </span>
                 </h3>
               </div>
             </div>
@@ -195,3 +243,33 @@ export default function NovelDetails() {
     </div>
   );
 }
+
+// function Stat({
+//   icon,
+//   value,
+//   label
+// }: {
+//   icon: React.ReactNode;
+//   value: string | number;
+//   label: string
+// }) {
+//   return (
+//     <div className="flex items-center gap-3 px-2 first:pl-0 group/stat">
+//       {/* Icon Container with a subtle background on hover */}
+//       <div className="p-2 rounded-xl bg-white/5 group-hover/stat:bg-white/10 transition-colors">
+//         {icon}
+//       </div>
+
+//       <div className="flex flex-col items-start">
+//         {/* The Actual Data */}
+//         <span className="text-sm  font-black text-white leading-none">
+//           {value}
+//         </span>
+//         {/* The Label - Small and muted to keep focus on the number */}
+//         <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">
+//           {label}
+//         </span>
+//       </div>
+//     </div>
+//   );
+// }

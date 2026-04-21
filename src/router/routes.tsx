@@ -48,6 +48,7 @@ import MuseumUpdate from "@/features/Entertainment/Museum/museum_update";
 import MuseumTitleCreate from "@/features/Entertainment/Museum/museum_title_create";
 import StoryTellingTitleCreate from "@/features/Entertainment/StoryTelling/storytelling_title_create";
 import MuseumTitleDetails from "@/features/Entertainment/Museum/museum_title_details";
+import NotificationPage from "@/features/Notification/notification";
 
 const router = createBrowserRouter(
   [
@@ -580,6 +581,14 @@ const router = createBrowserRouter(
               { label: "Details" },
             ],
           },
+        },
+        //notification
+        {
+          path: "/notifications",
+          element: <NotificationPage />,
+          handle: {
+            crumb: ["Notifications"],
+          }
         },
         //Auth
         {

@@ -2,13 +2,14 @@ import { useComicsTitleDetailsQuery } from "@/composable/Query/Entertainment/Com
 import { decryptAuthData } from "@/lib/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  DollarSign,
   Star,
   Eye,
   ThumbsUp,
   Loader2,
   XCircle,
   CircleCheckBig,
+  ArrowLeft,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
@@ -16,6 +17,7 @@ import EpisodeActions from "@/components/Entertainment/Comics/Episodes/episode_a
 import { Badge } from "@/components/ui/badge";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
+import Stat from "@/components/common/details_stat";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -58,50 +60,81 @@ export default function ComicsTitleDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
-
-        {/* --- HEADER / BANNER AREA --- */}
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
-          {/* Background Image Layer */}
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
+        <Button
+         className="cursor-pointer"
+          onClick={() => navigate("/entertainment/comics")}
+          variant="ghost"
+          >
+            <ArrowLeft />
+            Back to Comics
+          </Button>
+        {/* --- HEADER --- */}
+        <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
+          {/* Background Image Layer - Increased blur for readability */}
           <div
-            className="absolute inset-0 opacity-40 blur-md scale-105 bg-cover bg-center"
-            style={{ backgroundImage: `url(${comic.horizontal_thumbnail})` }}
+            className="absolute inset-0 opacity-40 blur-xl scale-110 bg-cover bg-center"
+            style={{ backgroundImage: `url(${comic.thumbnail})` }}
           />
-          {/* Gradient Overlay for Readability */}
-          <div className="absolute inset-0 bg-linear-to-t from-card via-card/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80" />
 
-          {/* Content Wrapper: Changed from fixed height to min-height */}
-          <div className="relative flex flex-col md:flex-row gap-8 p-6 md:p-10 items-center md:items-end min-h-80">
+          {/* Dark Gradient Overlay - Vital for text contrast */}
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-transparent" />
 
-            <div className="shrink-0 group">
-              <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 transition-transform group-hover:scale-[1.02] duration-300">
-                <img
-                  src={comic?.thumbnail}
-                  alt={comic?.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          {/* Content Wrapper - items-center fixes the vertical alignment */}
+          <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+            {/* Thumbnail Image */}
+            <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
+              <img
+                src={comic.thumbnail}
+                alt={comic.name}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Info Section: Added better spacing and responsive text alignment */}
-            <div className="flex-1 space-y-4 text-center md:text-left w-full items-center">
-              <h1 className="text-xl lg:text-2xl font-black tracking-tight text-foreground drop-shadow-sm leading-tight">
-                {comic?.name}
-              </h1>
+            {/* Info Section */}
+            <div className="flex-1 space-y-6 text-center md:text-left">
+              <div className="space-y-4">
+                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase text-white drop-shadow-md">
+                  {comic.name || `Novel ${id}`}
+                </h1>
 
-              <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                {comic?.generes?.map((genre: any) => (
-                  <Badge key={genre?.id} className="bg-primary text-white border-none">
-                    {genre.name}
-                  </Badge>
-                ))}
+                {/* Genre Tags */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-2 py-2">
+                  {comic?.generes?.map((genre: any) => (
+                    <Badge
+                      key={genre?.id}
+                      className="bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md px-3 py-1 text-xs font-bold"
+                    >
+                      {genre.name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              {/* Stats Bar: Styled as a floating card for better separation */}
-              <div className="inline-flex flex-wrap items-center justify-center md:justify-start gap-4 py-3 rounded-2xl bg-background/50 backdrop-blur-md shadow-inner">
-                <Stat icon={<DollarSign className="text-blue-500" />} value={`${comic?.price ?? 0} Kyats`} />
-                <Stat icon={<Star className="text-yellow-500 fill-yellow-500" />} value={`${comic?.rating ?? 0} Rating`} />
-                <Stat icon={<Eye className="text-blue-500" />} value={`${comic?.views ?? 0} Views`} />
-                <Stat icon={<ThumbsUp className="text-red-500" />} value={`${comic?.likes ?? 0} Likes`} />
+
+              {/* Stats Bar - Refactored to Grid for perfect alignment */}
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8 px-8 py-2 rounded-2xl bg-white/3 border border-white/10 backdrop-blur-xl shadow-2xl">
+                <Stat
+                  icon={<Banknote className="text-emerald-400" size={20} />}
+                  value={`${comic?.price ?? 0} Ks`}
+                  label="Price"
+                />
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={comic?.rating ?? "0"}
+                  label="Rating"
+                />
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(comic?.views ?? 0).toLocaleString()}
+                  label="Views"
+                />
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={comic?.likes ?? "0"}
+                  label="Likes"
+                />
               </div>
             </div>
           </div>
@@ -183,16 +216,6 @@ export default function ComicsTitleDetails() {
           <CommentsSection commentsList={commentsList} category="comic"/>
         </div>
       </div>
-    </div>
-  );
-}
-
-// Small helper component for header stats
-function Stat({ icon, value }: { icon: React.ReactNode; value: string }) {
-  return (
-    <div className="flex items-center gap-2 px-2 first:pl-0">
-      <div className="p-1 rounded-md">{icon}</div>
-      <span className="text-xs md:text-sm font-bold whitespace-nowrap">{value}</span>
     </div>
   );
 }

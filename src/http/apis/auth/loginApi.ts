@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 export const creatorLogin = async (data: LoginInput) => {
   try {
     const response = await axiosInstance.post(`auth/login`, data);
-    console.log("login response", response?.data);
+    // console.log("login response", response?.data);
     return response?.data;
   } catch (error) {
     if (error instanceof AxiosError) {

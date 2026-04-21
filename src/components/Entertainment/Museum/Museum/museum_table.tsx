@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import Paginator from "@/components/common/Pagination/paginator";
-import { columns } from "./columns";
 import type { Museum } from "@/types/response/entertainment/museum/museumResponse";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
+import MuseumColumns from "./columns";
 
 interface StoryTellingTableProps {
   data: Museum[];
@@ -47,7 +47,7 @@ export function MuseumTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
+  const columns = MuseumColumns();
   const table = useReactTable({
     data: data ?? [],
     columns: columns,

@@ -61,7 +61,7 @@ const data = {
       ],
     },
     {
-        title: "Entertainment",
+        title: "Content",
         url: "#",
         icon: BookOpen,
         items: [
@@ -79,11 +79,6 @@ const data = {
               title: "Story Telling",
               url: "/entertainment/storytelling",
               icon: BookHeadphones
-            },
-            {
-              title: "Journal",
-              url: "/entertainment/journal",
-              icon: Newspaper
             },
             {
               title: "Gallery",

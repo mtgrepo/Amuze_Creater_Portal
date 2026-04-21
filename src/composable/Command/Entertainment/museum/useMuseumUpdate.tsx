@@ -1,9 +1,10 @@
 import { updateMuseum, type UpdateMuseumPayload } from "@/http/apis/entertainment/museum/museumApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 export const useMuseumUpdate = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const museumMutation = useMutation({
     mutationKey : ["museumDetail"],
     mutationFn: async ({id, data} : {id: number, data: UpdateMuseumPayload}) => {
@@ -11,7 +12,7 @@ export const useMuseumUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["museumDetail"] });
-      router.navigate('/entertainment/museum')
+      navigate('/entertainment/museum')
     },
   });
 

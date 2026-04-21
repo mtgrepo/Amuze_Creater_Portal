@@ -15,6 +15,8 @@ export default function StoryTellingEpisodeUpdate() {
     Number(id),
   );
 
+  console.log("story episode", storyTellingEpisodeDetails)
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">

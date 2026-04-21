@@ -65,7 +65,7 @@ export const getMuseumTitleDetail = async (id: number) => {
     const result = await axiosInstance.get(
       `museum/get-museum-title/${id}`,
     );
-    return result.data;
+    return result.data.data;
   } catch (error) {
     if (error instanceof AxiosError) {
           throw new Error(error.response?.data.message || "API failed");

@@ -1,3 +1,5 @@
+import type { MuseumEpisode } from "./museumEpisodeResponse";
+
 export interface MuseumTitleDetailResponseType {
     status: boolean;
     message: string;
@@ -18,13 +20,3 @@ export interface MuseumTitleDetailResponse {
     ratings: number;
 }
 
-export interface MuseumEpisode{
-    id: number;
-    name: string;
-    thumbnail: string;
-    approve_status: number;
-    is_publish: boolean;
-    likes: number;
-    views: number;
-    created_at?: Date | null;
-}

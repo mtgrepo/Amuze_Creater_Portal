@@ -11,33 +11,30 @@ import {
 import { ClipboardPenLine, Info, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import type { ComicsTitleDetailsResponse } from "@/types/response/entertainment/comics/comicsTitleDetailsResponse";
+import type { MuseumTitleDetailResponse } from "@/types/response/entertainment/museum/museumTitleDetailResponse";
 
 interface TitleActionsProps {
-  episode: ComicsTitleDetailsResponse;
-  museumId?:number,
-  titleId?: number; 
+  title: MuseumTitleDetailResponse,
+  museumId: number,
 }
 
-export default function TitleActions({ episode, museumId, titleId }: TitleActionsProps) {
+export default function TitleActions({ title, museumId }: TitleActionsProps) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/entertainment/museum/${museumId}/title/edit/${episode?.id}`, {
+    navigate(`/entertainment/museum/${museumId}/title/edit/${title?.id}`, {
       state: { 
-        episode, 
-        museumId,
-        titleId 
+       title,
+       museumId 
       },
     });
   };
 
   const handleViewDetails = () => {
-        navigate(`/entertainment/museum/${museumId}/episode/details/${episode?.id}`, {
+        navigate(`/entertainment/museum/${museumId}/title/details/${title?.id}`, {
       state: { 
-        episode, 
-        museumId,
-        titleId 
+        title,
+        museumId 
       },
     });
   }
@@ -59,7 +56,7 @@ export default function TitleActions({ episode, museumId, titleId }: TitleAction
         </DropdownMenuItem>
 
         <DropdownMenuItem onSelect={handleEdit}>
-          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit Episode
+          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit Title
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

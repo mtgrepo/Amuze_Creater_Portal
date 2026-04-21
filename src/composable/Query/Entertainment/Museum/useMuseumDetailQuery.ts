@@ -11,5 +11,6 @@ export const useMuseumDetailQuery = (id:number) => {
     return{
         museumDetail : museumDetail?.data?.data,
         isDetailPending: museumDetail.isPending,
+        error:museumDetail?.error
     }
 }

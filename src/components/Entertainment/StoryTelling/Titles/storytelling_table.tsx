@@ -19,9 +19,10 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import type { StoryTellingTitleResponse } from "@/types/response/entertainment/storytelling/storytellingResponse"
-import { columns } from "./columns";
+import StoryTellingColumns from "./columns";
 import React from "react";
 import Paginator from "@/components/common/Pagination/paginator";
+import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 
 interface StoryTellingTableProps {
     data: StoryTellingTitleResponse[];
@@ -46,7 +47,7 @@ export function StoryTellingTable({
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-
+    const columns = StoryTellingColumns();
     const table = useReactTable({
         data: data ?? [],
         columns: columns,
@@ -136,7 +137,14 @@ export function StoryTellingTable({
                 </div>
                 {total > 0 && (
                     <div className="flex items-center gap-3">
-                       
+
+                        <PageSizeComponent
+                            pageSize={pageSize}
+                            totalRows={total}
+                            onChange={(size) =>
+                                onPaginationChange(1, size === "all" ? total : size)
+                            }
+                        />
                         <Paginator
                             currentPage={page}
                             totalPages={totalPages}

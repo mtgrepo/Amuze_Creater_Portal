@@ -1,86 +1,138 @@
-import ImageModal from "@/components/common/image_modal";
 import { Status } from "@/components/common/status";
 import { Button } from "@/components/ui/button";
 import { useMuseumEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumEpisodeDetailsQuery";
-import { ArrowLeft, Eye, Images, Loader2} from "lucide-react";
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom"
+import { ArrowLeft, Eye, Loader2 } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function MuseumEpisodeDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [showImage, setShowImage] = React.useState(false);
 
-
-    const {episodeDetails, isEpisodeLoading} = useMuseumEpisodeDetailsQuery(
-        Number(id)
-    );
+    const { episodeDetails, isEpisodeLoading } =
+        useMuseumEpisodeDetailsQuery(Number(id));
 
     if (isEpisodeLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-                <p className="text-gray-400">Loading museum details...</p>
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                <p className="text-muted-foreground">
+                    Loading episode details...
+                </p>
             </div>
         );
     }
 
     if (!episodeDetails) {
         return (
-            <div className="min-h-screen flex items-center justify-center ">
-                <p>Episode details not found.</p>
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-muted-foreground">
+                    Episode details not found.
+                </p>
             </div>
         );
     }
+
     return (
-        <div className="min-h-screen p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
-                <div className="relative overflow-hidden rounded-2xl border border-border min-h-75">
-                    <div
-                        className="absolute inset-0 opacity-30 grayscale-[0.5] blur-sm bg-cover bg-center"
-                        style={{ backgroundColor: "var(--card-foreground)" }}
-                    />
+        <div className="min-h-screen bg-background text-foreground">
+            <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+                <div className="flex items-center">
+                    <Button
+                        variant="outline"
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                    >
+                        <ArrowLeft size={18} />
+                        Back
+                    </Button>
+                </div>
+                <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
 
-                    <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center md:items-start">
-                        <div className="w-40 h-56 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
-                            <img
-                                src={episodeDetails.thumbnail}
-                                alt={episodeDetails.name}
-                                className="w-full h-full object-cover"
+                    <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border    ">
+                        <img
+                            src={episodeDetails.thumbnail}
+                            alt={episodeDetails.name}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+
+                    <div className="flex-1 space-y-4 text-center md:text-left">
+                        <h1 className="text-2xl md:text-3xl font-black">
+                            {episodeDetails.name || `Episode ${id}`}
+                        </h1>
+
+                        <div className="flex justify-center md:justify-start">
+                            <Status
+                                icon={<Eye size={16} />}
+                                value={episodeDetails.views}
+                                color="gray"
+                                label="Views"
                             />
-                        </div>
-
-                        <div className="flex-1 space-y-6 text-center md:text-left">
-                            <div>
-                                <h1 className="text-2xl font-bold tracking-tight mb-2 uppercase">
-                                    {episodeDetails.name || `Ep ${id}`}
-                                </h1>
-                                <Status icon={<Eye size={16} />} value={episodeDetails?.views} color={"gray"} label={"Views"} />
-                            </div>
                         </div>
                     </div>
                 </div>
 
+                <div className="bg-card border border-border p-6 rounded-3xl">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span className="w-1 h-6 bg-primary rounded-full" />
+                        Images
+                    </h3>
 
-                <Button
-                    className="w-full bg-primary/90 text-white cursor-pointer"
-                    onClick={() => setShowImage((prev) => !prev)}
-                >
-                   <Images/> Images
-                </Button>
+                    {episodeDetails.files_path?.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
 
-                {showImage && (
-                    <ImageModal images={episodeDetails.files_path}
-                        onClose={() => setShowImage(false)} />
-                )}
+                            {episodeDetails.files_path.map((file: any) => (
+                                <div
+                                    key={file.id}
+                                    className="group rounded-xl overflow-hidden border bg-background shadow-sm hover:shadow-md transition"
+                                >
+                                    <div className="overflow-hidden">
+                                        <img
+                                            src={file.image}
+                                            alt="Episode"
+                                            className="w-full h-40 object-cover group-hover:scale-105 transition duration-300"
+                                        />
+                                    </div>
 
-                <div className="pt-4">
-                    <Button variant="outline" onClick={() => navigate(-1)}>
-                        <ArrowLeft className="mr-2" size={18} />
-                        Back
-                    </Button>
+                                    <div className="p-3 space-y-1">
+                                        <div className="text-sm font-medium line-clamp-1">
+                                            {file.label ? (
+                                                <span
+                                                    dangerouslySetInnerHTML={{ __html: file.label }}
+                                                />
+                                            ) : (
+                                                <span className="text-muted-foreground italic">
+                                                    No Label
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="text-xs text-muted-foreground line-clamp-2">
+                                            {file.description ? (
+                                                <span
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: file.description,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span className="italic">
+                                                    No Description
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                        </div>
+                    ) : (
+                        <div className="text-center py-16 border border-dashed rounded-2xl">
+                            <p className="text-muted-foreground italic">
+                                No images available.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
-    )
+    );
 }

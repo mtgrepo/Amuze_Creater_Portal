@@ -39,9 +39,9 @@ export default function EpisodeActions({
     );
   };
 
-    const handleViewDetails = () => {
-        navigate(`/entertainment/museum/${museumId}/title/${titleId}/episode/details/${episode.id}`, {
-      state: { 
+  const handleViewDetails = () => {
+    navigate(`/entertainment/museum/${museumId}/title/${titleId}/episode/details/${episode.id}`, {
+      state: {
         episode,
         museumId,
         titleId
@@ -52,27 +52,27 @@ export default function EpisodeActions({
 
   return (
     <>
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={handleViewDetails}>
+            <Info className="mr-2 h-4 w-4" /> View Details
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleEdit}>
+            <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
+          </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={handleEdit}>
-          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
-        </DropdownMenuItem>
 
-            <DropdownMenuItem onSelect={handleViewDetails}>
-          <Info className="mr-2 h-4 w-4" /> View Details
-        </DropdownMenuItem>
 
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
     </>
   );

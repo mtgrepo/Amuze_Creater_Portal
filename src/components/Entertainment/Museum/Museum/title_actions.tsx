@@ -56,7 +56,7 @@ export default function TitleActions({title, museumId }: TitleActionsProps) {
         </DropdownMenuItem>
 
         <DropdownMenuItem onSelect={handleEdit}>
-          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit Title
+          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

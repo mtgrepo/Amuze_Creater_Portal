@@ -21,7 +21,6 @@ import NovelDetails from "../features/Entertainment/Novel/novel_details";
 import AuthorReport from "../features/Report/author_report";
 import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/storytelling_title_details";
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
-import StoryTellingEpisodeDetails from "@/features/Entertainment/StoryTelling/storytelling_episode_details";
 import StoryTellingEpisodeUpdate from "@/features/Entertainment/StoryTelling/storytelling_episode_update";
 import GalleryMain from "@/features/Entertainment/Gallery/gallery";
 import GalleryCreate from "@/features/Entertainment/Gallery/gallery_create";
@@ -481,23 +480,6 @@ const router = createBrowserRouter(
                 href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
               },
               { label: "Episode Create" },
-            ],
-          },
-        },
-        {
-          path: "/entertainment/storytelling/:titleId/episode/details/:id",
-          element: <StoryTellingEpisodeDetails />,
-          handle: {
-            crumb: ({ location }: any) => [
-              { label: "StoryTelling", href: "/entertainment/storytelling" },
-              {
-                label: location?.state?.titleName,
-                href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
-              },
-              {
-                label: location?.state?.episode?.name,
-                href: `/entertainment/storytelling/details/${location?.state?.episode?.id}`,
-              },
             ],
           },
         },

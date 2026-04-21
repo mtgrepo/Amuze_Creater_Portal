@@ -6,167 +6,169 @@ import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/epi
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
-import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery"
-import router from "@/router/routes";
-import { CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
-import { useParams } from "react-router-dom"
+import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery";
+import { ArrowLeft, CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function StoryTellingTitleDetails () {
-    const {id} = useParams();
-    const {storyTellingTitleDetails : story, isTitleLoading, error} = useStoryTellingTitleDetailsQuery(Number(id));
-  const { commentsList } = useCommentQuery('story',Number(id));
-      if (isTitleLoading) {
+export default function StoryTellingTitleDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const { storyTellingTitleDetails: story, isTitleLoading, error } =
+    useStoryTellingTitleDetailsQuery(Number(id));
+
+  const { commentsList } = useCommentQuery("story", Number(id));
+
+  if (isTitleLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading storytelling details...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading storytelling details...</p>
       </div>
     );
   }
 
   if (error || !story) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-500 mb-2">Oops!</h2>
-          <p className="text-gray-400">
-            Failed to load storytelling details. Please refresh or try again.
-          </p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-3">
+          <XCircle className="w-10 h-10 text-destructive mx-auto" />
+          <h2 className="text-xl font-bold">Failed to load details</h2>
         </div>
       </div>
     );
   }
-    return(
-        <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto space-y-6">
-        {/* Banner / Header Area */}
-        <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center dark:opacity-30 opacity-50"
-            style={{ backgroundImage: `url(${story?.horizontal_thumbnail})` }}
-          >
-          </div>
-          <div className="absolute inset-0 "></div>
-          {/* Content Overlay */}
-          <div className="relative flex p-6 ">
-            {/* Vertical Poster */}
-            <img
-              src={story?.thumbnail}
-              alt={story?.name}
-              className="w-32 md:w-48 h-60 rounded-lg shadow-2xl border border-gray-700 object-cover"
-            />
 
-            <div className="ml-4 space-y-2">
-              <h1 className="text-2xl md:text-4xl font-bold">
-                {story?.name}
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft size={18} />
+            Back
+          </Button>
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
+          <div
+            className="absolute inset-0  bg-cover bg-center scale-105"
+            style={{ backgroundImage: `url(${story.horizontal_thumbnail})` }}
+          />
+
+          <div className="absolute inset-0 
+  bg-gradient-to-t 
+  from-background via-background/30 to-transparent"
+          />
+          <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center md:items-end">
+
+            <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
+              <img
+                src={story.thumbnail}
+                alt={story.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 space-y-4 text-center md:text-left">
+              <h1 className="text-2xl md:text-3xl font-black">
+                {story.name}
               </h1>
 
-              {/* Genre Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {story?.generes?.map((genre: any) => (
-                  <Badge key={genre?.id}>{genre.name}</Badge>
+              <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                {story.generes?.map((g: any) => (
+                  <Badge key={g.id}>{g.name}</Badge>
                 ))}
               </div>
 
-              {/* Stats Bar */}
-               <div className="flex items-center gap-6 flex-wrap">
-                <Status icon={<Star size={16} />} value={story?.rating} color={"yellow"} label={"Rating"} />
-                <Status icon={<Eye size={16} />} value={story?.views} color={"gray"} label={"Views"} />
-                <Status icon={<ThumbsUp size={16} />} value={story?.likes} color={"blue"} label={"Likes"} />
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                <Status icon={<Star size={16} />} value={story.rating} color="yellow" label="Rating" />
+                <Status icon={<Eye size={16} />} value={story.views} color="gray" label="Views" />
+                <Status icon={<ThumbsUp size={16} />} value={story.likes} color="blue" label="Likes" />
               </div>
-
-              <div className="flex gap-2">
-                <h3 className="text-sm">Description:</h3>
-                {story?.description ? (
-                    <LongText text={story?.description}/>
-                ): (
-                    <p className="text-sm italic">"No description"</p>
-                )}
-              </div>
-
             </div>
           </div>
         </div>
 
-        {/* Episode List Section */}
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-card border border-border p-6 rounded-3xl">
+          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+            <span className="w-1 h-6 bg-primary rounded-full" />
+            Description
+          </h3>
+          {story.description ? (
+            <LongText text={story.description} />
+          ) : (
+            <p className="text-muted-foreground italic">No description available.</p>
+          )}
+        </div>
+
+        <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Episode Lists</h2>
+            <h2 className="text-xl font-bold">Episodes</h2>
             <Button
               onClick={() =>
-                router.navigate(`/entertainment/storytelling/${id}/episode/create`, {
-                  state: {
-                    titleName: story?.name,
-                    titleId: story?.id
-                  }
+                navigate(`/entertainment/storytelling/${id}/episode/create`, {
+                  state: { titleName: story.name, titleId: story.id },
                 })
               }
-              className="cursor-pointer bg-primary px-6 py-1.5 rounded-full text-sm font-medium transition-colors"
             >
-              Add
+              Add Episode
             </Button>
           </div>
 
-          <div className="space-y-3">
-            {story?.story_episodes && story?.story_episodes?.length > 0 ? (
+          <div className="grid gap-3">
+            {story?.story_episodes && story.story_episodes?.length > 0 ? (
               story.story_episodes.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
-                  className="flex items-center  border border-border p-3 rounded-xl  transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border rounded-2xl hover:bg-accent/50 bg-background/40 transition"
                 >
-                  <span className="w-8 text-gray-500 text-center">
-                    {index + 1}
-                  </span>
-                  <img
-                    src={ep.thumbnail}
-                    alt=""
-                    className="w-12 h-12 rounded object-cover mx-4"
-                  />
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <span className="text-muted-foreground w-6">
+                      {(index + 1)}
+                    </span>
+                    <img src={ep.thumbnail} className="w-20 h-14 object-cover rounded" />
+                  </div>
+
                   <div className="flex-1">
-                    <h4 className="font-medium">
+                    <h4 className="font-semibold">
                       {ep.name || `Episode ${index + 1}`}
                     </h4>
-                        <p className="text-xs text-gray-500">
-                        {new Date(story.created_at!).toLocaleDateString()}
-                        </p>
-                  </div>    
-                  <div className="flex items-center gap-4 px-4">
-                    <span className="text-yellow-500 text-sm">
-                      🪙 {ep?.price}
-                    </span>
-                   
-                    <div className="text-green-500 text-xl">
-                      {ep?.approve_status === 0 ? (
-                        <IconWithTooltip
-                          tooltip="Unapproved"
-                          icon={<XCircle className="w-4 h-4 text-red-500" />}
-                        />
-                      ) : (
-                        <IconWithTooltip
-                          tooltip="Approved"
-                          icon={
-                            <CircleCheckBig className="w-4 h-4 text-green-500" />
-                          }
-                        />
-                      )}
-                    </div>
-                    <button className="text-gray-500 hover:text-white">
-                      <EpisodeActions episode={ep} titleId={story?.id} titleName={story?.name}/>
-                    </button>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(story.created_at!).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
+                    <span className="text-yellow-600 text-sm">🪙 {ep.price}</span>
+
+                    {ep.approve_status === 0 ? (
+                      <IconWithTooltip tooltip="Unapproved" icon={<XCircle className="w-5 h-5 text-destructive" />} />
+                    ) : (
+                      <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
+                    )}
+
+                    <EpisodeActions episode={ep} titleId={story.id} titleName={story.name} />
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-20 border-2 border-dashed border-gray-800 rounded-xl">
-                <p className="text-gray-500 italic">
-                  No episodes available for "{story?.name}" yet.
-                </p>
+              <div className="text-center py-16 border border-dashed rounded-2xl">
+                <p className="text-muted-foreground italic">No episodes yet.</p>
               </div>
             )}
           </div>
         </div>
-      </div>
-      <CommentsSection category="story" commentsList={commentsList}/>
+
+        <div className="bg-card border border-border p-6 rounded-3xl">
+          <h3 className="text-xl font-bold mb-4">Reader Feedback</h3>
+          <CommentsSection category="story" commentsList={commentsList} />
         </div>
-    )
+      </div>
+    </div>
+  );
 }

@@ -107,7 +107,7 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
         } else if (mode === "add") {
             // form.setValue("created_by", creatorId);
         }
-    }, [defaultValues, mode, creatorId]);
+    }, [form, defaultValues, mode, creatorId]);
 
 
 
@@ -152,7 +152,6 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
                         formData.append(key, String(value));
                     }
                 });
-                console.log(formData?.getAll)
                 await courseCreateMutation(formData);
                 form.reset();
             } else {

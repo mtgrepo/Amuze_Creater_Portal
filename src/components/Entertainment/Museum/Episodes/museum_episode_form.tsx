@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import ImageUpload from "@/components/common/image_upload";
 import { MuseumImageUploader } from "@/components/common/museum_image_upload";
 import { Button } from "@/components/ui/button";
@@ -12,15 +13,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { useMuseumEpisodeCreate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeCreate";
-import { useMuseumEpisodeThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeThumbnailUpdate";
-import { useMuseumEpisodeUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CheckCircle2 } from "lucide-react";
+import ConfirmCard from "@/components/common/confirm_card";
+import { useMuseumEpisodeCreate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeCreate";
+import { useMuseumEpisodeUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeUpdate";
+import { useMuseumEpisodeThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeThumbnailUpdate";
+
 
 const FileItemSchema = (mode: "add" | "edit") =>
   z
@@ -71,17 +75,27 @@ export default function MuseumEpisodeForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+  const resetToken = useRef(defaultValues?.id);
+  const storedData = localStorage.getItem("creator");
+const loginCreator = storedData ? decryptAuthData(storedData) : null;
+const creatorId = loginCreator?.creator?.id;
+
+
   const formSchema = createFormSchema(mode);
+  const [confirmDialog, setConfirmDialog] = useState(false);
+  
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       titleId,
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
       museum_file: [],
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
@@ -94,30 +108,21 @@ export default function MuseumEpisodeForm({
     isCreatePending || isUpdatePending || isThumbnailUpdatePending;
 
   useEffect(() => {
-    if (defaultValues) {
+    if(mode === "edit" && defaultValues && defaultValues.id !== resetToken.current){
       form.reset({
         titleId: defaultValues.titleId,
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
         museum_file: defaultValues.museum_file,
-        created_by: form.getValues("created_by"),
+        created_by: creatorId, 
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
-
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth sync error:", error);
-    }
-  }, []);
+   if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -299,10 +304,63 @@ export default function MuseumEpisodeForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isLoading}>
-              {isLoading && <Spinner />}
-              {mode === "add" ? "Add Episode" : "Save Changes"}
-            </Button>
+            <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isLoading) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Create Episode" : "Save Changes"}
+              </Button>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <DialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </DialogTitle>
+                  <DialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+
+                <DialogFooter className="sm:justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setConfirmDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1"
+                    disabled={
+                      isLoading
+                    }
+                  >
+                    {(isLoading) && (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    )}
+                    Confirm & {mode === "add" ? "Create Episode" : "Update Episode"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </form>
       </Form>

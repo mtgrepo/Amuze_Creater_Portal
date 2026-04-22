@@ -121,7 +121,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [defaultValues, mode, creatorId, form]);
 
   const { novelCreateMutation, isNovelCreating } = useNovelCreateCommand();
   const { updateTextMutation, isUpdatingText } = useNovelUpdateTextCommand();

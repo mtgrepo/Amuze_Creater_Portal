@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
       }
-    } catch(e) {
+    } catch {
       localStorage.removeItem("creator");
     }
     return config;

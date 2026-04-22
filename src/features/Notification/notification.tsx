@@ -11,8 +11,12 @@ export default function NotificationPage() {
   const [limit, setLimit] = React.useState(10);
   const [search, setSearch] = React.useState("");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
+  if (!loginCreator?.creator?.id) {
+  throw new Error("Creator ID is missing");
+}
   const creatorId = loginCreator?.creator?.id;
   const [debouncedSearch] = useDebounce(search, 700);
+  
 
   const { notificationsList, isLoading } = useNotificationsQuery({
     page,
@@ -21,8 +25,6 @@ export default function NotificationPage() {
     role_id: Number(loginCreator?.creator?.role_id!),
     is_read: false,
   });
-
-  // console.log("notificcations data", notificationsList?.notifications)
 
   React.useEffect(() => {
     setPage(1);

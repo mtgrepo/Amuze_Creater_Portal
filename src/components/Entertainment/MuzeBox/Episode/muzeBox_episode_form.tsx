@@ -129,7 +129,7 @@ export default function MuzeBoxEpisodeForm({
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId]);
 
   const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 
@@ -172,7 +172,6 @@ export default function MuzeBoxEpisodeForm({
     presignedParts: any[],
     chunkSizeMB: number = 0,
   ) {
-    console.log("In upload multi part", presignedParts);
     const uploadedParts: UploadedPart[] = [];
     const concurrency = Number(import.meta.env.UPLOAD_CONCURRENCY) || 4;
     let index = 0;

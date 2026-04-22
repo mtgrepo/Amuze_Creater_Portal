@@ -49,7 +49,6 @@ export function ComicsTitleComponents({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // console.log("data in table", data)
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )

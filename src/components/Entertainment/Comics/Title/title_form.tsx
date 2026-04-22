@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -124,7 +125,7 @@ export default function ComicTitleForm({
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId]);
 
   const { t } = useTranslation();
 

@@ -13,8 +13,16 @@ import { decryptAuthData } from "../../../../lib/helper";
 export default function Grades() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
-  const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  const creatorId = loginCreator?.creator?.id!;
+  const [creatorId, setCreatorId] = React.useState<number | undefined>();
+
+
+  React.useEffect(() => {
+    const storedData = localStorage.getItem("creator");
+    if (!storedData) return;
+
+    const loginCreator = decryptAuthData(storedData);
+    setCreatorId(loginCreator?.creator?.id);
+  }, []);
 
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -27,9 +35,10 @@ export default function Grades() {
     }
   }, [tab]);
 
+
   const { gradeList: apiData, isLoading } = useGradesQuery({
-    approve_status: queryParams?.approve_status!,
-    authorId: creatorId,
+        authorId: creatorId ?? 0,
+    approve_status: queryParams?.approve_status,
   });
 
   const { t } = useTranslation();

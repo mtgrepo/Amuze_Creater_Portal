@@ -113,7 +113,6 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
       defaultValues &&
       defaultValues.id !== resetToken.current
     ) {
-      console.log("enter edit mode")
       form.reset({
         ...defaultValues,
         created_by: creatorId,
@@ -122,7 +121,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId]);
  
   
     const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;

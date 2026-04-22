@@ -42,6 +42,7 @@ import ConfirmCard from "../../common/confirm_card";
 import RequiredLabel from "../../common/required_label";
 import { useBlocker, useNavigate } from "react-router-dom";
 import NavigateConfirmDialog from "../../common/navigate_confirm_dialog";
+import { t } from "i18next";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -112,23 +113,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
       created_by: creatorId,
     },
   });
-  // Inside ComicTitleForm...
-  // useEffect(() => {
-  //   if (defaultValues) {
-  //     form.reset({
-  //       name: defaultValues.name || "",
-  //       description: defaultValues.description || "",
-  //       price: defaultValues.price ?? 0,
-  //       generes: defaultValues.generes || [],
 
-  //       thumbnail: defaultValues.thumbnail,
-  //       actual_file: defaultValues.actual_file,
-  //       preview_file: defaultValues?.preview_file,
-  //       display_file: defaultValues?.display_file,
-  //       created_by: form.getValues("created_by"),
-  //     });
-  //   }
-  // }, [defaultValues, form]);
   useEffect(() => {
     if (
       mode === "edit" &&
@@ -245,10 +230,10 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
           {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Gallery" : "Edit Gallery"}
+              {mode === "add" ? t('gallery_form.create_title') : t('gallery_form.update_title') }
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your gallery.
+              {t('gallery_form.description')}
             </p>
           </div>
 
@@ -261,7 +246,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      <RequiredLabel label="Thumbnail" />
+                      <RequiredLabel label={t('thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -286,7 +271,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Title" />
+                        <RequiredLabel label={t('title')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -305,7 +290,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Price (Coins/MMK)" />
+                        <RequiredLabel label={t('price')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -328,7 +313,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Description" />
+                      <RequiredLabel label={t('description')} />
                     </FormLabel>
                     <FormControl>
                       <Textarea
@@ -359,7 +344,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   return (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-base">
-                        <RequiredLabel label="Genres" />
+                        <RequiredLabel label={t('genres')} />
                       </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
@@ -398,7 +383,9 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
 
           {/* HORIZONTAL ASSETS SECTION */}
           <div className="pt-6 border-t">
-            <h3 className="text-lg font-semibold mb-4">Marketing Assets</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {t('banner_title')}
+            </h3>
             <div className="p-6 border rounded-xl  border-dashed">
               {mode === "add" ? (
                 <FormField
@@ -407,7 +394,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        <RequiredLabel label="Banner" />
+                        <RequiredLabel label={t('horizontal_thumbnail')} />
                       </FormLabel>
                       <FormControl>
                         <div className="mt-2">
@@ -474,7 +461,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 navigate("/entertainment/gallery");
               }}
             >
-              Cancel & Reset
+              {t('cancel')}
             </Button>
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -494,7 +481,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
                 {(isPending || isUpdatingThumbnail || isUpdatingText) && (
                   <Spinner className="mr-2 w-4 h-4" />
                 )}
-                {mode === "add" ? "Add Gallery" : "Save Changes"}
+                {mode === "add" ? t('create') : t('update')}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>

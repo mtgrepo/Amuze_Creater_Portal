@@ -59,5 +59,33 @@
   "comments": "Comments",
 
   "total_sales": "Total Sales",
-  "total_revenue": "Total Revenue"
+  "total_revenue": "Total Revenue",
+
+  "banner_title": "Marketing Assets",
+
+  "novel_form" : {
+    "description": "Fill in the information of your novel here."
+  },
+
+  "comics_form" : {
+    "create_title" : "Create New Comics",
+    "description" : "Fill in the information of your comics title here.",
+    "update_title": "Update Comics Title"
+  },
+
+  "gallery_form": {
+    "create_title": "Create New Gallery",
+    "description": "Fill in the information of your gallery here.",
+    "update_title": "Update Gallery Title"
+  },
+
+  "episode_form" : {
+    "create_title": "Add New Episode",
+    "description": "Fill in the information of your episode here.",
+    "update_title": "Edit Episode",
+    "episode_name": "Episode Name",
+    "add_pages": "Add Pages",
+    "comics_pages": "Comics Pages",
+    "episode_cover": "Episode Cover"
+  }
 }

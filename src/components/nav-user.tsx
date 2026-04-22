@@ -1,11 +1,4 @@
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -26,10 +19,10 @@ import {
 import { useDispatch } from "react-redux";
 import { logoutAction } from "../redux/auth/authSlice";
 import { toast } from "sonner";
-import router from "@/router/routes";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function NavUser({
-  creator
+  creator,
 }: {
   creator: {
     name: string;
@@ -39,13 +32,16 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
 
-
   const dispatch = useDispatch();
 
   const handleLogout = () => {
     dispatch(logoutAction());
     toast.success("Logged out successfully");
   };
+
+  const location = useLocation();
+  const isActive = location.pathname.startsWith("/account");
+  const navigate = useNavigate();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -53,7 +49,9 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className={`${isActive ? "bg-primary hover:bg-primary/90 text-primary-foreground" : ""}
+                          data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground
+                        `}
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={creator?.avatar} alt={creator?.name} />
@@ -90,21 +88,21 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.navigate('/account/user-details')}>
+              <DropdownMenuItem
+                onClick={() => navigate("/account/user-details")}
+                className={`
+                  ${isActive ? "bg-primary hover:bg-primary/90 text-primary-foreground" : ""}
+                  data-[state=open]:bg-sidebar-accent 
+                  data-[state=open]:text-sidebar-accent-foreground
+                `}
+              >
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <CreditCard />
                 Billing
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem>
                 <Bell />
                 Notifications

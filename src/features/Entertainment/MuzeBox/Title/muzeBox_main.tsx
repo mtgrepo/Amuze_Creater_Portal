@@ -95,7 +95,7 @@ export default function MuzeBox() {
               size={"sm"}
               className="cursor-pointer"
               onClick={() =>
-                navigate("/entertainment/muze-Box/title/create")
+                navigate("/entertainment/muze-box/title/create")
               }
             >
               <CirclePlus className="w-4 h-4" />

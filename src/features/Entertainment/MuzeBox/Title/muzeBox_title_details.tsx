@@ -18,6 +18,15 @@ import CommentsSection from "@/components/common/comment_component";
 import EpisodeActions from "@/components/Entertainment/MuzeBox/Episode/muzeBox_episode_actions";
 import Stat from "@/components/common/details_stat";
 import { useTranslation } from "react-i18next";
+import { useMuzeBoxEpisodeSortingCommand } from "@/composable/Command/Entertainment/MuzeBox/Episode/useEpisodeSortingCommand";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function MuzeBoxTitleDetails() {
   const { id } = useParams();
@@ -31,6 +40,12 @@ export default function MuzeBoxTitleDetails() {
   const { titleDetails, isLoading, error } = useMuzeBoxTitleDetailsQuery(
     Number(id)!,
   );
+  const { updateSortingMutation, isPending  } = useMuzeBoxEpisodeSortingCommand();
+
+  const  handleSorting = async (episodeId: number, nextSorting: number) => {
+    await updateSortingMutation({ type: "muze-box" ,episodeId, nextSorting });
+  }
+
   if (isLoading || isCommentsLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
@@ -170,68 +185,95 @@ export default function MuzeBoxTitleDetails() {
 
           <div className="grid gap-3">
             {titleDetails?.muze_box_episodes?.length > 0 ? (
-              titleDetails.muze_box_episodes.map((ep: any, index: number) => (
-                <div
-                  key={ep.id}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
-                >
-                  <div className="flex items-center w-full sm:w-auto">
-                    <span className="w-6 text-muted-foreground font-mono font-medium">
-                      {(index + 1).toString().padStart(2, "0")}
-                    </span>
-                    <img
-                      src={ep.thumbnail}
-                      alt=""
-                      className="w-20 h-14  object-cover mx-4 shadow-md"
-                    />
-                    <div className="flex-1 sm:hidden">
-                      <h4 className="font-bold text-sm">
+              titleDetails.muze_box_episodes
+                .sort((a: any, b: any) => a.sorting - b.sorting) // Sort episodes by sorting number
+                .map((ep: any, index: number) => (
+                  <div
+                    key={ep.id}
+                    className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
+                  >
+                    <div className="flex items-center w-full sm:w-auto">
+                      <span className="w-6 text-muted-foreground font-mono font-medium">
+                        {(index + 1).toString().padStart(2, "0")}
+                      </span>
+                      <img
+                        src={ep.thumbnail}
+                        alt=""
+                        className="w-20 h-14  object-cover mx-4 shadow-md"
+                      />
+                      <div className="flex-1 sm:hidden">
+                        <h4 className="font-bold text-sm">
+                          {ep.name || `Episode ${index + 1}`}
+                        </h4>
+                        <p className="text-[10px] text-muted-foreground">
+                          🪙 {ep?.price} Kyats
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="hidden sm:block flex-1 min-w-0">
+                      <h4 className="font-bold truncate group-hover:text-primary transition-colors">
                         {ep.name || `Episode ${index + 1}`}
                       </h4>
-                      <p className="text-[10px] text-muted-foreground">
-                        🪙 {ep?.price} Kyats
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(ep.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="hidden sm:block flex-1 min-w-0">
-                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">
-                      {ep.name || `Episode ${index + 1}`}
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(ep.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
-                    <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
-                      🪙 {ep?.price}
-                    </span>
-                    <div className="flex items-center gap-4">
-                      {ep?.approve_status === 0 ? (
-                        <IconWithTooltip
-                          tooltip="Pending"
-                          icon={
-                            <XCircle className="w-5 h-5 text-destructive" />
+                    <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
+                      <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
+                        🪙 {ep?.price}
+                      </span>
+                      <div className="flex items-center gap-4">
+                        {ep?.approve_status === 0 ? (
+                          <IconWithTooltip
+                            tooltip="Pending"
+                            icon={
+                              <XCircle className="w-5 h-5 text-destructive" />
+                            }
+                          />
+                        ) : (
+                          <IconWithTooltip
+                            tooltip="Approved"
+                            icon={
+                              <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                            }
+                          />
+                        )}
+                        <Select
+                        disabled={isPending}
+                          value={ep?.sorting.toString()}
+                          onValueChange={(value) =>
+                            handleSorting(ep?.id, parseInt(value))
                           }
+                        >
+                          <SelectTrigger className="w-15">
+                            <SelectValue>{index + 1}</SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {titleDetails?.muze_box_episodes?.map(
+                                (epi: any, index: number) => (
+                                  <SelectItem
+                                    value={(index + 1).toString()}
+                                    key={epi.id}
+                                  >
+                                    {index + 1}
+                                  </SelectItem>
+                                ),
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <EpisodeActions
+                          episode={ep}
+                          titleId={titleDetails?.id}
+                          titleName={titleDetails?.name}
                         />
-                      ) : (
-                        <IconWithTooltip
-                          tooltip="Approved"
-                          icon={
-                            <CircleCheckBig className="w-5 h-5 text-emerald-500" />
-                          }
-                        />
-                      )}
-                      <EpisodeActions
-                        episode={ep}
-                        titleId={titleDetails?.id}
-                        titleName={titleDetails?.name}
-                      />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl opacity-50">
                 <p className="italic">No episodes available yet.</p>

@@ -41,6 +41,7 @@ import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
 import { useBlocker, useNavigate } from "react-router-dom";
 import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import { useTranslation } from "react-i18next";
 
 // schema
 function createEpisodeSchema(mode: "add" | "edit") {
@@ -114,6 +115,7 @@ export default function ComicEpisodeForm({
 
   const [createDialog, setCreateDialog] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // apis
   const { episodeMutation, isPending: createPending } = useComicsEpisodeCreateCommand();
   const { episodeMutation: updateMutation, isPending: updatePending } = useComicEpisodeUpdateCommand();
@@ -219,7 +221,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight uppercase italic ">
-              {mode === "add" ? "New Episode" : "Edit Episode"}
+              {mode === "add" ? t('episode_form.create_title') : t('episode_form.update_title') }
             </h1>
             <p className="text-muted-foreground text-sm">
               Upload pages and manage episode details.
@@ -238,7 +240,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center text-center">
                   <FormLabel className="text-sm uppercase font-bold tracking-widest text-muted-foreground mb-4">
-                   <RequiredLabel label="Episode Cover"/>
+                   <RequiredLabel label={t('episode_form.episode_cover')}/>
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -260,7 +262,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold "><RequiredLabel label="Episode Name"/></FormLabel>
+                  <FormLabel className="font-bold "><RequiredLabel label={t('episode_form.episode_name')}/></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g. Chapter 05: The Storm"
@@ -278,7 +280,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-bold ">
-                    <RequiredLabel label="Price (Coins)"/>
+                    <RequiredLabel label={t('price')}/>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -300,7 +302,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
               <div className="flex items-center gap-2 ">
                 <ImageIcon size={20} className="text-primary" />
                 <h3 className="text-lg font-bold">
-                  <RequiredLabel label="Comic Pages" />
+                  <RequiredLabel label={t('episode_form.comics_pages')} />
                 </h3>
                 <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-bold border border-primary/20">
                   {form.watch("images")?.length || 0} Pages
@@ -314,7 +316,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
                   variant="outline"
                   className="gap-2 border-primary/50 text-primary hover:bg-primary/5 transition-all"
                 >
-                  <Plus size={16} /> Add Pages
+                  <Plus size={16} /> {t('episode_form.add_pages')}
                 </Button>
                 <Input
                   type="file"
@@ -422,7 +424,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
               onClick={() => navigate(-1)}
               disabled={createPending || updatePending || thumbnailPending}
             >
-              Back to Series
+              {t('cancel')}
             </Button>
             <AlertDialog open={createDialog} onOpenChange={setCreateDialog}>
               <Button
@@ -441,7 +443,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
                 {(createPending || updatePending || thumbnailPending) && (
                   <Spinner className="mr-2 w-4 h-4" />
                 )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? t('create') : t('update') }
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>

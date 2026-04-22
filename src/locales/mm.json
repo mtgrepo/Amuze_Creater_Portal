@@ -45,7 +45,7 @@
   "add_new": "အသစ်ထည့်ရန်",
   "edit": "အချက်အလက်ပြင်ဆင်ရန်",
   "delete": "ဖျက်ရန်",
-  "create": "ပြုလုပ်ရန်",
+  "create": "အသစ်ထည့်ရန်",
   "update": "ပြင်ဆင်ရန်",
   "cancel": "ပြန်ထွက်ရန်",
 
@@ -58,5 +58,33 @@
   "comments": "မှတ်ချက်များ",
 
   "total_sales": "စုစုပေါင်းရောင်းရငွေ",
-  "total_revenue": "စုစုပေါင်းဝင်ငွေ"
+  "total_revenue": "စုစုပေါင်းဝင်ငွေ",
+  
+  "banner_title": "ရုပ်ပြပုံများ",
+
+  "novel_form" : {
+    "description": "သင့်ဝတ္ထု၏ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။."
+  },
+
+  "comics_form" : {
+    "create_title": "Comics အသစ်ထည့်ရန်",
+    "description":"သင့် comics ၏ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
+    "update_title": "Comics အချက်အလက်ပြင်ဆင်ရန်"
+  },
+
+  "gallery_form" : {
+    "create_title": "ပုံထည့်ရန်",
+    "description": "သင့် ပုံ၏ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
+    "update_title": "ပုံအချက်အလက်ပြင်ဆင်ရန်"
+  },
+
+  "episode_form" : {
+    "create_title": "အပိုင်းသစ်ထည့်ရန်",
+    "description" :"သင့် comics ၏ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
+    "update_title": "အပိုင်းအချက်အလက်ပြင်ဆင်ရန်",
+    "episode_name": "အပိုင်းအမည်",
+    "add_pages": "ပုံထည့်ရန်",
+    "comics_pages": "ရုပ်ပြပုံများ",
+    "episode_cover": "ဇာတ်လမ်းတွဲ ကာဗာပုံ"
+  }
 }

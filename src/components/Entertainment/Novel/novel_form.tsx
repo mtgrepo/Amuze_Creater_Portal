@@ -237,6 +237,9 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
             <h2 className="text-2xl font-bold">
               {mode === "add" ? t("create_new_novel") : t("edit_novel")}
             </h2>
+            <p className="text-muted-foreground text-sm pt-2">
+              {t("novel_form.description")}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

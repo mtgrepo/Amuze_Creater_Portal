@@ -19,6 +19,15 @@ import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 import Stat from "@/components/common/details_stat";
 import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEpisodeSortingCommand } from "@/composable/Command/Entertainment/Comics/useEpisodeSortingCommand";
 
 export default function ComicsTitleDetails() {
   const { id } = useParams();
@@ -47,6 +56,8 @@ export default function ComicsTitleDetails() {
     error,
   } = useComicsTitleDetailsQuery(payload);
 
+  const { updateSortingMutation, isPending } = useEpisodeSortingCommand();
+
   if (isLoading || isCommentsLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
@@ -69,6 +80,10 @@ export default function ComicsTitleDetails() {
       </div>
     );
   }
+
+  const handleSorting = async (episodeId: number, nextSorting: number) => {
+    await updateSortingMutation({ type: "comic" ,episodeId, nextSorting });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -181,68 +196,100 @@ export default function ComicsTitleDetails() {
 
           <div className="grid gap-3">
             {comic?.comic_episodes?.length > 0 ? (
-              comic.comic_episodes.map((ep: any, index: number) => (
-                <div
-                  key={ep.id}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
-                >
-                  <div className="flex items-center w-full sm:w-auto">
-                    <span className="w-6 text-muted-foreground font-mono font-medium">
-                      {(index + 1).toString().padStart(2, "0")}
-                    </span>
-                    <img
-                      src={ep.thumbnail}
-                      alt=""
-                      className="w-20 h-14  object-cover mx-4 shadow-md"
-                    />
-                    <div className="flex-1 sm:hidden">
-                      <h4 className="font-bold text-sm">
+              comic.comic_episodes
+                .sort((a: any, b: any) => a.sorting - b.sorting) // Sort episodes by sorting number
+                .map((ep: any, index: number) => (
+                  <div
+                    key={ep.id}
+                    className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
+                  >
+                    <div className="flex items-center w-full sm:w-auto">
+                      <span className="w-6 text-muted-foreground font-mono font-medium">
+                        {(index + 1).toString().padStart(2, "0")}
+                      </span>
+                      <img
+                        src={ep.thumbnail}
+                        alt=""
+                        className="w-20 h-14  object-cover mx-4 shadow-md"
+                      />
+                      <div className="flex-1 sm:hidden">
+                        <h4 className="font-bold text-sm">
+                          {ep.name || `Episode ${index + 1}`}
+                        </h4>
+                        <p className="text-[10px] text-muted-foreground">
+                          🪙 {ep?.price} Kyats
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="hidden sm:block flex-1 min-w-0">
+                      <h4 className="font-bold truncate group-hover:text-primary transition-colors">
                         {ep.name || `Episode ${index + 1}`}
                       </h4>
-                      <p className="text-[10px] text-muted-foreground">
-                        🪙 {ep?.price} Kyats
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(comic.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="hidden sm:block flex-1 min-w-0">
-                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">
-                      {ep.name || `Episode ${index + 1}`}
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(comic.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
-                    <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
-                      🪙 {ep?.price}
-                    </span>
-                    <div className="flex items-center gap-4">
-                      {ep?.approve_status === 0 ? (
-                        <IconWithTooltip
-                          tooltip="Pending"
-                          icon={
-                            <XCircle className="w-5 h-5 text-destructive" />
+                    <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
+                      <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
+                        🪙 {ep?.price}
+                      </span>
+                      <div className="flex items-center gap-4">
+                        {ep?.approve_status === 0 ? (
+                          <IconWithTooltip
+                            tooltip="Pending"
+                            icon={
+                              <XCircle className="w-5 h-5 text-destructive" />
+                            }
+                          />
+                        ) : (
+                          <IconWithTooltip
+                            tooltip="Approved"
+                            icon={
+                              <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                            }
+                          />
+                        )}
+                        <Select
+                        disabled={isPending}
+                          value={ep?.sorting.toString()}
+                          onValueChange={(value) =>
+                            handleSorting(ep?.id, parseInt(value))
                           }
+                        >
+                          <SelectTrigger className="w-15">
+                            <SelectValue>{index + 1}</SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {comic?.comic_episodes?.map(
+                                (epi: any, index: number) => (
+                                  <SelectItem
+                                    value={(index + 1).toString()}
+                                    key={epi.id}
+                                  >
+                                    {index + 1}
+                                  </SelectItem>
+                                ),
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {/* {isPending && (
+                          <div className="animate-spin text-primary">
+                            <Loader2 className="w-5 h-5" />
+                          </div>
+                        )} */}
+                        <EpisodeActions
+                          episode={ep}
+                          titleId={comic?.id}
+                          titleName={comic?.name}
                         />
-                      ) : (
-                        <IconWithTooltip
-                          tooltip="Approved"
-                          icon={
-                            <CircleCheckBig className="w-5 h-5 text-emerald-500" />
-                          }
-                        />
-                      )}
-                      <EpisodeActions
-                        episode={ep}
-                        titleId={comic?.id}
-                        titleName={comic?.name}
-                      />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl opacity-50">
                 <p className="italic">No episodes available yet.</p>

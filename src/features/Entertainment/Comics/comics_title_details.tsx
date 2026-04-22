@@ -37,14 +37,23 @@ export default function ComicsTitleDetails() {
   const { t } = useTranslation();
 
   // const { commentsList, isLoading: isCommentsLoading } = useComicsTitleCommentQuery(Number(id));
-  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery('comic', Number(id));
-  const { titleDetails: comic, isLoading, error } = useComicsTitleDetailsQuery(payload);
+  const { commentsList, isLoading: isCommentsLoading } = useCommentQuery(
+    "comic",
+    Number(id),
+  );
+  const {
+    titleDetails: comic,
+    isLoading,
+    error,
+  } = useComicsTitleDetailsQuery(payload);
 
   if (isLoading || isCommentsLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        <p className="text-muted-foreground animate-pulse font-medium">Loading details...</p>
+        <p className="text-muted-foreground animate-pulse font-medium">
+          Loading details...
+        </p>
       </div>
     );
   }
@@ -65,13 +74,13 @@ export default function ComicsTitleDetails() {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 space-y-6">
         <Button
-         className="cursor-pointer"
+          className="cursor-pointer"
           onClick={() => navigate("/entertainment/comics")}
           variant="ghost"
-          >
-            <ArrowLeft />
-            Back to Comics
-          </Button>
+        >
+          <ArrowLeft />
+          Back to Comics
+        </Button>
         {/* --- HEADER --- */}
         <div className="relative overflow-hidden rounded-3xl border border-border min-h-80 bg-zinc-500 dark:bg-zinc-900 shadow-2xl">
           {/* Background Image Layer - Increased blur for readability */}
@@ -81,12 +90,10 @@ export default function ComicsTitleDetails() {
           />
 
           {/* Dark Gradient Overlay - Vital for text contrast */}
-          <div
-            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
-          />
+          <div className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent" />
 
           {/* Content Wrapper - items-center fixes the vertical alignment */}
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+          <div className="relative flex flex-col lg:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
             {/* Thumbnail Image */}
             <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
               <img
@@ -97,19 +104,16 @@ export default function ComicsTitleDetails() {
             </div>
 
             {/* Info Section */}
-            <div className="flex-1 space-y-6 text-center md:text-left">
+            <div className="flex-1 space-y-6 text-center lg:text-left">
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase drop-shadow-md">
-                  {comic.name || `Novel ${id}`}
+                <h1 className="text-2xl lg:text-3xl font-black tracking-tighter uppercase drop-shadow-md wrap-break-word">
+                  {comic.name || `Comic ${id}`}
                 </h1>
 
                 {/* Genre Tags */}
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 py-2">
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 py-2">
                   {comic?.generes?.map((genre: any) => (
-                    <Badge
-                      key={genre?.id}
-                      className="bg-primary text-xs"
-                    >
+                    <Badge key={genre?.id} className="bg-primary text-xs">
                       {genre.name}
                     </Badge>
                   ))}
@@ -162,14 +166,16 @@ export default function ComicsTitleDetails() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Episode Lists</h2>
             <Button
-              onClick={() => navigate(`/entertainment/comics/episode/create/${id}`, {
-                state: {
-                  titleName: comic?.name
-                }
-              })}
+              onClick={() =>
+                navigate(`/entertainment/comics/episode/create/${id}`, {
+                  state: {
+                    titleName: comic?.name,
+                  },
+                })
+              }
               className="rounded-full shadow-lg"
             >
-              {t('add_new_episode')}
+              {t("add_new_episode")}
             </Button>
           </div>
 
@@ -181,28 +187,58 @@ export default function ComicsTitleDetails() {
                   className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
                 >
                   <div className="flex items-center w-full sm:w-auto">
-                    <span className="w-6 text-muted-foreground font-mono font-medium">{(index + 1).toString().padStart(2, '0')}</span>
-                    <img src={ep.thumbnail} alt="" className="w-20 h-14  object-cover mx-4 shadow-md" />
+                    <span className="w-6 text-muted-foreground font-mono font-medium">
+                      {(index + 1).toString().padStart(2, "0")}
+                    </span>
+                    <img
+                      src={ep.thumbnail}
+                      alt=""
+                      className="w-20 h-14  object-cover mx-4 shadow-md"
+                    />
                     <div className="flex-1 sm:hidden">
-                      <h4 className="font-bold text-sm">{ep.name || `Episode ${index + 1}`}</h4>
-                      <p className="text-[10px] text-muted-foreground">🪙 {ep?.price} Kyats</p>
+                      <h4 className="font-bold text-sm">
+                        {ep.name || `Episode ${index + 1}`}
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        🪙 {ep?.price} Kyats
+                      </p>
                     </div>
                   </div>
 
                   <div className="hidden sm:block flex-1 min-w-0">
-                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">{ep.name || `Episode ${index + 1}`}</h4>
-                    <p className="text-xs text-muted-foreground">{new Date(comic.created_at).toLocaleDateString()}</p>
+                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">
+                      {ep.name || `Episode ${index + 1}`}
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(comic.created_at).toLocaleDateString()}
+                    </p>
                   </div>
 
                   <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
-                    <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">🪙 {ep?.price}</span>
+                    <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
+                      🪙 {ep?.price}
+                    </span>
                     <div className="flex items-center gap-4">
                       {ep?.approve_status === 0 ? (
-                        <IconWithTooltip tooltip="Pending" icon={<XCircle className="w-5 h-5 text-destructive" />} />
+                        <IconWithTooltip
+                          tooltip="Pending"
+                          icon={
+                            <XCircle className="w-5 h-5 text-destructive" />
+                          }
+                        />
                       ) : (
-                        <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
+                        <IconWithTooltip
+                          tooltip="Approved"
+                          icon={
+                            <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                          }
+                        />
                       )}
-                      <EpisodeActions episode={ep} titleId={comic?.id} titleName={comic?.name}/>
+                      <EpisodeActions
+                        episode={ep}
+                        titleId={comic?.id}
+                        titleName={comic?.name}
+                      />
                     </div>
                   </div>
                 </div>
@@ -218,7 +254,7 @@ export default function ComicsTitleDetails() {
         {/* --- COMMENTS SECTION --- */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           {/* <h3 className="text-xl font-bold mb-6">Reader Feedback</h3> */}
-          <CommentsSection commentsList={commentsList} category="comic"/>
+          <CommentsSection commentsList={commentsList} category="comic" />
         </div>
       </div>
     </div>

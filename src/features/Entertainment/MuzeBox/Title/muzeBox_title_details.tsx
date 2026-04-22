@@ -74,7 +74,7 @@ export default function MuzeBoxTitleDetails() {
             className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
           />
           {/* Content Wrapper - items-center fixes the vertical alignment */}
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+          <div className="relative flex flex-col lg:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
             {/* Thumbnail Image */}
             <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
               <img
@@ -85,14 +85,14 @@ export default function MuzeBoxTitleDetails() {
             </div>
 
             {/* Info Section */}
-            <div className="flex-1 space-y-6 text-center md:text-left">
+            <div className="flex-1 space-y-6 text-center lg:text-left">
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase drop-shadow-md">
+                <h1 className="text-2xl lg:text-3xl font-black tracking-tighter uppercase drop-shadow-md">
                   {titleDetails.name || `MuzeBox ${id}`}
                 </h1>
 
                 {/* Genre Tags */}
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 py-2">
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 py-2">
                   {titleDetails?.generes?.map((genre: any) => (
                     <Badge
                       key={genre?.id}
@@ -105,7 +105,7 @@ export default function MuzeBoxTitleDetails() {
               </div>
 
               {/* Stats Bar - Refactored to Grid for perfect alignment */}
-              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-2 rounded-2xl">
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${titleDetails?.price ?? 0} Ks`}

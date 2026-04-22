@@ -26,7 +26,9 @@ function App() {
   const matches = rawMatches as MatchType[]
   return (
     <SidebarProvider>
-      <AppSidebar />
+        <div className="flex min-h-screen w-full">
+
+      <AppSidebar className="h-auto min-h-full"/>
 
       <SidebarInset>
         {/* HEADER */}
@@ -52,6 +54,7 @@ function App() {
           <Outlet />
         </div>
       </SidebarInset>
+      </div>
     </SidebarProvider>
   )
 }

@@ -184,14 +184,6 @@ export default function GradeDetails() {
             )}
           </div>
         </div>
-
-        {/* BACK BUTTON */}
-        <div className="pt-4">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2" size={18} />
-            Back
-          </Button>
-        </div>
       </div>
     </div>
   );

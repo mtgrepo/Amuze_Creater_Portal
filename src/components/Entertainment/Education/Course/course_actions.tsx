@@ -20,8 +20,6 @@ interface CourseActionProps {
 }
 
 export default function CourseActions({ course, titleId, titleName }: CourseActionProps) {
-    console.log("course data", course?.id)
-    console.log("grade id", titleId)
   const navigate = useNavigate();
 
   const handleEditEpisode = () => {

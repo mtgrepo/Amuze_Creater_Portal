@@ -135,7 +135,6 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
       defaultValues &&
       defaultValues.id !== resetToken.current
     ) {
-      console.log("enter edit mode")
       form.reset({
         ...defaultValues,
         created_by: creatorId,
@@ -144,7 +143,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId]);
 
 
   const { galleryUpdateTextMutation, isUpdatingText } = useGalleryUpdateTextCommand();
@@ -185,7 +184,6 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
             formData.append(key, String(value));
           }
         });
-        console.log("submit values", values);
         await createGalleryMutation(formData);
       } else {
         // --- HANDLE EDIT ---

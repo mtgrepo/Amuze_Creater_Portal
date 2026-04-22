@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { FolderPlus, Image as ImageIcon, X, Plus, CheckCircle2 } from "lucide-react";
@@ -80,6 +80,7 @@ export default function ComicEpisodeForm({
     const resetToken = useRef(defaultValues?.id);
   
   const formSchema = createEpisodeSchema(mode);
+  
 
   // initialize form
   const form = useForm<EpisodeFormValues>({
@@ -96,6 +97,11 @@ export default function ComicEpisodeForm({
     },
   });
 
+  const images = useWatch({
+    control: form.control,
+  name: "images",
+  });
+
     useEffect(() => {
     if (
       mode === "edit" &&
@@ -110,7 +116,7 @@ export default function ComicEpisodeForm({
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId]);
 
   const [createDialog, setCreateDialog] = useState(false);
   const navigate = useNavigate();
@@ -124,6 +130,7 @@ export default function ComicEpisodeForm({
   const removeImage = async (index: number) => {
     const currentImages = form.getValues("images");
     const imageToRemove = currentImages[index];
+    
 
     // Check image
     const isExistingOnServer = imageToRemove?.id && !(imageToRemove instanceof File);
@@ -303,7 +310,7 @@ const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
                   <RequiredLabel label="Comic Pages" />
                 </h3>
                 <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-bold border border-primary/20">
-                  {form.watch("images")?.length || 0} Pages
+                  {images.length ?? 0} Pages
                 </span>
               </div>
 

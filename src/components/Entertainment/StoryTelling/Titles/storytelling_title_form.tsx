@@ -19,7 +19,7 @@ import { useGenresBySubCategoryQuery } from "@/composable/Query/Genre/useGenresQ
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
-import  { useEffect, useState } from "react";
+import  { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -63,6 +63,10 @@ export default function StoryTellingTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+    const resetToken = useRef(defaultValues?.id);
+    const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id;
   const formSchema = createFormSchema(mode);
   const subcategory_id = 3;
   const [confirmDialog, setConfirmDialog] = useState(false);
@@ -85,35 +89,27 @@ export default function StoryTellingTitleForm({
       genres: defaultValues?.genres || [],
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         genres: defaultValues.genres || [],
         thumbnail: defaultValues.thumbnail,
         horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"), 
+        created_by: creatorId, 
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
-  
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, []);
+     if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
+
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -153,7 +149,7 @@ export default function StoryTellingTitleForm({
               type: "vertical",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch {
             toast.error("Failed to update vertical thumbnail.");
           }
         }
@@ -171,7 +167,7 @@ export default function StoryTellingTitleForm({
               type: "horizontal",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch{
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
@@ -366,7 +362,7 @@ export default function StoryTellingTitleForm({
                   isThumbnailUpdatePending) && (
                     <Spinner className="mr-2 w-4 h-4" />
                   )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? "Create Title" : "Save Changes"}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -381,12 +377,11 @@ export default function StoryTellingTitleForm({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                {/* Review Card */}
                 <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
 
                 <AlertDialogFooter className="sm:justify-center gap-2">
                   <AlertDialogCancel className="flex-1 cursor-pointer">
-                    Back to Edit
+                    Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={form.handleSubmit(onSubmit)}
@@ -400,7 +395,7 @@ export default function StoryTellingTitleForm({
                       isThumbnailUpdatePending) && (
                         <Spinner className="mr-2 w-4 h-4" />
                       )}
-                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                    Confirm & {mode === "add" ? "Create Title" : "Update Title"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

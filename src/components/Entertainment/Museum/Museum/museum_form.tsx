@@ -1,5 +1,7 @@
+import ConfirmCard from "@/components/common/confirm_card";
 import ImageUpload from "@/components/common/image_upload";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -16,7 +18,8 @@ import { useMuseumThumbnailUpdate } from "@/composable/Command/Entertainment/mus
 import { useMuseumUpdate } from "@/composable/Command/Entertainment/museum/useMuseumUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -49,7 +52,14 @@ export default function MuseumForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+    const resetToken = useRef(defaultValues?.id);
+   const storedData = localStorage.getItem("creator");
+const loginCreator = storedData ? decryptAuthData(storedData) : null;
+const creatorId = loginCreator?.creator?.id;
+
   const formSchema = createFormSchema(mode);
+  const [confirmDialog, setConfirmDialog] = useState(false);
+
 
   const { createMutation, isCreatePending } = useMuseumCreate();
   const { updateMuseumMutation, isMuseumUpdatePending } = useMuseumUpdate();
@@ -61,39 +71,33 @@ export default function MuseumForm({
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
         horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"),
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
+      if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
 
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, []);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -132,7 +136,7 @@ export default function MuseumForm({
               type: "vertical",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch {
             toast.error("Failed to update vertical thumbnail.");
           }
         }
@@ -150,7 +154,7 @@ export default function MuseumForm({
               type: "horizontal",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch {
             toast.error("Failed to update horizontal thumbnail.");
           }
         }
@@ -275,10 +279,64 @@ export default function MuseumForm({
             >
               Cancel & Reset
             </Button>
-            <Button type="submit" className="flex-1 " disabled={isLoading}>
-              {isLoading && <Spinner />}
-              {mode === "add" ? "Add Museum" : "Save Changes"}
-            </Button>
+
+            <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+              <Button
+                className="flex-1 cursor-pointer"
+                type="button"
+                onClick={async () => {
+                  const isValid = await form.trigger();
+
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error("Please fill in all required fields correctly.");
+                  }
+                }}
+              >
+                {(isLoading) && (
+                  <Spinner className="mr-2 w-4 h-4" />
+                )}
+                {mode === "add" ? "Create Museum" : "Save Changes"}
+              </Button>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <DialogTitle className="text-center text-xl">
+                    Confirm {mode === "add" ? "Creation" : "Changes"}
+                  </DialogTitle>
+                  <DialogDescription className="text-center">
+                    Please review the details below before proceeding.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+
+                <DialogFooter className="sm:justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setConfirmDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="flex-1"
+                    disabled={
+                      isLoading
+                    }
+                  >
+                    {(isLoading) && (
+                      <Spinner className="mr-2 w-4 h-4" />
+                    )}
+                    Confirm & {mode === "add" ? "Create Museum" : "Update Museum"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </form>
       </Form>

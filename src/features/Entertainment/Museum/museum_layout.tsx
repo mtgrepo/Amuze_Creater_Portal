@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { decryptAuthData } from "@/lib/helper";
-import router from "@/router/routes";
 import { CirclePlus, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useMuseumQuery } from "@/composable/Query/Entertainment/Museum/useMuseumQuery";
 import { MuseumTable } from "@/components/Entertainment/Museum/Museum/museum_table";
+import { useNavigate } from "react-router-dom";
 
 export default function MuseumLayout() {
   const [tab, setTab] = React.useState<"all" | "approved">("all");
@@ -15,6 +15,7 @@ export default function MuseumLayout() {
   const [pageSize, setPageSize] = React.useState(10);
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
+  const navigate = useNavigate();
 
   const handlePaginationChange = (newPage: number, newPageSize: number) => {
     setPage(newPage);
@@ -55,7 +56,7 @@ export default function MuseumLayout() {
               </button>
             )}
           </div>
- <Button size="sm" className="cursor-pointer" onClick={() => router.navigate("/entertainment/museum/create")}>
+ <Button size="sm" className="cursor-pointer" onClick={() => navigate("/entertainment/museum/create")}>
           <CirclePlus className="mr-2 h-4 w-4" />
           Create Museum
         </Button>

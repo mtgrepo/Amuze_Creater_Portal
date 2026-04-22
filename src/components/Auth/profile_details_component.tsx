@@ -29,7 +29,10 @@ export default function ProfileDetailsComponent({
   profile,
 }: CreatorDetailsProps) {
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  const id = loginCreator?.creator?.id!;
+  if(!loginCreator?.creator?.id){
+    throw new Error("Creator ID is missing");
+  }
+  const id = loginCreator?.creator?.id;
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   // const [isUploading, setIsUploading] = useState(false);

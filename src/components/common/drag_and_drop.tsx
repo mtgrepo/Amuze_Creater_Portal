@@ -62,7 +62,6 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({
         file.type.startsWith("video/"));
         if(validVideo){
           const preview = URL.createObjectURL(validVideo);
-          console.log("✅ setPreview hit with preview:", preview); 
           setFile(validVideo);
           setPreview?.(preview);
           setValue(fieldKey, validVideo, {shouldValidate: true});

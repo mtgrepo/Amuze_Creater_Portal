@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 export const getAllComments = async (category: string ,id: number) => {
   try {
     let route = "get-comments";
-    if (category === "gallery") {
+    if (category === "gallery" || category === "post") {
       route = "get-all-comments"
     }
     const response = await axiosInstance.get(`${category}/${route}/${id}`, {

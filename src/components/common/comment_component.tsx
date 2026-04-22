@@ -20,8 +20,9 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "../ui/scroll-area";
 import { useTranslation } from "react-i18next";
+import { differenceInMinutes, formatDistanceToNowStrict } from "date-fns";
 
-const CommentsSection = ({commentsList, category } : {commentsList: any, category: string}) => {
+const CommentsSection = ({ commentsList, category }: { commentsList: any, category: string }) => {
   const { id } = useParams();
   const comicId = Number(id!);
   const { t } = useTranslation();
@@ -192,7 +193,7 @@ const CommentsSection = ({commentsList, category } : {commentsList: any, categor
           </Button>
         )}
 
-        {replies.length > 2 && isExpanded && (
+        {replies.length > 1 && isExpanded && (
           <Button
             variant="link"
             size="sm"
@@ -212,10 +213,16 @@ const CommentsSection = ({commentsList, category } : {commentsList: any, categor
 
 
   const comments = commentsList || [];
+  const countAllComments = (comments: any[]): number => {
+    return comments.reduce((total, comment) => {
+      return total + 1 + countAllComments(comment.reply || []);
+    }, 0);
+  };
+  const totalComments = countAllComments(comments);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h2 className="text-xl font-bold mb-4">{t("comments")} ({comments.length})</h2>
+      <h2 className="text-xl font-bold mb-4">{t("comments")} ({totalComments})</h2>
 
       <div className="mb-6 border rounded-lg p-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -244,97 +251,108 @@ const CommentsSection = ({commentsList, category } : {commentsList: any, categor
 
       <ScrollArea className="h-100">
         <div className="space-y-5 border p-4 rounded-lg">
-        {comments.length === 0 && (
-          <div className="text-center text-gray-500 py-10">
-            No comments yet. Be the first to comment!
-          </div>
-        )}
+          {comments.length === 0 && (
+            <div className="text-center text-gray-500 py-10">
+              No comments yet. Be the first to comment!
+            </div>
+          )}
 
-        {comments.map((comment: any) => {
-          const isAuthor = comment.user?.id === creatorId;
+          {comments.map((comment: any) => {
+            const isAuthor = comment.user?.id === creatorId;
+            const isNew =
+              differenceInMinutes(new Date(), new Date(comment.created_date)) < 10;
 
-          return (
-            <div key={comment.id} className="border rounded-lg p-4">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-800 flex items-center justify-center">
-                  {getAvatar(comment.user?.name)}
-                </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`font-bold ${isAuthor && "text-primary" }`}>
-                      {comment.user?.name}
-                    </span>
+
+            return (
+              <div key={comment.id} className="border rounded-lg p-4">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-800 flex items-center justify-center">
+                    {getAvatar(comment.user?.name)}
                   </div>
 
-                  <p className="text-sm  mt-1">{comment.comment}</p>
-
-                  <div className="flex gap-4 mt-2">
-                    <Button variant="link" onClick={() => setReplyToId(comment.id)}>
-                      Reply
-                    </Button>
-
-                    {isAuthor && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="link" className="text-destructive cursor-pointer">
-                            Delete
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(comment.id)} variant={'destructive'}>
-                              Continue
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
-                  </div>
-
-                  {comment.reply?.length > 0 && renderReplies(comment.reply, comment.id)}
-
-                  {replyToId === comment.id && (
-                    <div className="mt-3 flex flex-col gap-2">
-                      <Input
-                        autoFocus
-                        value={replyTexts[comment.id] || ""}
-                        onChange={(e) =>
-                          setReplyTexts((prev) => ({
-                            ...prev,
-                            [comment.id]: e.target.value,
-                          }))
-                        }
-                        className="border-b bg-transparent text-sm outline-none"
-                        placeholder="Write a reply..."
-                      />
-
-                      <div className="flex gap-2 justify-end">
-                        <Button onClick={() => setReplyToId(null)} variant={"outline"}>
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={() => handleReply(comment.id)}
-                          disabled={isStorePending}
-                        >
-                          Send Reply
-                        </Button>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center gap-2">
+                      <span className={`font-bold ${isAuthor && "text-primary"}`}>
+                        {comment.user?.name}
+                      </span>
+                      <div
+                        className={`text-sm  text-right ${isNew ? "text-blue-500" : "text-gray-400"}`}
+                      >
+                        {formatDistanceToNowStrict(new Date(comment.created_date), {
+                          addSuffix: true,
+                        })}
                       </div>
                     </div>
-                  )}
+
+                    <p className="text-sm  mt-1">{comment.comment}</p>
+
+                    <div className="flex gap-4 mt-2">
+                      <Button variant="link" onClick={() => setReplyToId(comment.id)}>
+                        Reply
+                      </Button>
+
+                      {isAuthor && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="link" className="text-destructive cursor-pointer">
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel variant={"outline"}>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(comment.id)} variant={'destructive'}>
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
+                    </div>
+
+                    {comment.reply?.length > 0 && renderReplies(comment.reply, comment.id)}
+
+                    {replyToId === comment.id && (
+                      <div className="mt-3 flex flex-col gap-2">
+                        <Input
+                          autoFocus
+                          value={replyTexts[comment.id] || ""}
+                          onChange={(e) =>
+                            setReplyTexts((prev) => ({
+                              ...prev,
+                              [comment.id]: e.target.value,
+                            }))
+                          }
+                          className="border-b bg-transparent text-sm outline-none"
+                          placeholder="Write a reply..."
+                        />
+
+                        <div className="flex gap-2 justify-end">
+                          <Button onClick={() => setReplyToId(null)} variant={"outline"}>
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={() => handleReply(comment.id)}
+                            disabled={isStorePending}
+                          >
+                            Send Reply
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
       </ScrollArea>
     </div>
   );

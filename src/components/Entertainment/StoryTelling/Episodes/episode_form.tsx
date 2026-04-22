@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { CheckCircle2, FolderPlus } from "lucide-react";
 import ImageUpload from "@/components/common/image_upload";
 import { Button } from "@/components/ui/button";
-import router from "@/router/routes";
 import AudioUpload from "@/components/common/audio_upload";
 import { Spinner } from "@/components/ui/spinner";
 import { useEpisodeCreateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeCreateCommand";
@@ -156,7 +155,6 @@ export default function StoryTellingEpisodeForm({
           formData.append("created_by", String(values.created_by));
         }
 
-        // thumbnail still file ✅
         if (values.thumbnail instanceof File) {
           formData.append("thumbnail", values.thumbnail);
         }
@@ -268,7 +266,7 @@ export default function StoryTellingEpisodeForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Price(MMK)</FormLabel>
+                  <FormLabel className="font-bold ">Price</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -306,11 +304,13 @@ export default function StoryTellingEpisodeForm({
             <Button
               type="button"
               variant="outline"
-              className="flex-1 cursor-pointer"
-              onClick={() => router.navigate(-1)}
-              disabled={isLoading}
+              className="flex-1 text-muted-foreground hover:text-destructive"
+              onClick={() => {
+                form.reset();
+                toast.info("Form cleared");
+              }}
             >
-              Back to Titles
+              Cancle & Reset
             </Button>
 
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
@@ -330,7 +330,7 @@ export default function StoryTellingEpisodeForm({
                   {(isLoading) && (
                     <Spinner className="mr-2 w-4 h-4" />
                   )}
-                  {mode === "add" ? "Add Title" : "Save Changes"}
+                  {mode === "add" ? "Create Episode" : "Save Changes"}
                 </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -345,12 +345,11 @@ export default function StoryTellingEpisodeForm({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                {/* Review Card */}
                 <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
 
                 <AlertDialogFooter className="sm:justify-center gap-2">
                   <AlertDialogCancel className="flex-1 cursor-pointer">
-                    Back to Edit
+                    Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={form.handleSubmit(onSubmit)}
@@ -360,19 +359,11 @@ export default function StoryTellingEpisodeForm({
                     {(isLoading) && (
                       <Spinner className="mr-2 w-4 h-4" />
                     )}
-                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                    Confirm & {mode === "add" ? "Create Episode" : "Update Episode"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <Button
-              type="submit"
-              className="flex-1 cursor-pointer"
-              disabled={isLoading}
-            >
-              {isLoading && <Spinner className="mr-2 w-4 h-4" />}
-              {mode === "add" ? "Create Episode" : "Update Episode"}
-            </Button>
           </div>
         </form>
       </Form>

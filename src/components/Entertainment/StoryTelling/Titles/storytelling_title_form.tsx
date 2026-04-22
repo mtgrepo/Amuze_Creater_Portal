@@ -366,7 +366,7 @@ export default function StoryTellingTitleForm({
                   isThumbnailUpdatePending) && (
                     <Spinner className="mr-2 w-4 h-4" />
                   )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? "Create Title" : "Save Changes"}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -381,12 +381,11 @@ export default function StoryTellingTitleForm({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                {/* Review Card */}
                 <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
 
                 <AlertDialogFooter className="sm:justify-center gap-2">
                   <AlertDialogCancel className="flex-1 cursor-pointer">
-                    Back to Edit
+                    Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={form.handleSubmit(onSubmit)}
@@ -400,7 +399,7 @@ export default function StoryTellingTitleForm({
                       isThumbnailUpdatePending) && (
                         <Spinner className="mr-2 w-4 h-4" />
                       )}
-                    Confirm & {mode === "add" ? "Add Title" : "Update Title"}
+                    Confirm & {mode === "add" ? "Create Title" : "Update Title"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

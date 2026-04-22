@@ -1,12 +1,12 @@
 import { createStoryTellingEpisode } from "@/http/apis/entertainment/storytelling/storyTellingEpisodeApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useEpisodeCreateCommand = () => {
      const queryClient = useQueryClient();
      const {id} = useParams();
+     const navigate = useNavigate();
   const createEpisodeMutation = useMutation({
     mutationFn: async (data: FormData) => {
       return await createStoryTellingEpisode(data);
@@ -14,7 +14,7 @@ export const useEpisodeCreateCommand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["storyTellingTitleList"] });
       toast.success(`Added new storytelling episode successfully`);
-      router.navigate(`/entertainment/storytelling/details/${id}`)
+      navigate(`/entertainment/storytelling/details/${id}`)
     },
     onError: (error:any) => {
       toast.error(error?.response?.data?.message || "Failed to create episode");

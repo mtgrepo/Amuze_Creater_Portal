@@ -92,3 +92,4 @@ export const deleteEpisodeImage = async (episodeId: number, imageId: number) => 
         throw new Error (error as string || "Something went wrong")
     }
 }
+

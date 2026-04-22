@@ -223,10 +223,10 @@ export default function ComicTitleForm({
           {/* HEADER SECTION */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Series" : "Edit Series" }
+              {mode === "add" ? t('comics_form.create_title') : t('comics_form.update_title') }
             </h2>
-            <p className="text-muted-foreground text-sm">
-              Fill in the information for your comic title.
+            <p className="text-muted-foreground text-sm pt-2">
+              {t('comics_form.description')}
             </p>
           </div>
 
@@ -239,7 +239,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      <RequiredLabel label="Thumbnail" />
+                      <RequiredLabel label={t('thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -264,7 +264,7 @@ export default function ComicTitleForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Comics Title" />
+                        <RequiredLabel label={t('title')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -283,7 +283,7 @@ export default function ComicTitleForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Price (Coins/MMK)" />
+                        <RequiredLabel label={t('price')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -306,7 +306,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Description" />
+                      <RequiredLabel label={t('description')} />
                     </FormLabel>
                     <FormControl>
                       <Textarea
@@ -337,7 +337,7 @@ export default function ComicTitleForm({
                   return (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-base">
-                        <RequiredLabel label="Genres" />
+                        <RequiredLabel label={t('genres')} />
                       </FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg  min-h-25">
                         {genresList?.length ? (
@@ -376,7 +376,7 @@ export default function ComicTitleForm({
 
           {/* HORIZONTAL ASSETS SECTION */}
           <div className="pt-6 border-t">
-            <h3 className="text-lg font-semibold mb-4">Marketing Assets</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('banner_title')}</h3>
             <div className="p-6 border rounded-xl  border-dashed">
               <FormField
                 control={form.control}
@@ -384,7 +384,7 @@ export default function ComicTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      <RequiredLabel label="Horizontal Thumbnail" />
+                      <RequiredLabel label={t('horizontal_thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">

@@ -69,16 +69,16 @@ export default function ComicEpisodeDetails() {
   };
 
   return (
-    <div className="min-h-screen px-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <Button 
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6 px-6">
+        <Button
           variant="ghost"
           onClick={() => navigate(-1)}
           className="cursor-pointer"
-          >
-            <ArrowLeft className=" h-4 w-4" />
-            Back to {location.state?.titleName}
-            </Button>
+        >
+          <ArrowLeft className=" h-4 w-4" />
+          Back to {location.state?.titleName}
+        </Button>
         {/* HERO CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
           <div
@@ -211,7 +211,7 @@ export default function ComicEpisodeDetails() {
                     <img
                       src={images[currentImageIndex].url}
                       alt={`Page ${currentImageIndex + 1}`}
-                      className="max-w-full h-[50vh] max-xl:h-[calc(100vh-60rem)] shadow-2xl"
+                      className="max-w-full max-h-[80vh] object-contain shadow-2xl"
                     />
                   ) : (
                     <div className="h-full flex items-center justify-center text-zinc-500">

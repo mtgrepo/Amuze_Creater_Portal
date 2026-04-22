@@ -278,7 +278,7 @@ const router = createBrowserRouter(
           handle: { crumb: ["Entertainment", "MuzeBox"] },
         },
         {
-          path: "/entertainment/muze-Box/title/create",
+          path: "/entertainment/muze-box/title/create",
           element: <MuzeBoxTitleCreate />,
           handle: {
             crumb: [

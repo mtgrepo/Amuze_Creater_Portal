@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import ImageUpload from "@/components/common/image_upload";
 import { MuseumImageUploader } from "@/components/common/museum_image_upload";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import { useMuseumEpisodeThumbnailUpdate } from "@/composable/Command/Entertainm
 import { useMuseumEpisodeUpdate } from "@/composable/Command/Entertainment/Museum/useMuseumEpisodeUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -75,19 +75,27 @@ export default function MuseumEpisodeForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+  const resetToken = useRef(defaultValues?.id);
+  const storedData = localStorage.getItem("creator");
+const loginCreator = storedData ? decryptAuthData(storedData) : null;
+const creatorId = loginCreator?.creator?.id;
+
+
   const formSchema = createFormSchema(mode);
-      const [confirmDialog, setConfirmDialog] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(false);
   
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       titleId,
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
       museum_file: [],
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
@@ -100,30 +108,21 @@ export default function MuseumEpisodeForm({
     isCreatePending || isUpdatePending || isThumbnailUpdatePending;
 
   useEffect(() => {
-    if (defaultValues) {
+    if(mode === "edit" && defaultValues && defaultValues.id !== resetToken.current){
       form.reset({
         titleId: defaultValues.titleId,
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
         museum_file: defaultValues.museum_file,
-        created_by: form.getValues("created_by"),
+        created_by: creatorId, 
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
-
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth sync error:", error);
-    }
-  }, []);
+   if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {

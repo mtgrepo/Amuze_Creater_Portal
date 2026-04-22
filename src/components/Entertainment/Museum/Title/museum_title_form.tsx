@@ -16,7 +16,7 @@ import { useMuseumTitleThumbnailUpdate } from "@/composable/Command/Entertainmen
 import { useMuseumTitleUpdate } from "@/composable/Command/Entertainment/Museum/useMuseumTitleUpdate";
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -55,6 +55,10 @@ export default function MuseumTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+   const resetToken = useRef(defaultValues?.id);
+    const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id;
   const formSchema = createFormSchema(mode);
     const [confirmDialog, setConfirmDialog] = useState(false);
   
@@ -66,7 +70,7 @@ export default function MuseumTitleForm({
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
@@ -79,29 +83,20 @@ export default function MuseumTitleForm({
     isCreateTitlePending || isUpdatePending || isThumbnailUpdatePending;
 
       useEffect(() => {
-    if (defaultValues) {
+    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
       form.reset({
         museum_id: defaultValues.museum_id,
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
-        created_by: form.getValues("created_by"),
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
-
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth sync error:", error);
-    }
-  }, []);
+       if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {

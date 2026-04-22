@@ -19,7 +19,7 @@ import { useMuseumUpdate } from "@/composable/Command/Entertainment/Museum/useMu
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -52,6 +52,11 @@ export default function MuseumForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+    const resetToken = useRef(defaultValues?.id);
+   const storedData = localStorage.getItem("creator");
+const loginCreator = storedData ? decryptAuthData(storedData) : null;
+const creatorId = loginCreator?.creator?.id;
+
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
 
@@ -73,34 +78,26 @@ export default function MuseumForm({
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
       horizontal_thumbnail: defaultValues?.horizontal_thumbnail || undefined,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
         horizontal_thumbnail: defaultValues.horizontal_thumbnail,
-        created_by: form.getValues("created_by"),
+        created_by: creatorId,
       });
+      resetToken.current = defaultValues.id;
     }
-  }, [defaultValues]);
+      if(mode === "add" && creatorId){
+    form.setValue("created_by", creatorId)
+   }
+  }, [defaultValues, mode, creatorId, form]);
 
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
-    }
-  }, []);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -139,7 +136,7 @@ export default function MuseumForm({
               type: "vertical",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch {
             toast.error("Failed to update vertical thumbnail.");
           }
         }
@@ -157,7 +154,7 @@ export default function MuseumForm({
               type: "horizontal",
               thumbnail: formData,
             });
-          } catch (e) {
+          } catch {
             toast.error("Failed to update horizontal thumbnail.");
           }
         }

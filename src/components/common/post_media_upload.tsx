@@ -29,7 +29,7 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
   const hasMaxImages = value.filter((v) => v.type === "image").length >= 10;
   const isDisabled = hasVideo || hasMaxImages;
   const onDrop = (acceptedFiles: File[]) => {
-    let currentItems = value || [];
+    const currentItems = value || [];
 
     const currentImages = currentItems.filter((i) => i.type === "image");
     const currentVideos = currentItems.filter((i) => i.type === "video");

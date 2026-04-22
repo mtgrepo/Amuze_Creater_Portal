@@ -2,8 +2,8 @@ import axiosInstance from "@/http/httpClient";
 import { AxiosError } from "axios"
 
 export interface GradesParams {
-    approve_status: number,
     authorId: number
+    approve_status?: number,
 }
 export const getAllGrades = async (params: GradesParams) => {
     try {

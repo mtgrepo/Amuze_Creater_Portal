@@ -18,7 +18,7 @@ import { usePostUpdate } from "@/composable/Command/Entertainment/Posts/usePostU
 import { decryptAuthData } from "@/lib/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Earth, UserLock } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -67,6 +67,10 @@ export default function PostForm({
   defaultValues,
   onSuccess,
 }: FormProps) {
+  const resetToken = useRef(defaultValues?.id);
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id;
   const formSchema = createFormSchema();
   const [confirmDialog, setConfirmDialog] = useState(false);
 
@@ -82,35 +86,29 @@ export default function PostForm({
       description: defaultValues?.description || "",
       visibility: "public",
       isVideo: false,
-      created_by: "",
+      created_by: creatorId,
       media: [],
     },
   });
 
   useEffect(() => {
-    if (defaultValues) {
+    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
       form.reset({
         description: defaultValues.description || "",
         visibility: defaultValues.visibility,
         isVideo: defaultValues.isVideo,
         media: normalizeMedia(defaultValues?.media as any),
-        created_by: form.getValues("created_by"),
+        created_by: creatorId,
       });
-    }
-  }, [defaultValues]);
+      resetToken.current = defaultValues.id;
 
-  useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Failed to read auth data from localStorage", error);
     }
-  }, []);
+    if (mode === "add" && creatorId) {
+      form.setValue("created_by", creatorId)
+    }
+  }, [defaultValues, mode, creatorId, form]);
+
+
 
   const onSubmit = async (values: FormValues) => {
     try {

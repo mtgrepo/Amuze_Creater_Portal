@@ -6,10 +6,6 @@ export async function requestPermissionAndGetToken(): Promise<string | null> {
   const permission = await Notification.requestPermission();
   const registration = await registerServiceWorker();
 
-//   Notification.requestPermission().then((permission) => {
-//   console.log("Permission:", permission)
-// })
-
   if (permission !== "granted") {
     console.warn("Notification permission denied");
     return null;

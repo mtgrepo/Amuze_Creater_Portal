@@ -20,6 +20,7 @@ import {
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useLoginCommand } from "@/composable/Command/auth/useLoginCommand";
 import { Spinner } from "./ui/spinner";
+import { requestPermissionAndGetToken } from "@/notification";
 
 const formSchema = z.object({
   emailOrPhone: z.string().min(1, { message: "Email is required." }),
@@ -44,7 +45,16 @@ export function LoginForm({
   const { loginMutation, isPending } = useLoginCommand();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await loginMutation(values);
+      const fcmToken = await requestPermissionAndGetToken();
+      const logInPayload = {
+        ...values,
+        web_firebase_key: fcmToken || null
+      }
+      await loginMutation(logInPayload);
+
+      if (fcmToken) {
+        localStorage.setItem("fcm_token", fcmToken);
+      }
       // console.log("form values", values);
     } catch (error) {
       toast.error(`${error}`);

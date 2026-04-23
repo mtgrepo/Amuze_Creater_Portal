@@ -17,12 +17,7 @@ server: {
     proxy: {
       // When the frontend calls "/api", Vite redirects it
       '/api': {
-<<<<<<< Updated upstream
         target: 'https://uat.api.amuze.com.mm/api/', 
-=======
-        // target: 'https://uat.api.amuze.com.mm/api/', // Your real backend
-        target: 'http://localhost:7000/api/', 
->>>>>>> Stashed changes
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

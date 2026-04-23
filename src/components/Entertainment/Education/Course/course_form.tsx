@@ -73,7 +73,7 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
     const creatorId = loginCreator?.creator?.id || "";
 
     const resetToken = useRef(defaultValues?.id);
-
+    const { t } = useTranslation();
     const formSchema = createFormSchema(mode);
     const [confirmDialog, setConfirmDialog] = useState(false);
     const navigate = useNavigate();
@@ -199,7 +199,6 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
         }
     };
 
-    const { t } = useTranslation();
 
     return (
         <div className="max-w-7xl mx-auto p-6 border rounded-xl shadow-sm">
@@ -208,10 +207,10 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
                     {/* HEADER */}
                     <div className="border-b pb-4">
                         <h2 className="text-2xl font-bold">
-                            {mode === "add" ? "Add Course" : "Edit Course"}
+                            {mode === "add" ? t('course_form.create_title') : t('course_form.update_title') }
                         </h2>
-                        <p className="text-muted-foreground text-sm">
-                            Fill in the information for your coourse.
+                        <p className="text-muted-foreground text-sm pt-2">
+                           {t('course_form.description')}
                         </p>
                     </div>
 
@@ -327,7 +326,7 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
                             variant="outline"
                             onClick={() => navigate("/entertainment/education")}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Button>
                         <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
                             <Button
@@ -349,7 +348,7 @@ export default function CourseForm({ mode, defaultValues, grade_id }: FormProps)
                                     isUpdatingText ||
                                     isUpdatingThumbnail ||
                                     isUpdatingPdf) && <Spinner className="mr-2 w-4 h-4" />}
-                                {mode === "add" ? "Add Title" : "Save Changes"}
+                                {mode === "add" ? t("create") : t("update") }
                             </Button>
                             <AlertDialogContent className="max-w-md">
                                 <AlertDialogHeader>

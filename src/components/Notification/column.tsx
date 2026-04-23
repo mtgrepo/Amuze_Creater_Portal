@@ -57,7 +57,7 @@ export default function NotificationColumn() {
     },
     {
       accessorKey: "body",
-      header: "body",
+      header: t('description'),
       cell: ({ row }) => {
         const body = row.getValue("body") as string;
 
@@ -79,7 +79,7 @@ export default function NotificationColumn() {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t('noti_status'),
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
         return <div>{status}</div>;
@@ -88,7 +88,7 @@ export default function NotificationColumn() {
     {
       id: "sent_by",
       accessorFn: (row) => row?.sent_by?.name,
-      header: "Sender",
+      header: t('sender'),
       cell: ({ row }) => {
         const sent_by = row.getValue("sent_by") as string;
         return <div>{sent_by ?? "N/A"}</div>;
@@ -96,7 +96,7 @@ export default function NotificationColumn() {
     },
     {
         accessorKey: "is_read",
-        header: "Is Read",
+        header: t('is_read'),
         cell: ({ row }) => {
             const is_read = row.getValue("is_read") as boolean;
             return (

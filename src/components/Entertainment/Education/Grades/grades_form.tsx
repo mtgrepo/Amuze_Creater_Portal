@@ -42,6 +42,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useGradeCreateCommand } from "../../../../composable/Command/Entertainment/Education/Grades/useGradeCreateCommand";
 import { useGradeTextUpdateCommand } from "../../../../composable/Command/Entertainment/Education/Grades/useGradeTextUpdateCommand";
 import { useGradeThumbnailUpdateCommand } from "../../../../composable/Command/Entertainment/Education/Grades/useGradeThumbnailUpdateCommand";
+import { useTranslation } from "react-i18next";
 
 function createFormSchema(mode: "add" | "edit") {
     const imageSchema =
@@ -82,7 +83,7 @@ export default function GradesForm({
     const navigate = useNavigate();
 
     const formSchema = createFormSchema(mode);
-
+    const { t } = useTranslation();
 
     const [createDialog, setCreateDialog] = useState(false);
 
@@ -206,10 +207,10 @@ export default function GradesForm({
                     {/* HEADER */}
                     <div className="border-b pb-4">
                         <h2 className="text-2xl font-bold tracking-tight">
-                            {mode === "add" ? "Create New Grade" : "Edit Grade Details"}
+                            {mode === "add" ? t('grade_form.create_title') : t('grade_form.update_title') }
                         </h2>
                         <p className="text-muted-foreground text-sm">
-                            Fill in the information for your grades.
+                            {t('grade_form.description')}
                         </p>
                     </div>
 
@@ -221,7 +222,7 @@ export default function GradesForm({
                             render={({ field }) => (
                                 <FormItem className="flex flex-col items-center">
                                     <FormLabel>
-                                        <RequiredLabel label="Thumbnail" />
+                                        <RequiredLabel label={t("thumbnail")} />
                                     </FormLabel>
                                     <FormControl>
                                         <ImageUpload
@@ -243,7 +244,7 @@ export default function GradesForm({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            <RequiredLabel label="Grades Name" />
+                                            <RequiredLabel label={t("grade_form.grade")} />
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -261,7 +262,7 @@ export default function GradesForm({
                                 name="is_old_question"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Question Type</FormLabel>
+                                        <FormLabel>{t("grade_form.question_type")}</FormLabel>
 
                                         <FormControl>
                                             <Select
@@ -301,7 +302,7 @@ export default function GradesForm({
                                 navigate("/entertainment/education");
                             }}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Button>
 
                         <Button
@@ -314,7 +315,7 @@ export default function GradesForm({
                             }}
                         >
                             {(isPending || isThumbnailPending || isUpdatePending) && <Spinner className="mr-2 w-4 h-4" />}
-                            {mode === "add" ? "Add Title" : "Save Changes"}
+                            {mode === "add" ? t('create') : t('update') }
                         </Button>
                     </div>
 

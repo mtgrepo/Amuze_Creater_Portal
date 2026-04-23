@@ -6,9 +6,8 @@ import { useNotificationsQuery } from "../../composable/Query/Notification/useNo
 import { Input } from "../../components/ui/input";
 import { NotificationComponent } from "@/components/Notification/notification_component";
 import { Button } from "@/components/ui/button";
-import type { Notification } from "@/types/response/notification/notificationResponse";
 import { useMarkAllReadCommand } from "@/composable/Command/Notification/useMarkAllReadCommand";
-import { Loader2 } from "lucide-react";
+import { CheckCheck } from "lucide-react";
 
 export default function NotificationPage() {
   const [page, setPage] = React.useState(1);
@@ -16,7 +15,7 @@ export default function NotificationPage() {
   const [search, setSearch] = React.useState("");
 
   const [isAllSelected, setIsAllSelected] = React.useState(false);
-  const [selectedRows, setSelectedRows] = React.useState<Notification[]>([]);
+  // const [selectedRows, setSelectedRows] = React.useState<Notification[]>([]);
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
 
@@ -35,7 +34,7 @@ export default function NotificationPage() {
     is_read: false,
   });
 
-  const { markAllReadMutation, isPending } = useMarkAllReadCommand();
+  const { markAllReadMutation } = useMarkAllReadCommand();
 
   React.useEffect(() => {
     setPage(1);
@@ -47,28 +46,26 @@ export default function NotificationPage() {
   };
 
   //stable callback (prevents re-render loop)
+  // const handleAllSelectedChange = React.useCallback(
+  //   (allSelected: boolean, rows: Notification[]) => {
+  //     setIsAllSelected(allSelected);
+  //     setSelectedRows(rows);
+  //   },
+  //   []
+  // );
+
   const handleAllSelectedChange = React.useCallback(
-    (allSelected: boolean, rows: Notification[]) => {
-      setIsAllSelected(allSelected);
-      setSelectedRows(rows);
-    },
-    []
-  );
+  (allSelected: boolean) => {
+    setIsAllSelected(allSelected);
+  },
+  []
+);
 
   const handleMarkAllRead = async () => {
     // const ids = selectedRows.map((row) => row.id);
     // console.log("Mark as read:", ids);
     await markAllReadMutation();
   };
-
-if (isPending) {
-  return (
-    <div className="flex h-[60vh] w-full flex-col items-center justify-center gap-3">
-      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      <p className="text-sm text-muted-foreground">Loading...</p>
-    </div>
-  );
-}
 
   return (
     <SidebarInset>
@@ -84,6 +81,7 @@ if (isPending) {
 
             {isAllSelected && (
               <Button onClick={handleMarkAllRead} variant={'outline'}>
+                <CheckCheck className="mr-2 w-4 h-4"/>
                 Mark As All Read
               </Button>
             )}

@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ClipboardPenLine, Info, MoreHorizontal } from "lucide-react";
+import { Info, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Notification } from "@/types/response/notification/notificationResponse";
 
@@ -28,9 +28,6 @@ export default function NotificationActions(notifications: Notification) {
     setOpen(true);
   };
 
-  const handleMarkAsRead = () => {
-    //call mark as read api
-  };
 
   return (
     <>
@@ -48,10 +45,10 @@ export default function NotificationActions(notifications: Notification) {
           <DropdownMenuItem onClick={handleViewDetails}>
             <Info /> View Details
           </DropdownMenuItem>
-
+{/* 
           <DropdownMenuItem onClick={handleMarkAsRead}>
             <ClipboardPenLine /> Mark as Read
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 

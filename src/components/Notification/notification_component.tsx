@@ -91,12 +91,12 @@ export function NotificationComponent({
     },
   });
 
-  // 🔍 apply search filter
+  // apply search filter
   React.useEffect(() => {
     table.getColumn("title")?.setFilterValue(search);
   }, [search, table]);
 
-  // ✅ ONLY depend on rowSelection (fixes infinite loop)
+  // ONLY depend on rowSelection (fixes infinite loop)
   React.useEffect(() => {
     const rows = table.getSelectedRowModel().rows;
 
@@ -108,7 +108,7 @@ export function NotificationComponent({
       isAllSelected,
       rows.map((row) => row.original)
     );
-  }, [rowSelection]); // 👈 critical fix
+  }, [rowSelection]); 
 
   return (
     <div className="w-full">

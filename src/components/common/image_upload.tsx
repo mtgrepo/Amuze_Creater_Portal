@@ -27,14 +27,14 @@ export default function ImageUpload({
 
   const acceptType = fieldType === "image" ? "image/*" : "video/*"
 
-  // ✅ Derived preview (NO useEffect needed)
+  // Derived preview (NO useEffect needed)
   const preview = useMemo(() => {
     if (!value) return null
     if (typeof value === "string") return value
     return URL.createObjectURL(value)
   }, [value])
 
-  // ✅ Derived file type (NO state needed)
+  // Derived file type (NO state needed)
   const fileType = useMemo(() => {
     if (!value) return null
     if (typeof value === "string") return fieldType
@@ -114,9 +114,11 @@ export default function ImageUpload({
   }
 
   const handleRemove = (e: React.MouseEvent) => {
+    // console.log("clicked remove")
     e.preventDefault()
     e.stopPropagation()
-    onChange(null)
+    onChange(null);
+    
   }
 
   const handleCropSave = (croppedFile: File) => {

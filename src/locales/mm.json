@@ -7,6 +7,9 @@
   "published": "ထုတ်ဝေပြီး",
   "publish_status": "ထုတ်ဝေမှု", 
   "approve_status": "အတည်ပြုမှူ",
+  "noti_status": "အခြေအနေ",
+  "sender": "ပေးပို့သူ",
+  "is_read": "ဖတ်ပြီးခြင်း",
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
@@ -85,6 +88,27 @@
     "episode_name": "အပိုင်းအမည်",
     "add_pages": "ပုံထည့်ရန်",
     "comics_pages": "ရုပ်ပြပုံများ",
-    "episode_cover": "ဇာတ်လမ်းတွဲ ကာဗာပုံ"
+    "episode_cover": "ဇာတ်လမ်းတွဲ ကာဗာပုံ",
+    "video": "ဗီဒီယို"
+  },
+
+  "muze_box_form": {
+    "create_title": "Muze Box အသစ်ထည့်ရန်",
+    "description": "သင့် Muze Box အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
+    "update_title": "Muze Box အချက်အလက်ပြင်ဆင်ရန်"
+  },
+
+  "grade_form" : {
+    "create_title": "အတန်း အသစ်ထည့်ရန်",
+    "update_title": "အတန်း အချက်အလက်ပြင်ဆင်ရန်",
+    "description": "သင့် အတန်း အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
+    "grade": "အတန်းအမည်",
+    "question_type": "မေးခွန်းအမျိုးအစား"
+  },
+
+  "course_form": {
+    "create_title": "သင်ခန်းစာ အသစ်ထည့်ရန်",
+    "update_title": "သင်ခန်းစာ အချက်အလက်ပြင်ဆင်ရန်",
+    "description": "သင့် သင်ခန်းစာ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။."
   }
 }

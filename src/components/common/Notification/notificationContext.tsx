@@ -1,8 +1,10 @@
 import { useAllNotificationMarkAsRead } from "@/composable/Command/Notification/useAllNotificationMarkAsRead"
 import { useNotificationMarkAsRead } from "@/composable/Command/Notification/useNotificationMarkAsRead"
 import { useInfiniteNotificationsQuery } from "@/composable/Query/Notification/useInfiniteNotificationsQuery"
+import { messaging } from "@/firebase"
 import type { Notification } from "@/types/response/notification/notificationResponse"
-import React, { createContext, useContext, useState, useCallback} from "react"
+import { onMessage } from "firebase/messaging"
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react"
 
 type CreatorNotiContextType = {
   notifications: Notification[],
@@ -16,11 +18,11 @@ type CreatorNotiContextType = {
   toggleDropdown: () => void
   closeDropdown: () => void
 
-    loadMore: () => void,
-    hasMore: boolean,
-    isFetchingNextPage: boolean,
-    hasNextPage: boolean,
-    fetchNextPage: () => Promise<unknown>
+  loadMore: () => void,
+  hasMore: boolean,
+  isFetchingNextPage: boolean,
+  hasNextPage: boolean,
+  fetchNextPage: () => Promise<unknown>
 
   novelUnread: number
   comicUnread: number
@@ -31,17 +33,17 @@ type CreatorNotiContextType = {
   educationUnread: number
   museumUnread: number
   postUnread: number
-}   
+}
 
 const CATEGORY_TYPES: Record<string, string[]> = {
-  novel:     ["USER LIKED NOVEL"],
-  comic:     ["USER LIKED COMIC", "COMIC_EPISODE_CREATED"],
-  story:     ["USER LIKED STORYTELLING"],
-  gallery:   ["USER LIKED GALLERY"],
-  muzeBox:   ["USER LIKED MUZEBOX", "MUZEBOX_EPISODE_CREATED"],
+  novel: ["USER LIKED NOVEL"],
+  comic: ["USER LIKED COMIC", "COMIC_EPISODE_CREATED"],
+  story: ["USER LIKED STORYTELLING"],
+  gallery: ["USER LIKED GALLERY"],
+  muzeBox: ["USER LIKED MUZEBOX", "MUZEBOX_EPISODE_CREATED"],
   education: ["USER LIKED EDUCATION", "EDUCATION_COURSE_CREATED"],
-  museum:    ["USER LIKED MUSEUM", "MUSEUM_TITLE_CREATED", "MUSEUM_EPISODE_CREATED"],
-  post:      ["USER LIKED POST"],
+  museum: ["USER LIKED MUSEUM", "MUSEUM_TITLE_CREATED", "MUSEUM_EPISODE_CREATED"],
+  post: ["USER LIKED POST"],
 }
 
 const countUnreadByTypes = (notifications: Notification[], type?: string[]) =>
@@ -56,13 +58,13 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const limit = 10;
 
   const {
-  data,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-} = useInfiniteNotificationsQuery(limit)
-  const {updateMarkNotiMutation} = useNotificationMarkAsRead();
-  const {updateAllMarkNotiMutation} = useAllNotificationMarkAsRead();
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteNotificationsQuery(limit)
+  const { updateMarkNotiMutation } = useNotificationMarkAsRead();
+  const { updateAllMarkNotiMutation } = useAllNotificationMarkAsRead();
 
   // const addNotification = useCallback((noti: Notification) => {
   //   setNotifications(prev => [noti, ...prev])
@@ -74,12 +76,25 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const hasMore = hasNextPage
 
   const handleMarkAsRead = useCallback(async (id: number) => {
-      await updateMarkNotiMutation({id})
-  },[])
+    await updateMarkNotiMutation({ id })
+  }, [])
 
   const handleMarkAllAsRead = useCallback(async () => {
-    await updateAllMarkNotiMutation({page, limit})
+    await updateAllMarkNotiMutation({ page, limit })
   }, [])
+
+  useEffect(() => {
+    const unsubscribe = onMessage(messaging, (payload) => {
+      if (payload.notification) {
+        new Notification(payload.notification.title ?? "New Notification", {
+          body: payload.notification.body ?? "",
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
 
   const unreadCount = notifications.filter(n => !n?.reads[0]?.is_read).length
 
@@ -88,15 +103,15 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const closeDropdown = useCallback(() => setIsDropdownOpen(false), [])
 
   // Per-category derived counts
-  const novelUnread     = countUnreadByTypes(notifications, CATEGORY_TYPES.novel)
-  const comicUnread     = countUnreadByTypes(notifications, CATEGORY_TYPES.comic)
-  const storyUnread     = countUnreadByTypes(notifications, CATEGORY_TYPES.story)
-  const magazineUnread  = countUnreadByTypes(notifications, CATEGORY_TYPES.magazine)
-  const galleryUnread   = countUnreadByTypes(notifications, CATEGORY_TYPES.gallery)
-  const muzeBoxUnread   = countUnreadByTypes(notifications, CATEGORY_TYPES.muzeBox)
+  const novelUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.novel)
+  const comicUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.comic)
+  const storyUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.story)
+  const magazineUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.magazine)
+  const galleryUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.gallery)
+  const muzeBoxUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.muzeBox)
   const educationUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.education)
-  const museumUnread    = countUnreadByTypes(notifications, CATEGORY_TYPES.museum)
-  const postUnread      = countUnreadByTypes(notifications, CATEGORY_TYPES.post)
+  const museumUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.museum)
+  const postUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.post)
 
   return (
     <CreatorNotiContext.Provider value={{

@@ -85,7 +85,6 @@ export const updatePostMedia = async (id:number, mediaData: FormData) => {
         },
       }
     );
-    console.log("update post media", result.data)
     return result.data;
   } catch (error) {
     if (error instanceof AxiosError) {

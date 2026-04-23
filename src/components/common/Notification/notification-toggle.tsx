@@ -10,7 +10,7 @@ const CreatorNotificationToggle = () => {
   return (
     <div className="relative">
       <Button
-        className="relative flex items-center justify-center"
+        className="relative relative flex items-center justify-center"
         aria-label="Notifications"
         onClick={toggleDropdown}
         variant="outline" size="icon"

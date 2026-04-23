@@ -11,6 +11,9 @@ import { Separator } from "./components/ui/separator"
 import { ModeToggle } from "./components/common/Themes/mode-toggle"
 import BreadCrumbLayout from "./components/common/Layouts/bread_crumb_layout"
 import { LanguageToggle } from "./components/common/Language/language-toggle"
+import { useEffect } from "react"
+import { onMessage } from "firebase/messaging"
+import { messaging } from "./firebase"
 import CreatorNotificationToggle from "./components/common/Notification/notification-toggle"
 
 type MatchType = {
@@ -25,6 +28,18 @@ function App() {
   const matches = rawMatches as MatchType[]
 
 
+  useEffect(() => {
+    const unsubscribe = onMessage(messaging, (payload) => {
+      if (payload.notification) {
+        new Notification(payload.notification.title ?? "New Notification", {
+          body: payload.notification.body ?? "",
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -37,25 +52,26 @@ function App() {
             <div className="flex items-center gap-3">
               <SidebarTrigger />
 
-              <Separator
-                orientation="vertical"
-                className="h-5 shrink-0"
-              />
-              {/* Dynamic Breadcrumb */}
-              <BreadCrumbLayout matches={matches} />
-            </div>
-            <div className="flex items-center gap-2">
-              <CreatorNotificationToggle />
-              <LanguageToggle />
-              <ModeToggle />
-            </div>
-          </header>
-
-          {/* PAGE CONTENT */}
-          <div className="flex flex-1 flex-col gap-4 px-4 py-6">
-            <Outlet />
+            <Separator
+              orientation="vertical"
+              className="h-5 shrink-0"
+            />
+            {/* Dynamic Breadcrumb */}
+            <BreadCrumbLayout matches={matches} />
           </div>
-        </SidebarInset>
+          <div className="flex items-center gap-2">
+            <CreatorNotificationToggle/>
+            <LanguageToggle />
+            <ModeToggle />
+   
+          </div>
+        </header>
+
+        {/* PAGE CONTENT */}
+        <div className="flex flex-1 flex-col gap-4 px-4 py-6">
+          <Outlet />
+        </div>
+      </SidebarInset>
       </div>
     </SidebarProvider>
   )

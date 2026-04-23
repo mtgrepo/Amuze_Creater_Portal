@@ -94,9 +94,11 @@ export default function PostForm({
   const formSchema = createFormSchema();
   const [confirmDialog, setConfirmDialog] = useState(false);
 
+
+
   const { createMutation, isCreatePending } = usePostCreate();
   const { updateMutation, isUpdatePending } = usePostUpdate();
-  const { updateMediaMutation, isMediaUpdatePending } = usePostMediaUpdate();
+  const { updateMediaMutation, isMediaUpdatePending} = usePostMediaUpdate();
 
   const isLoading = isCreatePending || isUpdatePending || isMediaUpdatePending;
 
@@ -138,12 +140,13 @@ export default function PostForm({
         created_by: creatorId,
       });
       resetToken.current = true;
-      originalMediaRef.current = normalizeMedia(defaultValues.media || []);
+      originalMediaRef.current = normalizeMedia(defaultValues.media || [])
     }
     if (mode === "add" && creatorId) {
       form.setValue("created_by", creatorId);
     }
   }, [defaultValues, mode, creatorId, form]);
+  
 
   const onSubmit = async (values: FormValues) => {
     try {

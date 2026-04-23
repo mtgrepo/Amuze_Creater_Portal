@@ -5,10 +5,33 @@ import { useTranslation } from "react-i18next";
 import type { Notification } from "../../types/response/notification/notificationResponse";
 import i18n from "../../i18n";
 import NotificationActions from "./notification_actions";
+import { Checkbox } from "../ui/checkbox";
 
 export default function NotificationColumn() {
   const { t } = useTranslation();
   const columns: ColumnDef<Notification>[] = [
+      {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
     {
       header: t("no"),
       cell: ({ row, table }) => {

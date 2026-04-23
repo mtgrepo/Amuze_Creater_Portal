@@ -5,19 +5,40 @@ import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useStoryTellingSortingUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useSortingUpdateCommand";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import { useStoryTellingTitleDetailsQuery } from "@/composable/Query/Entertainment/StoryTelling/useStorytTellingTitleDetailsQuery";
-import { ArrowLeft, CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleCheckBig,
+  Eye,
+  Loader2,
+  Star,
+  ThumbsUp,
+  XCircle,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function StoryTellingTitleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { storyTellingTitleDetails: story, isTitleLoading, error } =
-    useStoryTellingTitleDetailsQuery(Number(id));
+  const {
+    storyTellingTitleDetails: story,
+    isTitleLoading,
+    error,
+  } = useStoryTellingTitleDetailsQuery(Number(id));
 
   const { commentsList } = useCommentQuery("story", Number(id));
+  const { updateSortingMutation, isPending } = useStoryTellingSortingUpdateCommand();
 
   if (isTitleLoading) {
     return (
@@ -27,6 +48,9 @@ export default function StoryTellingTitleDetails() {
       </div>
     );
   }
+  const handleSorting = async (episodeId: number, nextSorting: number) => {
+    await updateSortingMutation({ type: "story", episodeId, nextSorting });
+  };
 
   if (error || !story) {
     return (
@@ -59,12 +83,12 @@ export default function StoryTellingTitleDetails() {
             style={{ backgroundImage: `url(${story.horizontal_thumbnail})` }}
           />
 
-          <div className="absolute inset-0 
-  bg-gradient-to-t 
+          <div
+            className="absolute inset-0 
+  bg-linear-to-t 
   from-background via-background/30 to-transparent"
           />
           <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center md:items-end">
-
             <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
               <img
                 src={story.thumbnail}
@@ -75,9 +99,7 @@ export default function StoryTellingTitleDetails() {
 
             {/* Info */}
             <div className="flex-1 space-y-4 text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-black">
-                {story.name}
-              </h1>
+              <h1 className="text-2xl md:text-3xl font-black">{story.name}</h1>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-2">
                 {story.generes?.map((g: any) => (
@@ -86,9 +108,24 @@ export default function StoryTellingTitleDetails() {
               </div>
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status icon={<Star size={16} />} value={story.rating} color="yellow" label="Rating" />
-                <Status icon={<Eye size={16} />} value={story.views} color="gray" label="Views" />
-                <Status icon={<ThumbsUp size={16} />} value={story.likes} color="blue" label="Likes" />
+                <Status
+                  icon={<Star size={16} />}
+                  value={story.rating}
+                  color="yellow"
+                  label="Rating"
+                />
+                <Status
+                  icon={<Eye size={16} />}
+                  value={story.views}
+                  color="gray"
+                  label="Views"
+                />
+                <Status
+                  icon={<ThumbsUp size={16} />}
+                  value={story.likes}
+                  color="blue"
+                  label="Likes"
+                />
               </div>
             </div>
           </div>
@@ -102,7 +139,9 @@ export default function StoryTellingTitleDetails() {
           {story.description ? (
             <LongText text={story.description} />
           ) : (
-            <p className="text-muted-foreground italic">No description available.</p>
+            <p className="text-muted-foreground italic">
+              No description available.
+            </p>
           )}
         </div>
 
@@ -122,40 +161,86 @@ export default function StoryTellingTitleDetails() {
 
           <div className="grid gap-3">
             {story?.story_episodes && story.story_episodes?.length > 0 ? (
-              story.story_episodes.map((ep: any, index: number) => (
-                <div
-                  key={ep.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border rounded-2xl hover:bg-accent/50 bg-background/40 transition"
-                >
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <span className="text-muted-foreground w-6">
-                      {(index + 1)}
-                    </span>
-                    <img src={ep.thumbnail} className="w-20 h-14 object-cover rounded" />
+              story.story_episodes
+                .sort((a, b) => a.sorting - b.sorting)
+                .map((ep, index) => (
+                  <div
+                    key={ep.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border rounded-2xl hover:bg-accent/50 bg-background/40 transition"
+                  >
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <span className="text-muted-foreground w-6">
+                        {index + 1}
+                      </span>
+                      <img
+                        src={ep.thumbnail}
+                        className="w-20 h-14 object-cover rounded"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <h4 className="font-semibold">
+                        {ep.name || `Episode ${index + 1}`}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(story.created_at!).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
+                      <span className="text-yellow-600 text-sm">
+                        🪙 {ep.price}
+                      </span>
+
+                      {ep.approve_status === 0 ? (
+                        <IconWithTooltip
+                          tooltip="Unapproved"
+                          icon={
+                            <XCircle className="w-5 h-5 text-destructive" />
+                          }
+                        />
+                      ) : (
+                        <IconWithTooltip
+                          tooltip="Approved"
+                          icon={
+                            <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                          }
+                        />
+                      )}
+                      <Select
+                        disabled={isPending}
+                        value={ep?.sorting.toString()}
+                        onValueChange={(value) =>
+                          handleSorting(ep?.id, parseInt(value))
+                        }
+                      >
+                        <SelectTrigger className="w-15">
+                          <SelectValue>{index + 1}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {story?.story_episodes?.map(
+                              (epi: any, index: number) => (
+                                <SelectItem
+                                  value={(index + 1).toString()}
+                                  key={epi.id}
+                                >
+                                  {index + 1}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+
+                      <EpisodeActions
+                        episode={ep}
+                        titleId={story.id}
+                        titleName={story.name}
+                      />
+                    </div>
                   </div>
-
-                  <div className="flex-1">
-                    <h4 className="font-semibold">
-                      {ep.name || `Episode ${index + 1}`}
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(story.created_at!).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
-                    <span className="text-yellow-600 text-sm">🪙 {ep.price}</span>
-
-                    {ep.approve_status === 0 ? (
-                      <IconWithTooltip tooltip="Unapproved" icon={<XCircle className="w-5 h-5 text-destructive" />} />
-                    ) : (
-                      <IconWithTooltip tooltip="Approved" icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />} />
-                    )}
-
-                    <EpisodeActions episode={ep} titleId={story.id} titleName={story.name} />
-                  </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center py-16 border border-dashed rounded-2xl">
                 <p className="text-muted-foreground italic">No episodes yet.</p>

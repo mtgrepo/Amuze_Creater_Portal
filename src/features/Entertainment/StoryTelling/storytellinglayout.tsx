@@ -7,6 +7,7 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import { t } from "i18next";
 
 
 export default function StoryTellingLayout() {
@@ -76,7 +77,7 @@ export default function StoryTellingLayout() {
                     </div>
 
                     <Button size="sm" className="cursor-pointer" onClick={() => navigate('/entertainment/storytelling/title')}>
-                        <CirclePlus className="h-4 w-4" />Create Storytelling
+                        <CirclePlus className="h-4 w-4" /> {t('story_telling_form.create_button')}
                     </Button>
                 </div>
             </div>
@@ -91,13 +92,13 @@ export default function StoryTellingLayout() {
                 >
                     <TabsList className="w-full grid grid-cols-3 border-b" variant={"line"}>
                         <TabsTrigger value="all" className="w-full text-center">
-                            All
+                            {t('all')}
                         </TabsTrigger>
                         <TabsTrigger value="approved" className="w-full text-center">
-                            Approved
+                            {t('approved')}
                         </TabsTrigger>
                         <TabsTrigger value="published" className="w-full text-center">
-                            Published
+                            {t('published')}
                         </TabsTrigger>
                     </TabsList>
 

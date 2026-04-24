@@ -5,12 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
-import { Input } from "../../../../components/ui/input";
 import { useMuzeBoxQuery } from "@/composable/Query/Entertainment/MuzeBox/Title/useMuzeBoxQuery";
 import { MuzeBoxComponents } from "@/components/Entertainment/MuzeBox/Title/muzeBox_component";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import SearchBox from "../../../../components/common/search_box";
 
 export default function MuzeBox() {
   const [page, setPage] = React.useState(1);
@@ -85,12 +85,7 @@ export default function MuzeBox() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
-            <Input
-              placeholder="Filter name..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="max-w-sm"
-            />
+            <SearchBox search={text} setSearch={setText} />
             <Button
               size={"sm"}
               className="cursor-pointer"

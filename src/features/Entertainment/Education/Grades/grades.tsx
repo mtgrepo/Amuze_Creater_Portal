@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Input } from "../../../../components/ui/input";
 import { useGradesQuery } from "../../../../composable/Query/Entertainment/Education/Grades/useGradesQuery";
 import { GradeComponent } from "../../../../components/Entertainment/Education/Grades/grade_component";
 import { decryptAuthData } from "../../../../lib/helper";
+import SearchBox from "../../../../components/common/search_box";
 
 export default function Grades() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
@@ -49,12 +49,7 @@ export default function Grades() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
-            <Input
-              placeholder="Filter name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-sm"
-            />
+            <SearchBox search={search} setSearch={setSearch} />
             <Button
               size={"sm"}
               className="cursor-pointer"

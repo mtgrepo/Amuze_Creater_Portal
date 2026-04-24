@@ -111,5 +111,12 @@
     "create_title": "Create New Course",
     "description": "Fill in the information of your course here.",
     "update_title": "Update Course"
+  },
+
+  "story_telling_form": {
+    "create_button": "Create Story Telling",
+    "create_title": "Create New Story Telling",
+    "description": "Fill in the information of your story telling here.",
+    "update_title": "Update Story Telling"
   }
 }

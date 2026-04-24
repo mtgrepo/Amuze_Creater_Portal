@@ -6,12 +6,21 @@ export async function requestPermissionAndGetToken(): Promise<string | null> {
   const permission = await Notification.requestPermission();
   const registration = await registerServiceWorker();
 
+  if (Notification.permission === "denied") {
+    console.log("noti is denied")
+    return null;
+  }
+
   if (permission !== "granted") {
-    console.warn("Notification permission denied");
+     const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      return null;
+    }
     return null;
   }
 
   try {
+    console.log(import.meta.env.VITE_FIREBASE_VAPID_KEY)
     const token = await getToken(messaging as Messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration

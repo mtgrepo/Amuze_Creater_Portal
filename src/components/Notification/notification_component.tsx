@@ -7,7 +7,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
+
+import type {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table";
+
 import {
   Table,
   TableBody,
@@ -16,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
 import type { Notification } from "@/types/response/notification/notificationResponse";
@@ -29,10 +36,13 @@ export type NotificationProps = {
   limit: number;
   onPaginationChange: (page: number, limit: number) => void;
   isFetching?: boolean;
-  onExport?: () => void;
-  isExporting?: boolean;
   search: string;
   onSearchChange: (value: string) => void;
+
+  onAllSelectedChange?: (
+    isAllSelected: boolean,
+    selectedRows: Notification[]
+  ) => void;
 };
 
 export function NotificationComponent({
@@ -44,29 +54,31 @@ export function NotificationComponent({
   limit,
   search,
   onPaginationChange,
+  onAllSelectedChange,
 }: NotificationProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // console.log("data in table", data)
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+  const [columnFilters, setColumnFilters] =
+    React.useState<ColumnFiltersState>([]);
 
   const columns = NotificationColumn();
+
   const table = useReactTable({
     data,
     columns,
     manualPagination: true,
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setRowSelection,
+
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
+
     state: {
       sorting,
       columnFilters,
@@ -78,9 +90,25 @@ export function NotificationComponent({
       },
     },
   });
-React.useEffect(() => {
-  table.getColumn("title")?.setFilterValue(search);
-}, [search, table]);
+
+  // apply search filter
+  React.useEffect(() => {
+    table.getColumn("title")?.setFilterValue(search);
+  }, [search, table]);
+
+  // ONLY depend on rowSelection (fixes infinite loop)
+  React.useEffect(() => {
+    const rows = table.getSelectedRowModel().rows;
+
+    const isAllSelected =
+      rows.length > 0 &&
+      rows.length === table.getRowModel().rows.length;
+
+    onAllSelectedChange?.(
+      isAllSelected,
+      rows.map((row) => row.original)
+    );
+  }, [rowSelection]); 
 
   return (
     <div className="w-full">
@@ -94,28 +122,23 @@ React.useEffect(() => {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {isFetching ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    Loading...
-                  </div>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Loading...
                 </TableCell>
               </TableRow>
-            ) : table.getRowModel().rows?.length ? (
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -125,7 +148,7 @@ React.useEffect(() => {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -133,10 +156,7 @@ React.useEffect(() => {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -149,6 +169,7 @@ React.useEffect(() => {
         <div className="text-muted-foreground flex-1 text-sm">
           {total} total row(s)
         </div>
+
         {total > 0 && (
           <div className="flex items-center gap-3">
             <PageSizeComponent
@@ -158,6 +179,7 @@ React.useEffect(() => {
                 onPaginationChange(1, size === "all" ? total : size)
               }
             />
+
             <Paginator
               currentPage={page}
               totalPages={totalPages}

@@ -7,6 +7,9 @@
   "published": "Published",
   "publish_status": "Publish Status",
   "approve_status": "Approve Status",
+  "noti_status": "Status",
+  "sender": "Sender",
+  "is_read": "Is Read",
 
   "thumbnail" : "Thumbnail",
   "title": "Title",
@@ -86,6 +89,27 @@
     "episode_name": "Episode Name",
     "add_pages": "Add Pages",
     "comics_pages": "Comics Pages",
-    "episode_cover": "Episode Cover"
+    "episode_cover": "Episode Cover",
+    "video": "Video"
+  },
+
+  "muze_box_form" : {
+    "create_title": "Create New MuzeBox",
+    "description": "Fill in the information of your muze box here.",
+    "update_title": "Update MuzeBox"
+  },
+
+  "grade_form" : {
+    "create_title": "Create New Grade",
+    "description": "Fill in the information of your grade here.",
+    "update_title": "Update Grade",
+    "grade": "Grade Name",
+    "question_type": "Question Type"
+  },
+
+  "course_form": {
+    "create_title": "Create New Course",
+    "description": "Fill in the information of your course here.",
+    "update_title": "Update Course"
   }
 }

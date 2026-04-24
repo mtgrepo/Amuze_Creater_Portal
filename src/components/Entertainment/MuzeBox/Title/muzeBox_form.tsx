@@ -40,6 +40,7 @@ import ConfirmCard from "../../../common/confirm_card";
 import RequiredLabel from "../../../common/required_label";
 import { useBlocker, useNavigate } from "react-router-dom";
 import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
+import { useTranslation } from "react-i18next";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -77,6 +78,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
   const creatorId = loginCreator?.creator?.id || "";
 
   const resetToken = useRef(defaultValues?.id);
+  const { t } = useTranslation();
 
   const formSchema = createFormSchema(mode);
   const { genresList } = useGenresQuery(7);
@@ -218,8 +220,11 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
           {/* HEADER */}
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New MuzeBox" : "Edit MuzeBox"}
+              {mode === "add" ? t('muze_box_form.create_title') : t('muze_box_form.update_title')}
             </h2>
+            <p className="text-muted-foreground text-sm pt-2">
+              {t('muze_box_form.description')}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -231,7 +236,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Thumbnail" />
+                      <RequiredLabel label={t('thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -255,7 +260,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Title" />
+                        <RequiredLabel label={t('title')} />
                       </FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Enter title..." />
@@ -272,7 +277,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Age Rating" />
+                        <RequiredLabel label={t('age_rating')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -294,7 +299,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Description" />
+                      <RequiredLabel label={t('description')} />
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Enter description..." />
@@ -321,7 +326,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                   return (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Genres" />
+                        <RequiredLabel label={t('genres')} />
                       </FormLabel>
                       <div className="flex flex-wrap gap-2 border p-4 rounded-lg">
                         {genresList?.map((g: any) => {
@@ -355,7 +360,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Horizontal Thumbnail" />
+                      <RequiredLabel label={t('horizontal_thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -378,7 +383,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               variant="outline"
               onClick={() => navigate("/entertainment/muze-box")}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -397,7 +402,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
                 {(isPending || isUpdateTextPending || isUpdateThumbnailPending) && (
                   <Spinner className="mr-2 w-4 h-4" />
                 )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? t('create') : t('update')}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader className="text-center">

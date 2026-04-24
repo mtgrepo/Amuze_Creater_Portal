@@ -41,6 +41,7 @@ import ConfirmCard from "../../../common/confirm_card";
 import { CheckCircle2 } from "lucide-react";
 import RequiredLabel from "../../../common/required_label";
 import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
+import { useTranslation } from "react-i18next";
 
 type UploadedPart = {
   partNumber: number;
@@ -83,6 +84,7 @@ export default function MuzeBoxEpisodeForm({
 
   const resetToken = useRef(defaultValues?.id);
 
+  const { t } = useTranslation();
 
   const { id } = useParams();
   const formSchema = createFormSchema(mode);
@@ -318,8 +320,11 @@ export default function MuzeBoxEpisodeForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold">
-              {mode === "add" ? "Create New Episode" : "Edit Episode"}
+              {mode === "add" ? t('episode_form.create_title') : t('episode_form.update_title')}
             </h2>
+            <p className="text-muted-foreground text-sm pt-2">
+              {t('episode_form.description')}
+            </p>
           </div>
 
           <div className="space-y-6 max-w-sm mx-auto">
@@ -329,7 +334,7 @@ export default function MuzeBoxEpisodeForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    <RequiredLabel label="Thumbnail" />
+                    <RequiredLabel label={t('thumbnail')} />
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -352,7 +357,7 @@ export default function MuzeBoxEpisodeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Name" />
+                        <RequiredLabel label={t('title')} />
                       </FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Enter name..." />
@@ -368,7 +373,7 @@ export default function MuzeBoxEpisodeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label="Price (Coin/MMK)" />
+                        <RequiredLabel label={t('price')} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -392,7 +397,7 @@ export default function MuzeBoxEpisodeForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Description" />
+                      <RequiredLabel label={t('description')} />
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Enter description..." />
@@ -408,7 +413,7 @@ export default function MuzeBoxEpisodeForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label="Video" />
+                      <RequiredLabel label={t('episode_form.video')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -433,7 +438,7 @@ export default function MuzeBoxEpisodeForm({
                 navigate(-1)
               }
             >
-              Cancel
+              {t('cancel')}
             </Button>
 
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
@@ -457,7 +462,7 @@ export default function MuzeBoxEpisodeForm({
                   isVideoUpdating) && (
                     <Spinner className="mr-2 w-4 h-4" />
                   )}
-                {mode === "add" ? "Add Title" : "Save Changes"}
+                {mode === "add" ? t('create') : t('update')}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>

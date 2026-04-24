@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {  useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   LoginCreatorResponse,
@@ -28,22 +28,44 @@ export default function ProfileDetailsComponent({
   info,
   profile,
 }: CreatorDetailsProps) {
-  const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  if(!loginCreator?.creator?.id){
-    throw new Error("Creator ID is missing");
-  }
-  const id = loginCreator?.creator?.id;
+  const { profileUpdateMutation, isPending } = useProfileUpdateCommand();
+  
+  // Using useMemo to get the ID safely on the client side without triggering cascading renders
+  const creatorId = useMemo(() => {
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem("creator");
+      if (data) {
+        const decrypted = decryptAuthData(data);
+        return decrypted?.creator?.id;
+      }
+    }
+    return null;
+  }, []);
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  // const [isUploading, setIsUploading] = useState(false);
-  const { profileUpdateMutation, isPending } = useProfileUpdateCommand();
+  
+  // Initialize state directly from props to avoid the useEffect setState error
+  const [profileImage, setProfileImage] = useState<File | string | null>(
+    info?.profile || null
+  );
+
+
+  const [prevInfoProfile, setPrevInfoProfile] = useState(info?.profile);
+  if (info?.profile !== prevInfoProfile) {
+    setProfileImage(info.profile);
+    setPrevInfoProfile(info.profile);
+  }
+
   const handleUpdateProfile = async (file: File) => {
-    if (!file || !id) return;
+    if (!file || !creatorId) {
+      toast.error("Creator ID not found. Please log in again.");
+      return;
+    }
+    
     try {
-      console.log(file);
       const formData = new FormData();
       formData.append("profile", file);
-      await profileUpdateMutation({ id, data: formData });
+      await profileUpdateMutation({ id: creatorId, data: formData });
     } catch (error) {
       toast.error((error as string) || "Failed to update profile");
     }
@@ -57,15 +79,22 @@ export default function ProfileDetailsComponent({
           <div className="relative">
             <ImageUpload
               size="large"
-              value={info?.profile}
+              value={profileImage}
               onChange={(file) => {
-                if (file && !isPending) handleUpdateProfile(file);
+                if (isPending) return;
+
+                if (file) {
+                  setProfileImage(file); // Instant UI update
+                  handleUpdateProfile(file);
+                } else {
+                  setProfileImage(null);
+                }
               }}
             />
 
             {isPending && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-md">
-                <p className="text-white text-sm">Uploading...</p>
+                <p className="text-white text-sm font-medium animate-pulse">Uploading...</p>
               </div>
             )}
           </div>

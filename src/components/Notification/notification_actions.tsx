@@ -8,29 +8,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ClipboardPenLine,
-  Info,
-  MoreHorizontal,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Info, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Notification } from "@/types/response/notification/notificationResponse";
 
-export default function NotificationActions(notifications: Notification) {
-  const navigate = useNavigate();
+import { useState } from "react";
+import { toast } from "sonner";
+import NotificationDetailsDialog from "./notification_details_dialog";
 
+export default function NotificationActions(notifications: Notification) {
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const handleViewDetails = () => {
-    navigate(`/notifications/details/${notifications.id}`, {
-      state: {
-        titleName: notifications?.title
-      }
-    });
+    if (!notifications) {
+      toast.error("Failed to fetch promo code details.");
+      return;
+    }
+    setSelectedId(notifications.id);
+    setOpen(true);
   };
 
-  const handleMarkAsRead = () => {
-    //call mark as read api
-  }
 
   return (
     <>
@@ -48,13 +45,14 @@ export default function NotificationActions(notifications: Notification) {
           <DropdownMenuItem onClick={handleViewDetails}>
             <Info /> View Details
           </DropdownMenuItem>
-
+{/* 
           <DropdownMenuItem onClick={handleMarkAsRead}>
             <ClipboardPenLine /> Mark as Read
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <NotificationDetailsDialog id={selectedId!} open={open} setOpen={setOpen} />
     </>
   );
 }

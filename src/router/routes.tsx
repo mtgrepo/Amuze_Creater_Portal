@@ -56,6 +56,7 @@ import PostLayout from "@/features/Entertainment/Posts/post_layout";
 import PostsDetailPage from "@/features/Entertainment/Posts/post_details";
 import PostCreate from "@/features/Entertainment/Posts/post_create";
 import PostUpdate from "@/features/Entertainment/Posts/post_update";
+import PurchaseReport from "../features/Report/purchase_report";
 
 const router = createBrowserRouter(
   [
@@ -84,6 +85,13 @@ const router = createBrowserRouter(
           handle: {
             crumb: ["Report", "Author Income Report"],
           },
+        },
+        {
+          path: "/report/purchase",
+          element: <PurchaseReport />,
+          handle: {
+            crumb: ["Report", "Purchase Report"],
+          }
         },
         // Entertainment
         {

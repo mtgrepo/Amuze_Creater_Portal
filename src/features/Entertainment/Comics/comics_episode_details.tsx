@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import { Separator } from "../../../components/ui/separator";
+import { t } from "i18next";
 
 export default function ComicEpisodeDetails() {
   const { id } = useParams();
@@ -104,7 +105,7 @@ export default function ComicEpisodeDetails() {
                 <div className="flex flex-wrap justify-center md:justify-start gap-6 my-6">
                   <div className="flex flex-col items-center md:items-start">
                     <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
-                      Price
+                      {t('price')}
                     </span>
                     <div className="flex items-center gap-2 text-green-400 font-bold text-xl">
                       <Banknote size={20} />
@@ -114,7 +115,7 @@ export default function ComicEpisodeDetails() {
                   <div className="h-10 w-px bg-white/10 hidden md:block" />
                   <div className="flex flex-col items-center md:items-start">
                     <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
-                      Views
+                      {t('views')}
                     </span>
                     <div className="flex items-center gap-2 text-primary dark:text-blue-400 font-bold text-xl">
                       <Eye size={20} />
@@ -141,7 +142,7 @@ export default function ComicEpisodeDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Total Community Sales
+                  {t('total_sales')}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {episodeDetails.total_sales || 0}
@@ -160,7 +161,7 @@ export default function ComicEpisodeDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Estimated Revenue
+                  {t('total_revenue')}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {(episodeDetails.total_sales_amount || 0).toLocaleString()}{" "}
@@ -175,7 +176,7 @@ export default function ComicEpisodeDetails() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Comics Pages</CardTitle>
+            <CardTitle>{t('episode_form.comics_pages')}</CardTitle>
             <Separator />
             <CardDescription>
               <div className="flex items-center gap-4">

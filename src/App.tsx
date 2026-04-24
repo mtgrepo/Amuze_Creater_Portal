@@ -25,7 +25,6 @@ function App() {
   const matches = rawMatches as MatchType[]
 
 
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -49,7 +48,6 @@ function App() {
               <CreatorNotificationToggle />
               <LanguageToggle />
               <ModeToggle />
-
             </div>
           </header>
 

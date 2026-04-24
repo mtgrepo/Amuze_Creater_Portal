@@ -83,8 +83,10 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({ c
     await updateAllMarkNotiMutation({ page, limit })
   }, [])
 
-  useEffect(() => {
+ useEffect(() => {
     const unsubscribe = onMessage(messaging, (payload) => {
+          console.log("FCM payload:", payload);
+
       if (payload.notification) {
         new Notification(payload.notification.title ?? "New Notification", {
           body: payload.notification.body ?? "",
@@ -94,7 +96,6 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     return () => unsubscribe();
   }, []);
-
 
   const unreadCount = notifications.filter(n => !n?.reads[0]?.is_read).length
 

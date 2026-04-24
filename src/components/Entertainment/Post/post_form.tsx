@@ -1,4 +1,7 @@
-import { MediaUpload, type MediaItem } from "@/components/common/post_media_upload";
+import {
+  MediaUpload,
+  type MediaItem,
+} from "@/components/common/post_media_upload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -8,8 +11,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +44,7 @@ import { usePostMediaUpdate } from "@/composable/Command/Entertainment/Posts/use
 function normalizeMedia(media: any[] = []) {
   return media.map((m) => ({
     id: crypto.randomUUID(),
+    mediaId: m.id,
     url: m.url,
     alt: m.alt || "",
     type: m.type || "image",
@@ -49,7 +66,8 @@ function createFormSchema() {
           url: z.string().optional(),
           type: z.string().optional(),
           id: z.string().optional(),
-        })
+          mediaId: z.string().optional()
+        }),
       )
       .optional(),
   });
@@ -76,11 +94,9 @@ export default function PostForm({
   const formSchema = createFormSchema();
   const [confirmDialog, setConfirmDialog] = useState(false);
 
-
-
   const { createMutation, isCreatePending } = usePostCreate();
   const { updateMutation, isUpdatePending } = usePostUpdate();
-  const { updateMediaMutation, isMediaUpdatePending} = usePostMediaUpdate();
+  const { updateMediaMutation, isMediaUpdatePending } = usePostMediaUpdate();
 
   const isLoading = isCreatePending || isUpdatePending || isMediaUpdatePending;
 
@@ -122,13 +138,12 @@ export default function PostForm({
         created_by: creatorId,
       });
       resetToken.current = true;
-      originalMediaRef.current = normalizeMedia(defaultValues.media || [])
+      originalMediaRef.current = normalizeMedia(defaultValues.media || []);
     }
     if (mode === "add" && creatorId) {
-      form.setValue("created_by", creatorId)
+      form.setValue("created_by", creatorId);
     }
   }, [defaultValues, mode, creatorId, form]);
-  
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -139,64 +154,73 @@ export default function PostForm({
       formData.append("isVideo", String(values.isVideo));
       formData.append("created_by", String(values.created_by));
 
-      if (values.media) {
-        values.media.forEach((item: any, index: number) => {
-          const key = mode === 'add' ? "media" : "images";
+      const currentMedia = values.media || [];
+      const hasNewFiles = values.media?.some((m) => m.file);
+
+      console.log("current media", currentMedia)
+
+      if (mode === "add") {
+        currentMedia.forEach((item: any, index: number) => {
           if (item.file) {
-            formData.append(`file[${index}][${key}]`, item.file);
-          }
-          if(!item.file && item.url){
-            formData.append(`file[${index}][fieldId]`, item.url);
+            formData.append(`file[${index}][media]`, item.file);
           }
           formData.append(`file[${index}][alt]`, item.alt || "");
         });
-      }
-
-      if (mode === "add") {
         await createMutation(formData);
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
 
-        const currentMedia = values.media || [];
         const originalMedia = originalMediaRef.current;
 
-        const currentExisting = currentMedia.filter((m) => !m.file);
-        const originalIds = originalMedia.map(m => m.url);
-        const currentIds = currentExisting.map(m => m.url);
+        const originalIds = originalMedia.map((m) => m.url);
+        const currentIds = currentMedia
+          .filter((m) => !m.file)
+          .map((m) => m.url);
+        const hasDeleted = originalIds.some((id) => !currentIds.includes(id));
+        console.log("has deleted", hasDeleted);
 
-        const hasDeleted = originalIds.some(id => !currentIds.includes(id));
-        const hasNewFiles = currentMedia.some(m => m.file);
+        console.log("original media", originalMedia)
 
-        if(hasDeleted){
-          await updateMediaMutation({
-            id: Number(defaultValues.id),
-            data: formData
-          })
-        }else if(hasNewFiles){
-          await updateMutation({
-            id: Number(defaultValues.id),
-            data: formData
-          })
-        }else{
-          await updateMutation({
-            id: Number(defaultValues.id),
-            data: formData
-          })
-        }
+        const fd = new FormData();
 
+        fd.append("description", values.description);
+        fd.append("visibility", values.visibility);
 
-        if(hasNewFiles){
-          await updateMediaMutation({
-            id: Number(defaultValues.id),
-            data: formData
-          })
-        }else{
         await updateMutation({
           id: Number(defaultValues.id),
-          data: formData
+          data: fd,
         });
+
+        if (hasNewFiles) {
+          const fd = new FormData();
+
+          currentMedia.forEach((item, index) => {
+            if (item.file) {
+              fd.append(`file[${index}][images]`, item.file);
+              fd.append(`file[${index}][alt]`, item.alt || "");
+            }
+          });
+          await updateMutation({
+            id: Number(defaultValues.id),
+            data: fd,
+          });
         }
 
+        if (hasDeleted) {
+          const fd = new FormData();
+
+          currentMedia.forEach((item) => {
+            if (!item.file && item.mediaId && item.url) {
+              fd.append("fileId", item.mediaId);
+              fd.append("image", item.url!);
+              fd.append("alt", item.alt || "");
+            }
+          });
+          await updateMediaMutation({
+            id: Number(defaultValues.id),
+            data: fd,
+          });
+        }
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -208,7 +232,6 @@ export default function PostForm({
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {mode === "add" ? "Create New Post" : "Edit Post"}
@@ -284,7 +307,10 @@ export default function PostForm({
                       </p>
                     </div>
 
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormItem>
                 )}
               />
@@ -313,7 +339,6 @@ export default function PostForm({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
-
             <Button
               type="button"
               variant="outline"
@@ -347,13 +372,13 @@ export default function PostForm({
                   if (isValid) {
                     setConfirmDialog(true);
                   } else {
-                    toast.error("Please fill in all required fields correctly.");
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
                   }
                 }}
               >
-                {(isLoading) && (
-                  <Spinner className="mr-2 w-4 h-4" />
-                )}
+                {isLoading && <Spinner className="mr-2 w-4 h-4" />}
                 {mode === "add" ? "Create Post" : "Save Changes"}
               </Button>
               <DialogContent className="max-w-md">
@@ -390,17 +415,13 @@ export default function PostForm({
                         {mode === "add" ? "Creating..." : "Updating..."}
                       </>
                     ) : (
-                      <>
-                        Confirm & {mode === "add" ? "Create" : "Update"}
-                      </>
+                      <>Confirm & {mode === "add" ? "Create" : "Update"}</>
                     )}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
           </div>
-
         </form>
       </Form>
     </div>

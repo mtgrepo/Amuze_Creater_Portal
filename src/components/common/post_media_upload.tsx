@@ -5,6 +5,7 @@ import { Textarea } from "../ui/textarea";
 
 export type MediaItem = {
   id: string;
+  mediaId?: string;
   file?: File;
   url?: string;
   alt: string;
@@ -21,8 +22,6 @@ const getFileType = (file: File) => {
   if (file.type.startsWith("video")) return "video";
   return "unknown";
 };
-
-
 
 export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
   const hasVideo = value.some((v) => v.type === "video");
@@ -63,11 +62,22 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
         alt: "",
         type,
       });
-
-      if (type === "image") currentImages.push({} as any);
-      if (type === "video") currentVideos.push({} as any);
     }
-    onChange([...currentItems, ...newItems]);
+
+    const updated = [...currentItems];
+
+    // Replace first empty slot (if exists)
+    let insertIndex = updated.findIndex((i) => !i.file && !i.url);
+
+    if (insertIndex !== -1) {
+      updated[insertIndex] = newItems[0];
+      if (newItems[1]) updated.push(...newItems.slice(1));
+    } else {
+      updated.push(...newItems);
+    }
+
+    onChange(updated);
+    // onChange([...currentItems, ...newItems]);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -105,18 +115,18 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
     return item.type;
   };
 
-
   return (
     <div className="w-full">
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition
-        ${isDisabled
+        ${
+          isDisabled
             ? "opacity-50 cursor-not-allowed bg-muted"
             : isDragActive
               ? "border-primary bg-primary/10 cursor-pointer"
               : "border-muted-foreground/30 hover:bg-muted/30 cursor-pointer"
-          }`}
+        }`}
       >
         <input {...getInputProps()} />
 
@@ -127,7 +137,8 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
         </p>
 
         <p className="text-xs text-muted-foreground mt-1">
-          Maximum: 10 images or 1 video. You cannot upload images and a video together.
+          Maximum: 10 images or 1 video. You cannot upload images and a video
+          together.
         </p>
       </div>
 
@@ -149,7 +160,6 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
               </button>
 
               <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0 relative">
-
                 {(() => {
                   const src = getPreviewSrc(item);
                   const type = getType(item);
@@ -164,10 +174,7 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
 
                   if (type === "image") {
                     return (
-                      <img
-                        src={src}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={src} className="w-full h-full object-cover" />
                     );
                   }
 
@@ -195,7 +202,6 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
                     </span>
                   );
                 })()}
-
               </div>
 
               <div className="flex-1">
@@ -207,7 +213,7 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
                 />
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </div>

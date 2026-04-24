@@ -75,7 +75,7 @@ export default function ProfileDetailsComponent({
     <div className="">
       <div className="w-full max-w-7xl mx-auto">
         {/* Header Profile Card */}
-        <div className="bg-white dark:bg-[#17171A] border border-slate-300 dark:border-[#252525] rounded-md p-6 mb-6">
+        <div className="bg-card border border-slate-300 dark:border-[#252525] rounded-md p-6 mb-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="relative">
               <ImageUpload
@@ -85,7 +85,7 @@ export default function ProfileDetailsComponent({
                   if (isPending) return;
 
                   if (file) {
-                    setProfileImage(file); // Instant UI update
+                    setProfileImage(file); 
                     handleUpdateProfile(file);
                   } else {
                     setProfileImage(null);
@@ -134,7 +134,7 @@ export default function ProfileDetailsComponent({
                       )
                       : "N/A"}
                   </span>
-                </div>
+                </div> 
               </div>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function ProfileDetailsComponent({
           </TabsContent>
 
           <TabsContent value="security" className="mt-6">
-            <div className="bg-slate-50/50 dark:bg-slate-900/20 border border-slate-300 dark:border-[#252525] rounded-md p-6">
+            <div className="bg-card border border-slate-300 dark:border-[#252525] rounded-md p-6">
               <div className="flex items-center gap-2 mb-6">
                 <Lock className="w-5 h-5 text-slate-500" />
                 <h3 className="text-lg font-semibold">Account Security</h3>
@@ -177,6 +177,7 @@ export default function ProfileDetailsComponent({
                   </div>
                   <Button
                     variant="outline"
+                    className="cursor-pointer"
                     onClick={() => setIsPasswordModalOpen(true)}
                   >
                     Update Password

@@ -25,7 +25,7 @@ export default function ProfileWalletComponent({ data }: ProfileWalletProps) {
           <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">Financial Summary</h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-950 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-card shadow-sm">
           
           {/* Balance Tile */}
           <div className="p-8 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
@@ -79,7 +79,7 @@ export default function ProfileWalletComponent({ data }: ProfileWalletProps) {
             data.profit_percents.map((item) => (
               <div 
                 key={item.id} 
-                className="group p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
+                className="group p-6 bg-card border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">

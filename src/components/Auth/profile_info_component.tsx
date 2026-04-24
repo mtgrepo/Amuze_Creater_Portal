@@ -118,7 +118,7 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
 function Card({ title, children, className = "" }: CardProps) {
   return (
     <div
-      className={`bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md p-5 ${className}`}
+      className={`bg-card border border-slate-200 dark:border-slate-800 rounded-md p-5 ${className}`}
     >
       <h3 className="text-base font-bold mb-3">{title}</h3>
       <Separator className="mb-3" />
@@ -141,7 +141,7 @@ function Info({ label, value, icon }: InfoProps) {
           {label}:
         </span>
 
-        <span className="text-slate-600 dark:text-slate-400 wrap-break-word min-w-0">
+        <span className="wrap-break-word min-w-0">
           {value || (
             <span className="text-slate-400 dark:text-slate-500 italic">
               Not provided

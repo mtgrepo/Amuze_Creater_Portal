@@ -10,7 +10,7 @@ export default function ProfileHistoryComponent({ history }: ProfileHistoryProps
     // const profile = history?.photos;
   if (!history || history?.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-slate-50 dark:bg-slate-900/50 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 mt-5">
+      <div className="flex flex-col items-center justify-center p-12 bg-card rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 mt-5">
         <ImageIcon className="w-12 h-12 text-slate-300 mb-3" />
         <p className="text-slate-500 font-medium">No profile photo history found.</p>
       </div>
@@ -30,7 +30,7 @@ export default function ProfileHistoryComponent({ history }: ProfileHistoryProps
         {history.map((item) => (
           <div 
             key={item?.id} 
-            className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 shadow-sm transition-all hover:shadow-md"
+            className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-card shadow-sm transition-all hover:shadow-md"
           >
             {/* The Photo */}
             <img

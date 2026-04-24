@@ -3,8 +3,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, FileUp } from "lucide-react";
-import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
+import { CirclePlus } from "lucide-react";
 import { useGalleryQuery } from "@/composable/Query/Entertainment/Gallery/useGalleryQuery";
 import { GalleryTitleComponent } from "@/components/Entertainment/Gallery/gallery_component";
 import { useDebounce } from "use-debounce";
@@ -54,28 +53,6 @@ export default function GalleryMain() {
 
   const { t } = useTranslation();
 
-  const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
-    useComicsTitleExportCommand();
-
-  const handleExcelExport = async () => {
-    try {
-      const blob = await exportExcel();
-
-      if (!blob) return;
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "comics_titles.xlsx";
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Export failed", error);
-    }
-  };
 
   return (
     <SidebarInset>
@@ -90,16 +67,6 @@ export default function GalleryMain() {
             >
               <CirclePlus className="w-4 h-4" />
               {t('create_new_gallery')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="cursor-pointer"
-              onClick={handleExcelExport}
-              disabled={isLoadingExcel}
-            >
-              <FileUp className="h-4 w-4" />
-              {t('export_data')}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">

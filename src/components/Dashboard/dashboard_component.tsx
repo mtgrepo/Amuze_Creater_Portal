@@ -9,7 +9,6 @@ export default function DashboardComponent() {
   //   console.log("permission", raw?.creator?.permissions)
   // }, []);
 
-
   return (
     <SidebarProvider
       style={

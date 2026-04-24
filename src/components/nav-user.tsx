@@ -94,16 +94,13 @@ export function NavUser({
                   ${isActive ? "bg-primary hover:bg-primary/90 text-primary-foreground" : ""}
                   data-[state=open]:bg-sidebar-accent 
                   data-[state=open]:text-sidebar-accent-foreground
+                  cursor-pointer
                 `}
               >
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem> */}
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <Bell />
                 Notifications
               </DropdownMenuItem>

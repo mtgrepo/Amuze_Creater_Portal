@@ -12,7 +12,6 @@ import { TooltipProvider } from './components/ui/tooltip.tsx'
 import './i18n.ts'
 import { Toaster } from './components/ui/sonner.tsx'
 import { registerServiceWorker } from './registerSW.ts'
-import { CreatorNotiProvider } from './components/common/Notification/notificationContext.tsx'
 
 const queryClient = new QueryClient(({
   queryCache: new QueryCache({
@@ -26,7 +25,6 @@ registerServiceWorker();
 
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
-    <CreatorNotiProvider>
     <ThemeProvider>
       <TooltipProvider >
       <StrictMode>
@@ -37,6 +35,5 @@ createRoot(document.getElementById('root')!).render(
       </StrictMode>
       </TooltipProvider>
     </ThemeProvider>
-    </CreatorNotiProvider>
   </QueryClientProvider>
 );

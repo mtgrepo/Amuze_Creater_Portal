@@ -10,6 +10,7 @@ export const usePostMediaUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["postList"] });
+      queryClient.invalidateQueries({ queryKey: ["postDetail"] });
     },
     onError: (error:any) => {
       toast.error(error?.response?.data?.message || "Failed to update post media");

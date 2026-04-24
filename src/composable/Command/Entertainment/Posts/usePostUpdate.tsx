@@ -12,6 +12,7 @@ export const usePostUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["postList"] });
+      queryClient.invalidateQueries({ queryKey: ["postDetail"] });
       toast.success("Updated post successfully");
       navigate("/entertainment/posts")
     },

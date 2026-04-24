@@ -96,14 +96,19 @@ const CreatorNotiDropdown = () => {
 
       <div className="h-80 overflow-y-auto" >
         <div className="flex flex-col">
-
-          {notifications.map((noti) => (
-            <CreatorNotiItem
+          {notifications.length === 0 ? (
+            <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+              No notifications
+            </p>
+          ) : (
+            notifications.map((noti) => (
+              <CreatorNotiItem
               key={noti.id}
               notifications={noti}
               onClick={() => handleNotificationItem(noti)}
             />
-          ))}
+            ))
+          )}
 
           {hasNextPage && (
             <button

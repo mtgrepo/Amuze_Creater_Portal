@@ -24,7 +24,6 @@ function App() {
   const rawMatches = useMatches()
   const matches = rawMatches as MatchType[]
 
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">

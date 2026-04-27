@@ -4,5 +4,6 @@ export async function registerServiceWorker() {
       scope: "/creator-portal/",
     });
   }
+
   throw new Error("Service Workers are not supported in this browser.");
 }

@@ -12,11 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import LongText from "@/components/common/longtext";
 
-export default function PostColumns({
-  is_banned,
-}: {
-  is_banned: boolean;
-}) {
+export default function PostColumns({ is_banned }: { is_banned: boolean }) {
   const navigate = useNavigate();
 
   const columns: ColumnDef<PostResponse>[] = [
@@ -29,18 +25,18 @@ export default function PostColumns({
       },
     },
 
-   {
-  accessorKey: "description",
-  header: "Post Content",
-  cell: ({ row }) => {
-          const name = row.getValue("description") as string;
-          return (
-            <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
-          {name}
-        </div>
-          )
-  }
-},
+    {
+      accessorKey: "description",
+      header: "Post Content",
+      cell: ({ row }) => {
+        const name = row.getValue("description") as string;
+        return (
+          <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
+            {name}
+          </div>
+        );
+      },
+    },
     {
       header: "Media",
       accessorFn: (row) => row.media,
@@ -48,7 +44,9 @@ export default function PostColumns({
         const media = row.original.media || [];
 
         if (media.length === 0) {
-          return <span className="text-muted-foreground text-xs">No Media</span>;
+          return (
+            <span className="text-muted-foreground text-xs">No Media</span>
+          );
         }
 
         return (
@@ -64,10 +62,7 @@ export default function PostColumns({
                 }}
               >
                 {m.type === "image" ? (
-                  <img
-                    src={m.url}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={m.url} className="w-full h-full object-cover" />
                 ) : (
                   <>
                     <video
@@ -137,7 +132,9 @@ export default function PostColumns({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
               <DropdownMenuItem
-                onClick={() => navigate(`/entertainment/posts/details/${post.id}`)}
+                onClick={() =>
+                  navigate(`/entertainment/posts/details/${post.id}`)
+                }
               >
                 <Eye className="mr-2 h-4 w-4" />
                 View Details
@@ -149,7 +146,6 @@ export default function PostColumns({
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
-
             </DropdownMenuContent>
           </DropdownMenu>
         );

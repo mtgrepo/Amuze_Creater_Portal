@@ -1,168 +1,105 @@
 import { useMemo, useState } from "react";
-import { isSameDay, isSameMonth, isSameYear } from "date-fns";
-import { useAuthorReportQuery } from "../../composable/Query/Report/useAuthorReportQuery";
-import { decryptAuthData } from "../../lib/helper";
-import type { ReportFilters } from "../../types/response/report/authorReportResponse";
-import { AuthorReportComponent } from "../../components/Report/Author/author_report_component";
-import ReportCard from "../../components/common/report_card";
 import { Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+// Hooks & Helpers
+import { decryptAuthData } from "../../lib/helper";
 import { usePurchaseReportQuery } from "../../composable/Query/Report/usePurchaseReportQuery";
 
+// Components
+import { PurchaseReportComponent } from "@/components/Report/Purchase/purchase_report_component";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Types
+import type { ReportFilters } from "../../types/response/report/authorReportResponse";
+import type { PurchaseRow } from "@/components/Report/Purchase/column";
+
+type CategoryName = "Novel" | "Comics" | "Storytelling" | "Magazine";
+
+const CATEGORIES: { id: number; name: CategoryName }[] = [
+  { id: 1, name: "Novel" },
+  { id: 2, name: "Comics" },
+  { id: 3, name: "Storytelling" },
+  { id: 4, name: "Magazine" },
+];
+
 export default function PurchaseReport() {
+  const { t } = useTranslation();
+  
+  const [activeTab, setActiveTab] = useState<CategoryName>("Novel");
   const [filters, setFilters] = useState<ReportFilters>({
     category: "All",
     startDate: "",
     endDate: "",
   });
 
-  const { t } = useTranslation();
+  const authorId = useMemo(() => {
+    const creatorData = localStorage.getItem("creator");
+    if (!creatorData) return null;
+    return decryptAuthData(creatorData)?.creator?.id;
+  }, []);
 
-  const loginUser = decryptAuthData(localStorage.getItem("creator")!);
-  const authorId = loginUser?.creator?.id;
+  const subCategoryId = CATEGORIES.find((cat) => cat.name === activeTab)?.id || 1;
 
-  const { authorReportList, isLoading } = useAuthorReportQuery({
+  const { purchaseReportData, isLoading: isFetching } = usePurchaseReportQuery({
+    page: 1,
+    pageSize: 10,
     authorId: authorId!,
     startDate: filters.startDate,
     endDate: filters.endDate,
+    subCategoryId,
+    userId: "All",
+    purchaseBy: "All",
   });
 
-//   const { purchaseReportData, isLoading: isFetching } = usePurchaseReportQuery({
-//     page: 1,
-//     pageSize: 10,
-//     authorId: authorId!,
-//     startDate: filters.startDate,
-//     endDate: filters.endDate,
-//   })
-
-  // Flatten Table Data
-  const tableData = useMemo(() => {
-    const reports = authorReportList?.data?.reports;
-    if (!reports) return [];
-
-    if (filters.category === "All") {
-      return Object.values(reports).flat();
-    }
-
-    const selectedCategory = filters.category.toLowerCase();
-    const categoryMapping: Record<string, string[]> = {
-      magazine: ["magazine", "journal"],
-      journal: ["journal", "magazine"],
-      novel: ["novel"],
-      gallery: ["gallery"],
-    };
-
-    const keysToCheck = categoryMapping[selectedCategory] || [selectedCategory];
-    const apiKeys = Object.keys(reports);
-
-    for (const target of keysToCheck) {
-      const foundKey = apiKeys.find((k) => k.toLowerCase() === target);
-      if (foundKey && reports[foundKey].length > 0) {
-        return reports[foundKey];
-      }
-    }
-    return [];
-  }, [authorReportList, filters.category]);
-
-  // Manual Calculation based on your API response keys
-  const stats = useMemo(() => {
-    const now = new Date();
-
-    return tableData.reduce(
-      (acc, item) => {
-        const income = Number(item.authorIncome) || 0;
-
-        const itemDate = new Date(item.purchaseDate);
-
-        // Safety check for valid date
-        if (!isNaN(itemDate.getTime())) {
-          // Total (based on current table data/filters)
-          acc.totalIncome += income;
-
-          // Yearly (Current Year)
-          if (isSameYear(itemDate, now)) {
-            acc.yearlyIncome += income;
-          }
-
-          // Monthly (Current Month)
-          if (isSameMonth(itemDate, now)) {
-            acc.monthlyIncome += income;
-          }
-
-          // Daily (Today)
-          if (isSameDay(itemDate, now)) {
-            acc.dailyIncome += income;
-          }
-        }
-
-        return acc;
-      },
-      {
-        totalIncome: 0,
-        yearlyIncome: 0,
-        monthlyIncome: 0,
-        dailyIncome: 0,
-      },
-    );
-  }, [tableData]);
+  const tableData = useMemo<PurchaseRow[]>(() => {
+    return (purchaseReportData?.finalResult as PurchaseRow[]) || [];
+  }, [purchaseReportData]);
 
   const handleFiltersChange = (updates: Partial<ReportFilters>) => {
     setFilters((prev) => ({ ...prev, ...updates }));
   };
 
-  const currentMonth = new Date().toLocaleString("default", { month: "long" });
-  const currentYear = new Date().getFullYear().toString();
-  const currentDay = new Date().toLocaleDateString("default", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
-      {/* Dynamic Status Cards */}
+      {/* Header / Summary Card */}
       <div className="border border-dashed rounded-xl p-6 bg-card/50 hover:border-primary/50 transition-colors duration-300">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
-          <Wallet className="items-center text-primary " />
+          <Wallet className="text-primary" />
           <h1 className="font-bold text-lg text-foreground tracking-wider">
             {t("income_summary")}
           </h1>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-          {" "}
-          <ReportCard
-            title={t("total_income")}
-            value={stats.totalIncome.toLocaleString()}
-            accent=""
-            sub="Lifetime/ Filtered"
-          />
-          <ReportCard
-            title={t("yearly_income")}
-            value={stats.yearlyIncome.toLocaleString()}
-            sub={currentYear}
-            accent=""
-          />
-          <ReportCard
-            title={t("monthly_income")}
-            value={stats.monthlyIncome.toLocaleString()}
-            sub={currentMonth + ", " + currentYear}
-            accent=""
-          />
-          <ReportCard
-            title={t("daily_income")}
-            value={stats.dailyIncome.toLocaleString()}
-            sub={currentDay}
-            accent=""
-          />
-        </div>
       </div>
 
-      <AuthorReportComponent
-        data={tableData}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        isFetching={isLoading}
-        total={tableData.length}
-      />
+      <div className="border border-border p-3 rounded-lg my-3">
+        <Tabs
+          value={activeTab}
+          onValueChange={(val) => setActiveTab(val as CategoryName)}
+          className="w-full my-5"
+        >
+          <TabsList className="w-full grid grid-cols-4" variant="line">
+            {CATEGORIES.map((cat) => (
+              <TabsTrigger key={cat.id} value={cat.name} className="w-full text-center">
+                {cat.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {/* Render content based on active tab */}
+          {CATEGORIES.map((cat) => (
+            <TabsContent key={cat.id} value={cat.name}>
+              <PurchaseReportComponent
+                data={tableData}
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                isFetching={isFetching}
+                total={tableData.length}
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
   );
 }

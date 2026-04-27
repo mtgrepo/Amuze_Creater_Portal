@@ -3,7 +3,7 @@ import { getPurchaseReport, type PruchaseReportParams } from "../../../http/apis
 
 export const usePurchaseReportQuery = (params: PruchaseReportParams) => {
     const purchaseReportData = useQuery({
-        queryKey: ['purchaseReportData', params?.authorId],
+        queryKey: ['purchaseReportData', params?.authorId, params?.subCategoryId],
         queryFn: async () => {
             const res = await getPurchaseReport(params);
             return res?.data;

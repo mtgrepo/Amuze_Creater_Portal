@@ -28,12 +28,6 @@ export default function PurchaseReportColumn() {
     },
 
     {
-      accessorKey: "buyerName",
-      header: t("buyer"),
-      cell: ({ row }) => <div>{row.original.buyerName}</div>,
-    },
-
-    {
       accessorKey: "titleName",
       header: t("title"),
       cell: ({ row }) => <div>{row.original.titleName}</div>,
@@ -49,14 +43,10 @@ export default function PurchaseReportColumn() {
           "episodeName" in data ? data.episodeName : undefined;
 
         const magazineEpisodeName =
-          "magazineEpisodeName" in data
-            ? data.magazineEpisodeName
-            : undefined;
+          "magazineEpisodeName" in data ? data.magazineEpisodeName : undefined;
 
         const magazineSeasonName =
-          "magazineSeasonName" in data
-            ? data.magazineSeasonName
-            : undefined;
+          "magazineSeasonName" in data ? data.magazineSeasonName : undefined;
 
         return (
           <div className="max-w-75 whitespace-normal wrap-break-word">
@@ -83,7 +73,11 @@ export default function PurchaseReportColumn() {
         );
       },
     },
-
+    {
+      accessorKey: "buyerName",
+      header: t("buyer"),
+      cell: ({ row }) => <div>{row.original.buyerName}</div>,
+    },
     {
       accessorKey: "price",
       header: t("price"),
@@ -91,18 +85,31 @@ export default function PurchaseReportColumn() {
         <div>{row.original.price?.toLocaleString?.() ?? 0}</div>
       ),
     },
-
+    {
+      accessorKey: "buyingWithWallet",
+      header: "Pay(Wallet)",
+      cell: ({ row }) => (
+        <div>{row.original.buyingWithWallet?.toLocaleString?.() ?? 0}</div>
+      ),
+    },
+    {
+      accessorKey: "buyingWithBonus",
+      header: "Pay(Bonus)",
+      cell: ({ row }) => (
+        <div>{row.original.buyingWithBonus?.toLocaleString?.() ?? 0}</div>
+      ),
+    },
     {
       accessorKey: "created_at",
       header: t("date"),
       cell: ({ row }) => <div>{row.original.created_at || "-"}</div>,
     },
 
-    {
-      accessorKey: "buyerId",
-      header: "Buyer ID",
-      cell: ({ row }) => <div>{row.original.buyerId}</div>,
-    },
+    // {
+    //   accessorKey: "buyerId",
+    //   header: "Buyer ID",
+    //   cell: ({ row }) => <div>{row.original.buyerId}</div>,
+    // },
   ];
 
   return columns;

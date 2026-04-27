@@ -36,7 +36,7 @@ interface PurchaseReportProps {
     total: number;
 }
 
-export function AuthorReportComponent({ data, filters, onFiltersChange, isFetching }: PurchaseReportProps) {
+export function PurchaseReportComponent({ data, filters, onFiltersChange, isFetching }: PurchaseReportProps) {
     const { subCategoryList } = useSubCategoryQuery();
     
     // Table State
@@ -85,75 +85,7 @@ export function AuthorReportComponent({ data, filters, onFiltersChange, isFetchi
     const { t } = useTranslation();
     return (
         <div className="space-y-6">
-            <div className="rounded-xl border-2 p-6 bg-card shadow-sm flex flex-col gap-8">
 
-                {/* Date Range Section */}
-                <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase  mb-4">{t('date_range')}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">{t('start_date')}</label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className={cn("w-full justify-start border-2  rounded-lg", !filters.startDate && "text-muted-foreground")}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {filters.startDate ? format(getSafeDate(filters.startDate)!, "PPP") : "Select start date"}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={getSafeDate(filters.startDate)}
-                                        onSelect={(d) => onFiltersChange({ startDate: d ? format(d, "yyyy-MM-dd") : "" })}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">{t('end_date')}</label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className={cn("w-full justify-start border-2  rounded-lg", !filters.endDate && "text-muted-foreground")}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {filters.endDate ? format(getSafeDate(filters.endDate)!, "PPP") : "Select end date"}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={getSafeDate(filters.endDate)}
-                                        onSelect={(d) => onFiltersChange({ endDate: d ? format(d, "yyyy-MM-dd") : "" })}
-                                        disabled={filters.startDate ? { before: getSafeDate(filters.startDate)! } : undefined}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Category Section */}
-                <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase mb-4">Category Filters</p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="relative">
-                            <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">Sub-Category</label>
-                            <Select value={filters.category} onValueChange={(val) => onFiltersChange({ category: val })}>
-                                <SelectTrigger className="w-full border-2 h-11 rounded-lg">
-                                    <SelectValue placeholder="Select Category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="All" className="font-bold">All Categories</SelectItem>
-                                    {subCategoryList?.map((cat: any) => (
-                                        <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
             {/* Table */}
             <div className=" grid grid-cols-1 rounded-md border overflow-hidden">

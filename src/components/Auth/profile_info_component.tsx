@@ -22,6 +22,7 @@ type InfoProps = {
   label: string;
   value: string | number | undefined | null;
   icon?: React.ReactNode;
+  className?: string;
 };
 
 type CardProps = {
@@ -99,6 +100,7 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
                     label="Verification Status"
                     value={account.confirm_status}
                     icon={<CheckCircle className="w-4 h-4" />}
+                    className={`${account.confirm_status ? "text-green-500" : "text-red-500"}`}
                   />
                   <Info
                     label="Member Since"
@@ -127,7 +129,7 @@ function Card({ title, children, className = "" }: CardProps) {
   );
 }
 
-function Info({ label, value, icon }: InfoProps) {
+function Info({ label, value, icon, className }: InfoProps) {
   return (
     <div className="flex items-start gap-3 text-sm py-2">
       {icon && (
@@ -141,7 +143,7 @@ function Info({ label, value, icon }: InfoProps) {
           {label}:
         </span>
 
-        <span className="wrap-break-word min-w-0">
+        <span className={`${className} wrap-break-word min-w-0`}>
           {value || (
             <span className="text-slate-400 dark:text-slate-500 italic">
               Not provided

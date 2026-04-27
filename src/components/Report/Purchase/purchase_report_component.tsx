@@ -10,22 +10,13 @@ import {
     type SortingState,
     type VisibilityState
 } from "@tanstack/react-table";
-import { CalendarIcon } from "lucide-react";
-import { format, isValid, parseISO } from "date-fns";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { useSubCategoryQuery } from "../../../composable/Query/Genre/useSubCategoryQuery";
 import type {ReportFilters } from "../../../types/response/report/authorReportResponse";
 import { PageSizeComponent } from "../../common/Pagination/page-number";
 import Paginator from "../../common/Pagination/paginator";
 import { type PurchaseRow } from "./column";
-import { useTranslation } from "react-i18next";
 import PurchaseReportColumn from "./column";
 
 interface PurchaseReportProps {
@@ -36,8 +27,7 @@ interface PurchaseReportProps {
     total: number;
 }
 
-export function PurchaseReportComponent({ data, filters, onFiltersChange, isFetching }: PurchaseReportProps) {
-    const { subCategoryList } = useSubCategoryQuery();
+export function PurchaseReportComponent({ data, isFetching }: PurchaseReportProps) {
     
     // Table State
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -75,17 +65,12 @@ export function PurchaseReportComponent({ data, filters, onFiltersChange, isFetc
         },
     });
 
-    const getSafeDate = (dateStr: string): Date | undefined => {
-        if (!dateStr) return undefined;
-        const d = parseISO(dateStr);
-        return isValid(d) ? d : undefined;
-    };
+
 
     const totalRows = table.getFilteredRowModel().rows.length;
-    const { t } = useTranslation();
+
     return (
         <div className="space-y-6">
-
 
             {/* Table */}
             <div className=" grid grid-cols-1 rounded-md border overflow-hidden">

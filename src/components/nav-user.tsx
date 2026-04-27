@@ -27,7 +27,7 @@ export function NavUser({
   creator: {
     name: string;
     email: string;
-    avatar?: string;
+    profile?: string;
   };
 }) {
   const { isMobile } = useSidebar();
@@ -54,7 +54,7 @@ export function NavUser({
                         `}
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={creator?.avatar} alt={creator?.name} />
+                <AvatarImage src={creator?.profile} alt={creator?.name} />
                 <AvatarFallback className="rounded-lg bg-primary-foreground text-primary">
                   {creator?.email?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
@@ -75,7 +75,7 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={creator?.avatar} alt={creator?.name} />
+                  <AvatarImage src={creator?.profile} alt={creator?.name} />
                   <AvatarFallback className="rounded-lg bg-primary-foreground text-primary">
                     {creator?.email?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>

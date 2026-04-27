@@ -42,8 +42,7 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
 
   return (
       <div className="flex flex-1 flex-col gap-4">
-        <div className="w-full mt-5 ">
-          <div className="space-y-6">
+        <div className="w-full">
             <div className="grid grid-cols-1 gap-6">
               {/* Contact Details Card */}
               <Card title="Contact Details">
@@ -109,7 +108,6 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
                   />
                 </div>
               </Card>
-            </div>
           </div>
         </div>
       </div>

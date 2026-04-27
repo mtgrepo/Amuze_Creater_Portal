@@ -67,6 +67,11 @@
   "banner_title": "Marketing Assets",
   "episode_list": "Episode List",
 
+  "novel": "Novel",
+  "comics": "Comics",
+  "storytelling": "Story Telling",
+  "magazine": "Magazine",
+
   "novel_form" : {
     "description": "Fill in the information of your novel here."
   },

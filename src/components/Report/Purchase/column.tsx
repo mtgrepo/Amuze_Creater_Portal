@@ -7,11 +7,7 @@ import type {
   StoryTellingPurchaseResponse,
 } from "../../../types/response/report/purchaseReportResponse";
 
-export type PurchaseRow =
-  | ComicPurchaseReportResponse
-  | NovelPurchaseResponse
-  | StoryTellingPurchaseResponse
-  | JournalPurchaseResponse;
+export type PurchaseRow =  ComicPurchaseReportResponse | NovelPurchaseResponse | StoryTellingPurchaseResponse | JournalPurchaseResponse;
 
 export default function PurchaseReportColumn() {
   const { t } = useTranslation();
@@ -32,21 +28,17 @@ export default function PurchaseReportColumn() {
       header: t("title"),
       cell: ({ row }) => <div>{row.original.titleName}</div>,
     },
-
     {
       id: "productDetails",
       header: t("product_details"),
       cell: ({ row }) => {
         const data = row.original;
 
-        const episodeName =
-          "episodeName" in data ? data.episodeName : undefined;
+        const episodeName = "episodeName" in data ? data.episodeName : undefined;
 
-        const magazineEpisodeName =
-          "magazineEpisodeName" in data ? data.magazineEpisodeName : undefined;
+        const magazineEpisodeName = "magazineEpisodeName" in data ? data.magazineEpisodeName : undefined;
 
-        const magazineSeasonName =
-          "magazineSeasonName" in data ? data.magazineSeasonName : undefined;
+        const magazineSeasonName = "magazineSeasonName" in data ? data.magazineSeasonName : undefined;
 
         return (
           <div className="max-w-75 whitespace-normal wrap-break-word">
@@ -104,12 +96,6 @@ export default function PurchaseReportColumn() {
       header: t("date"),
       cell: ({ row }) => <div>{row.original.created_at || "-"}</div>,
     },
-
-    // {
-    //   accessorKey: "buyerId",
-    //   header: "Buyer ID",
-    //   cell: ({ row }) => <div>{row.original.buyerId}</div>,
-    // },
   ];
 
   return columns;

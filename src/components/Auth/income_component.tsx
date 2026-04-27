@@ -17,7 +17,7 @@ export default function ProfileWalletComponent({ data }: ProfileWalletProps) {
   if (!data) return <div className="p-8 text-center text-slate-500">No financial data available.</div>;
 
   return (
-    <div className="mt-8 space-y-12 max-w-6xl">
+    <div className=" space-y-12 w-full">
       {/* FINANCIAL OVERVIEW */}
       <section>
         <div className="flex items-center gap-2 mb-6">

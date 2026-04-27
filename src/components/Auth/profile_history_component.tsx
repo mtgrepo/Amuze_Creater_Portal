@@ -18,7 +18,7 @@ export default function ProfileHistoryComponent({ history }: ProfileHistoryProps
   }
 
   return (
-    <div className="mt-5">
+    <div className="w-full">
       <div className="flex items-center gap-2 mb-4">
         <h3 className="text-lg font-bold">Profile Photos</h3>
         <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-2 py-1 rounded-full">

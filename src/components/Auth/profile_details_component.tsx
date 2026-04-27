@@ -193,7 +193,7 @@ export default function ProfileDetailsComponent({
                   </div>
                   <Button
                     variant="ghost"
-                    className="text-blue-500 hover:text-blue-600"
+                    className="cursor-pointer text-primary"
                   >
                     Send Reset Link
                   </Button>

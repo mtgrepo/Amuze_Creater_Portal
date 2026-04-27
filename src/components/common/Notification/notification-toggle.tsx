@@ -18,7 +18,7 @@ const CreatorNotificationToggle = () => {
         {unreadCount > 0 && (
           <Badge
             variant="destructive"
-            className="absolute -top-2 -right-2 rounded-full min-w-[20px] text-center"
+            className="absolute -top-2 -right-2 rounded-full min-w-5 text-center"
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </Badge>

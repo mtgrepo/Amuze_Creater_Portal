@@ -21,29 +21,78 @@ firebase.initializeApp({
   appId: "1:268125967279:web:c35893076018a1774d155a"
 });
 
-console.log('Initialized the firebase apps')
-
 const messaging = firebase.messaging();
 
+const getTargetUrl = (type, titleId) => {
+  const routes = {
+    "USER LIKED NOVEL": `/creator-portal/entertainment/novel/details/${titleId}`,
+    "USER COMMENT ON NOVEL": `/entertainment/novel/details/${titleId}`,
+    "USER LIKED COMIC": `/entertainment/comics/details/${titleId}`,
+    "USER COMMENT ON COMIC": `/entertainment/comics/details/${titleId}`,
+    "USER LIKED STORY": `/entertainment/storytelling/details/${titleId}`,
+    "USER COMMENT ON STORY": `/entertainment/storytelling/details/${titleId}`,
+    "USER LIKED GALLERY": `/entertainment/gallery/details/${titleId}`,
+    "USER COMMENT ON GALLERY": `/entertainment/gallery/details/${titleId}`,
+    "USER LIKED MUZEBOX": `/entertainment/muzebox/details/${titleId}`,
+    "USER COMMENT ON MUZEBOX": `/entertainment/muzebox/details/${titleId}`,
+    "USER LIKED EDUCATION": `/entertainment/educatin/grades/details/${titleId}`,
+    "USER LIKED MUSEUM": `/entertainment/museum/details/${titleId}`,
+    "USER LIKED POST": `/entertainment/posts/details/${titleId}`,
+    "USER COMMENT ON POST": `/entertainment/posts/details/${titleId}`,
+  };
+  return routes[type] || "/";
+};
+
 messaging.onBackgroundMessage((payload) => {
-  self.registration.showNotification(payload.notification.title, {
-    body: payload.notification.body
-  });
+  console.log('[SW] Full Payload Received:', JSON.stringify(payload, null, 2));
+  
+  const fcmData = payload.data || {};
+  console.log('[SW] FCM Data Object:', fcmData);
+
+  const type = fcmData.type; 
+  const titleId = fcmData.titleId;
+
+  console.log(`[SW] Extracted - Type: ${type}, TitleId: ${titleId}`);
+
+  const notificationTitle = payload.notification?.title || "New Notification";
+
+  const notificationOptions = {
+    body: payload.notification?.body || "",
+    data: {
+      url: getTargetUrl(type, titleId)
+    },
+  };
+
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions
+  );
 });
 
-console.log('Firebase is listening the message')
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
 
-// self.addEventListener("push", (event) => {
-//   console.log("[SW] Push event received:", event);
+    const data = event.notification.data || {};
 
-//   const data = event.data?.json();
-//   console.log("[SW] Push payload:", data);
+    const targetUrl = new URL(
+    data.url || "/",
+    self.location.origin
+  ).href;
 
-//   self.registration.showNotification(
-//     data?.notification?.title || "Test Notification",
-//     {
-//       body: data?.notification?.body || "Push received successfully",
-//       icon: "/favicon.ico",
-//     }
-//   );
-// });
+
+  event.waitUntil(
+    clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    }).then(async(clientList) => {
+      for (const client of clientList) {
+        if ("focus" in client && "navigate" in client) {
+         await client.focus();
+         return client.navigate(targetUrl);
+        }
+      }
+
+      return clients.openWindow(targetUrl);
+    })
+  );
+});

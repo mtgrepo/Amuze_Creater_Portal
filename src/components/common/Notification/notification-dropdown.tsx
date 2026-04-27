@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCreatorNoti } from "./notificationContext";
 import CreatorNotiItem from "./notificationItems";
+import { useNavigate } from "react-router-dom";
+import { getNotificationRoute } from "./notification-routes";
 
 const CreatorNotiDropdown = () => {
   const {
@@ -17,13 +19,7 @@ const CreatorNotiDropdown = () => {
   } = useCreatorNoti();
 
   const ref = useRef<HTMLDivElement>(null);
-
-  // Load notifications from backend the first time the dropdown opens
-  //   useEffect(() => {
-  //     if (isDropdownOpen && notifications.length === 0) {
-  //       fetchNotifications();
-  //     }
-  //   }, [isDropdownOpen]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -35,37 +31,14 @@ const CreatorNotiDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside); // Cleanup
   }, []);
 
-  //   const notificationRoutes = {
-  //     NOVEL_CREATED: (d) => `/novels/${d.novelId}`,
-  //     COMIC_TITLE_CREATED: (d) => `/comics/${d.titleId}`,
-  //     COMIC_EPISODE_CREATED: (d) => `/comics/${d.titleId}/episode/${d.episodeId}`,
-  //     STORYTELLING_CREATED: (d) => `/stories/${d.storyId}`,
-  //     MAGAZINE_TITLE_CREATED: (d) => `/journal/${d.magazineId}`,
-  //     MAGAZINE_EPISODE_CREATED: (d) => `/journal/${d.magazineId}/season/${d.seasonId}/episode/${d.episodeId}`,
-  //     GALLERY_CREATED: (d) => `/gallery/${d.galleryId}`,
-  //     MUZEBOX_SERIES_CREATED: (d) => `/muzebox/${d.seriesId}`,
-  //     MUZEBOX_EPISODE_CREATED: (d) =>
-  //       `/muzebox/${d.seriesId}/episode/${d.episodeId}`,
-  //     EDUCATION_GRADE_CREATED: (d) => `/grade/${d.gradeId}`,
-  //     EDUCATION_COURSE_CREATED: (d) => `/grade/${d.gradeId}/course/${d.courseId}`,
-  //     MUSEUM_CREATED: (d) => `/museum/${d.museumId}`,
-  //     MUSEUM_TITLE_CREATED: (d) => `/museum/${d.museumId}/title/${d.titleId}`,
-  //     MUSEUM_EPISODE_CREATED: (d) =>
-  //       `/museum/${d.museumId}/title/${d.titleId}/episode/${d.episodeId}`,
-  //     POST_CREATED: (d) => `/posts/${d.postId}`,
-  //     KYC_SUBMITTED: (d) => `/user/kyc/info/${d.kycId}`,
-  //   };
 
   const handleNotificationItem = (noti: any) => {
     handleMarkAsRead(noti.id);
 
-    // const route = notificationRoutes?.[noti.type];
+    navigate(getNotificationRoute(noti.type, noti.data));
 
-    // if (route) {
-    //   navigate(route(noti.data));
-    // } else {
-    //   navigate("/");
-    // }
+    closeDropdown();
+    
   };
 
   if (!isDropdownOpen) return null;

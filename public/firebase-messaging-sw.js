@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-apiKey: "AIzaSyDWzTbxc_CJ5PMog5OSAP-rWFqYij3nRAg",
+  apiKey: "AIzaSyDWzTbxc_CJ5PMog5OSAP-rWFqYij3nRAg",
   authDomain: "amuzecreatorportal.firebaseapp.com",
   databaseURL: "https://amuzecreatorportal-default-rtdb.firebaseio.com",
   projectId: "amuzecreatorportal",
@@ -18,27 +18,42 @@ const getTargetUrl = (type, titleId) => {
   const routes = {
     "USER LIKED NOVEL": `/creator-portal/entertainment/novel/details/${titleId}`,
     "USER COMMENT ON NOVEL": `/creator-portal/entertainment/novel/details/${titleId}`,
+    "USER RATED NOVEL": `/creator-portal/entertainment/novel/details/${titleId}`,
+
     "USER LIKED COMIC": `/creator-portal/entertainment/comics/details/${titleId}`,
     "USER COMMENT ON COMIC": `/creator-portal/entertainment/comics/details/${titleId}`,
+    "USER RATED COMIC": `/creator-portal/entertainment/comics/details/${titleId}`,
+
+
     "USER LIKED STORY": `/creator-portal/entertainment/storytelling/details/${titleId}`,
     "USER COMMENT ON STORY": `/creator-portal/entertainment/storytelling/details/${titleId}`,
+    "USER RATED STORY": `/creator-portal/entertainment/storytelling/details/${titleId}`,
+
+
     "USER LIKED GALLERY": `/creator-portal/entertainment/gallery/details/${titleId}`,
     "USER COMMENT ON GALLERY": `/creator-portal/entertainment/gallery/details/${titleId}`,
-    "USER LIKED MUZEBOX": `/creator-portal/entertainment/muzebox/details/${titleId}`,
+    "USER RATED GALLERY": `/creator-portal/entertainment/gallery/details/${titleId}`,
+
+
+    "USER LIKED MUZEBOX": `/creator-portal/entertainment/muze-box/details/${titleId}`,
     "USER COMMENT ON MUZEBOX": `/creator-portal/entertainment/muze-box/details/${titleId}`,
+    "USER RATED MUZEBOX": `/creator-portal/entertainment/muze-box/details/${titleId}`,
+
+
     "USER LIKED EDUCATION": `/creator-portal/entertainment/education/grades/details/${titleId}`,
+
     "USER LIKED MUSEUM": `/creator-portal/entertainment/museum/details/${titleId}`,
+
     "USER LIKED POST": `/creator-portal/entertainment/posts/details/${titleId}`,
     "USER COMMENT ON POST": `/creator-portal/entertainment/posts/details/${titleId}`,
   };
   return routes[type] || "/";
 };
 
-messaging.onBackgroundMessage((payload) => {  
+messaging.onBackgroundMessage((payload) => {
   const fcmData = payload.data || {};
-  // console.log('[SW] FCM Data Object:', fcmData);
-
-  const type = fcmData.type; 
+  console.log("fcm payload", payload)
+  const type = fcmData.type;
   const titleId = fcmData.titleId;
 
   const notificationTitle = payload.notification?.title || "New Notification";
@@ -59,9 +74,9 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-    const data = event.notification.data || {};
+  const data = event.notification.data || {};
 
-    const targetUrl = new URL(
+  const targetUrl = new URL(
     data.url || "/",
     self.location.origin
   ).href;
@@ -71,11 +86,11 @@ self.addEventListener("notificationclick", (event) => {
     clients.matchAll({
       type: "window",
       includeUncontrolled: true,
-    }).then(async(clientList) => {
+    }).then(async (clientList) => {
       for (const client of clientList) {
         if ("focus" in client && "navigate" in client) {
-         await client.focus();
-         return client.navigate(targetUrl);
+          await client.focus();
+          return client.navigate(targetUrl);
         }
       }
 

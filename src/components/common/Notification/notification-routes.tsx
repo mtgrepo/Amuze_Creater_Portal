@@ -33,7 +33,7 @@ export const notificationRoutes: Record<string, (data: any) => string> = {
 
   // Education
   "USER LIKED EDUCATION": (d) =>
-    `/entertainment/educatin/grades/details/${d.titleId}`,
+    `/entertainment/education/grades/details/${d.titleId}`,
 
 
   // Museum

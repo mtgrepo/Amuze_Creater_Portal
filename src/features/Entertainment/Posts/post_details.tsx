@@ -55,7 +55,6 @@ const PostsDetailPage: React.FC = () => {
           {
             isDetailPending ? (
               <span>loading...</span>
-              // <ImageCardSkeleton />
             ) : (
               postDetail && (
                 <>
@@ -64,9 +63,9 @@ const PostsDetailPage: React.FC = () => {
                       <h2 className="text-red-600 font-semibold">
                         This post is banned
                       </h2>
-                      <p className="text-sm text-red-500 mt-1">
+                      <h4 className="text-sm text-red-500 mt-1">
                         <LongText text={postDetail.ban_reason || "No reason provided"} />
-                      </p>
+                      </h4>
                     </div>
                   )}
 
@@ -123,13 +122,13 @@ const PostsDetailPage: React.FC = () => {
                         </div>
 
                         <div className="p-3 space-y-1">
-                          <p className="text-xs text-muted-foreground ">
+                          <>
                             {item.alt ? (
                               <LongText text={item.alt} />
                             ) : (
                               <span className="italic">No description</span>
                             )}
-                          </p>
+                          </>
                         </div>
                       </div>
                     ))}

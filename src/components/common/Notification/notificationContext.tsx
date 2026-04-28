@@ -71,17 +71,19 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({
   const notifications =
     data?.pages.flatMap((page) => page?.notifications ?? []) || [];
 
-  const currentPage = data?.pages.length ?? 1;
-
   const hasMore = hasNextPage;
 
-  const handleMarkAsRead = useCallback(async (id: number) => {
+ const handleMarkAsRead = useCallback(
+  async (id: number) => {
     await updateMarkNotiMutation({ id });
-  }, []);
+  },
+  [updateMarkNotiMutation]
+);
 
-  const handleMarkAllAsRead = useCallback(async () => {
-    await updateAllMarkNotiMutation({ page: currentPage, limit });
-  }, []);
+ const handleMarkAllAsRead = useCallback(async () => {
+  const page = data?.pages.length ?? 1;
+  await updateAllMarkNotiMutation({ page, limit });
+}, [updateAllMarkNotiMutation, data, limit]);
 
   useEffect(() => {
     const unsubscribe = onMessage(messaging, (payload) => {

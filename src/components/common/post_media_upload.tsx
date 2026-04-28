@@ -66,7 +66,7 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
       });
     }
 
-    let updated = currentItems;
+    const updated = currentItems;
 
     newItems.forEach((newItem) => {
       const replaceIndex = updated.findIndex(

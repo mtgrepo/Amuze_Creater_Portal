@@ -76,3 +76,20 @@ export const updatePost = async (id:number, postData: FormData) => {
     throw new Error((error as string) || "Something went wrong");
 }
 }
+
+export const updatePostMedia = async (id:number, mediaData: FormData) => {
+  try {
+    const result = await axiosInstance.put(`post/update-post-media/${id}`, mediaData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return result.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "API failed");
+    }
+    throw new Error((error as string) || "Something went wrong");
+}
+}

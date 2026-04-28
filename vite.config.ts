@@ -18,6 +18,7 @@ server: {
       // When the frontend calls "/api", Vite redirects it
       '/api': {
         target: 'https://uat.api.amuze.com.mm/api/', 
+                // target: 'http://localhost:7000/api/', 
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

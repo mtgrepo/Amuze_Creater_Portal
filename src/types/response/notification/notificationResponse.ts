@@ -1,26 +1,25 @@
 export interface Notification {
     id: number;
+    type:string;
     title: string;
     body: string;
-    status: string,
-    category: string,
-    is_Broadcast: boolean,
-    title_id: number,
-    sent_by: {
-        id: number,
-        name: string
+    data: {
+        titleId: number;
+        createdBy: number;
+        created_at: string;
     }
-    is_read: boolean;
-    user: {
-        id: number,
-        name: string,
-        role_id: number
-    }[],
-    createdAt: Date;
+    created_at: string;
+    reads: [
+        {
+            is_read: boolean;
+            read_at: string;
+        }
+    ]
 }
 
 export interface NotificationResponse {
     notifications: Notification[];
     total: number;
-    totalPage: number;
+    page: number;
+    limit:number;
 }

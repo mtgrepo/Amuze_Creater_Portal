@@ -85,15 +85,15 @@ export default function NotificationColumn() {
         return <div>{status}</div>;
       },
     },
-    {
-      id: "sent_by",
-      accessorFn: (row) => row?.sent_by?.name,
-      header: t('sender'),
-      cell: ({ row }) => {
-        const sent_by = row.getValue("sent_by") as string;
-        return <div>{sent_by ?? "N/A"}</div>;
-      },
-    },
+    // {
+    //   id: "sent_by",
+    //   accessorFn: (row) => row?.sent_by?.name,
+    //   header: t('sender'),
+    //   cell: ({ row }) => {
+    //     const sent_by = row.getValue("sent_by") as string;
+    //     return <div>{sent_by ?? "N/A"}</div>;
+    //   },
+    // },
     {
         accessorKey: "is_read",
         header: t('is_read'),

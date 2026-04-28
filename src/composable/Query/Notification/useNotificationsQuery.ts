@@ -12,7 +12,7 @@ export const useNotificationsQuery = (params: NotificationParams) => {
     })
     return {
         notifications: notifications.data?.notifications ?? [],
-        total: notifications.data?.total,
+        total: notifications.data?.total ?? 0,
         isLoading: notifications.isLoading
     }
 }

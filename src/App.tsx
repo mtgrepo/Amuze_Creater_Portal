@@ -11,6 +11,10 @@ import { Separator } from "./components/ui/separator"
 import { ModeToggle } from "./components/common/Themes/mode-toggle"
 import BreadCrumbLayout from "./components/common/Layouts/bread_crumb_layout"
 import { LanguageToggle } from "./components/common/Language/language-toggle"
+import { useEffect } from "react"
+import { onMessage } from "firebase/messaging"
+import { messaging } from "./firebase"
+import CreatorNotificationToggle from "./components/common/Notification/notification-toggle"
 
 type MatchType = {
   pathname: string
@@ -21,9 +25,21 @@ type MatchType = {
 }
 function App() {
   const rawMatches = useMatches()
-
-  // Typecast safely
   const matches = rawMatches as MatchType[]
+
+
+  useEffect(() => {
+    const unsubscribe = onMessage(messaging, (payload) => {
+      if (payload.notification) {
+        new Notification(payload.notification.title ?? "New Notification", {
+          body: payload.notification.body ?? "",
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
   return (
     <SidebarProvider>
         <div className="flex min-h-screen w-full">
@@ -41,11 +57,13 @@ function App() {
               className="h-5 shrink-0"
             />
             {/* Dynamic Breadcrumb */}
-            <BreadCrumbLayout matches={matches}/>
+            <BreadCrumbLayout matches={matches} />
           </div>
           <div className="flex items-center gap-2">
+            <CreatorNotificationToggle/>
             <LanguageToggle />
             <ModeToggle />
+   
           </div>
         </header>
 

@@ -107,7 +107,7 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
 
 
   return (
-    <div>
+    <div className="w-full">
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition
@@ -200,7 +200,7 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
 
               <div className="flex-1">
                 <Textarea
-                  className="w-100"
+                  className="w-full"
                   placeholder="Add a caption..."
                   value={item.alt}
                   onChange={(e) => updateAlt(index, e.target.value)}

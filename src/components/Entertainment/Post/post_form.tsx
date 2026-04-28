@@ -23,13 +23,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import ConfirmCard from "@/components/common/confirm_card";
+import { usePostMediaUpdate } from "@/composable/Command/Entertainment/Posts/usePostMediaUpdate";
 
-function normalizeMedia(media: any[]) {
+function normalizeMedia(media: any[] = []) {
   return media.map((m) => ({
     id: crypto.randomUUID(),
     url: m.url,
-    alt: m.alt ?? "",
-    type: m.type ?? "image",
+    alt: m.alt || "",
+    type: m.type || "image",
     file: undefined,
   }));
 }
@@ -67,7 +68,8 @@ export default function PostForm({
   defaultValues,
   onSuccess,
 }: FormProps) {
-  const resetToken = useRef(defaultValues?.id);
+  const resetToken = useRef(false);
+  const originalMediaRef = useRef<MediaItem[]>([]);
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id;
@@ -75,10 +77,12 @@ export default function PostForm({
   const [confirmDialog, setConfirmDialog] = useState(false);
 
 
+
   const { createMutation, isCreatePending } = usePostCreate();
   const { updateMutation, isUpdatePending } = usePostUpdate();
+  const { updateMediaMutation, isMediaUpdatePending} = usePostMediaUpdate();
 
-  const isLoading = isCreatePending || isUpdatePending;
+  const isLoading = isCreatePending || isUpdatePending || isMediaUpdatePending;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -91,8 +95,25 @@ export default function PostForm({
     },
   });
 
+  // useEffect(() => {
+  //   if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
+  //     form.reset({
+  //       description: defaultValues.description || "",
+  //       visibility: defaultValues.visibility,
+  //       isVideo: defaultValues.isVideo,
+  //       media: normalizeMedia(defaultValues?.media as any),
+  //       created_by: creatorId,
+  //     });
+  //     resetToken.current = defaultValues.id;
+
+  //   }
+  //   if (mode === "add" && creatorId) {
+  //     form.setValue("created_by", creatorId)
+  //   }
+  // }, [defaultValues, mode, creatorId, form]);
+
   useEffect(() => {
-    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
+    if (mode === "edit" && defaultValues && !resetToken.current) {
       form.reset({
         description: defaultValues.description || "",
         visibility: defaultValues.visibility,
@@ -100,15 +121,14 @@ export default function PostForm({
         media: normalizeMedia(defaultValues?.media as any),
         created_by: creatorId,
       });
-      resetToken.current = defaultValues.id;
-
+      resetToken.current = true;
+      originalMediaRef.current = normalizeMedia(defaultValues.media || [])
     }
     if (mode === "add" && creatorId) {
       form.setValue("created_by", creatorId)
     }
   }, [defaultValues, mode, creatorId, form]);
-
-
+  
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -124,7 +144,9 @@ export default function PostForm({
           const key = mode === 'add' ? "media" : "images";
           if (item.file) {
             formData.append(`file[${index}][${key}]`, item.file);
-
+          }
+          if(!item.file && item.url){
+            formData.append(`file[${index}][fieldId]`, item.url);
           }
           formData.append(`file[${index}][alt]`, item.alt || "");
         });
@@ -134,10 +156,47 @@ export default function PostForm({
         await createMutation(formData);
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
+
+        const currentMedia = values.media || [];
+        const originalMedia = originalMediaRef.current;
+
+        const currentExisting = currentMedia.filter((m) => !m.file);
+        const originalIds = originalMedia.map(m => m.url);
+        const currentIds = currentExisting.map(m => m.url);
+
+        const hasDeleted = originalIds.some(id => !currentIds.includes(id));
+        const hasNewFiles = currentMedia.some(m => m.file);
+
+        if(hasDeleted){
+          await updateMediaMutation({
+            id: Number(defaultValues.id),
+            data: formData
+          })
+        }else if(hasNewFiles){
+          await updateMutation({
+            id: Number(defaultValues.id),
+            data: formData
+          })
+        }else{
+          await updateMutation({
+            id: Number(defaultValues.id),
+            data: formData
+          })
+        }
+
+
+        if(hasNewFiles){
+          await updateMediaMutation({
+            id: Number(defaultValues.id),
+            data: formData
+          })
+        }else{
         await updateMutation({
           id: Number(defaultValues.id),
           data: formData
         });
+        }
+
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {

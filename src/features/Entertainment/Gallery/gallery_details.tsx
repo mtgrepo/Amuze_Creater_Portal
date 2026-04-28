@@ -18,6 +18,7 @@ import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import CommentsSection from "@/components/common/comment_component";
 import { Button } from "../../../components/ui/button";
 import Stat from "@/components/common/details_stat";
+import { t } from "i18next";
 
 export default function GalleryDetails() {
   const { id } = useParams();
@@ -133,7 +134,7 @@ export default function GalleryDetails() {
         <div className="bg-card border border-border p-8 rounded-3xl shadow-sm">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t('description')}
           </h3>
           <p className="text-muted-foreground leading-relaxed">
             {galleryDetails?.description ||
@@ -153,7 +154,7 @@ export default function GalleryDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Total Community Sales
+                  {t('total_sales')}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {galleryDetails.total_sales || 0}
@@ -172,7 +173,7 @@ export default function GalleryDetails() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium">
-                  Estimated Revenue
+                  {t('total_revenue')}
                 </p>
                 <h3 className="text-4xl font-black text-foreground tracking-tighter">
                   {(galleryDetails.total_sales_amount || 0).toLocaleString()}{" "}

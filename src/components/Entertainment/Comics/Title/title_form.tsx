@@ -172,12 +172,9 @@ export default function ComicTitleForm({
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
 
-        const isThumbnailUpdated =
-          values.thumbnail instanceof File ||
-          values.horizontal_thumbnail instanceof File;
+        const isThumbnailUpdated = values.thumbnail instanceof File || values.horizontal_thumbnail instanceof File;
 
-        const type =
-          values.thumbnail instanceof File ? "vertical" : "horizontal";
+        const type = values.thumbnail instanceof File ? "vertical" : "horizontal";
 
         if (isThumbnailUpdated) {
           const thumbData = new FormData();

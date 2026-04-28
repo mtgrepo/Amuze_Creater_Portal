@@ -34,6 +34,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
+import { useTranslation } from "react-i18next";
+
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -179,6 +181,8 @@ export default function StoryTellingTitleForm({
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
       <Form {...form}>
@@ -186,11 +190,11 @@ export default function StoryTellingTitleForm({
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {mode === "add"
-                ? "Create New Storytelling Title"
-                : "Edit Storytelling Title Details"}
+                ? t('story_telling_form.create_title')
+                : t('story_telling_form.update_title')}
             </h2>
-            <p className="text-muted-foreground text-sm">
-              Fill in the information for your storytelling title.
+            <p className="text-muted-foreground text-sm pt-2">
+              {t('story_telling_form.description')}
             </p>
           </div>
 
@@ -202,7 +206,7 @@ export default function StoryTellingTitleForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      {t('thumbnail')}
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -225,7 +229,7 @@ export default function StoryTellingTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Storytelling Title</FormLabel>
+                      <FormLabel>{t('title')}</FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Title Name" {...field} />
                       </FormControl>
@@ -240,7 +244,7 @@ export default function StoryTellingTitleForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t('description')}</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -268,7 +272,7 @@ export default function StoryTellingTitleForm({
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">Genres</FormLabel>
+                      <FormLabel className="text-base">{t('genres')}</FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -312,7 +316,7 @@ export default function StoryTellingTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Horizontal Thumbnail
+                      {t('horizontal_thumbnail')}
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">
@@ -340,7 +344,7 @@ export default function StoryTellingTitleForm({
                 toast.info("Form cleared");
               }}
             >
-              Cancel & Reset
+              {t('cancel')}
             </Button>
 
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
@@ -362,7 +366,7 @@ export default function StoryTellingTitleForm({
                   isThumbnailUpdatePending) && (
                     <Spinner className="mr-2 w-4 h-4" />
                   )}
-                {mode === "add" ? "Create Title" : "Save Changes"}
+                {mode === "add" ? t('create') : t('update') }
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>

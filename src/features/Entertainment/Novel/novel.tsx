@@ -3,14 +3,13 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, FileUp } from "lucide-react";
-import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
-import { Input } from "../../../components/ui/input";
+import { CirclePlus } from "lucide-react";
 import { useNovelQuery } from "../../../composable/Query/Entertainment/Novel/useNovelQuery";
 import { NovelComponent } from "../../../components/Entertainment/Novel/novel_component";
 import { useDebounce } from "use-debounce";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import SearchBox from "../../../components/common/search_box";
 
 export default function Novel() {
   const [page, setPage] = React.useState(1);
@@ -55,29 +54,6 @@ export default function Novel() {
     setLimit(newLimit);
   };
 
-  const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
-    useComicsTitleExportCommand();
-
-  const handleExcelExport = async () => {
-    try {
-      const blob = await exportExcel();
-
-      if (!blob) return;
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "comics_titles.xlsx";
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Export failed", error);
-    }
-  };
-
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -86,12 +62,7 @@ export default function Novel() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
-            <Input
-              placeholder="Filter name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-sm"
-            />
+            <SearchBox search={search} setSearch={setSearch} />
             <Button
               size={"sm"}
               className="cursor-pointer"
@@ -99,16 +70,6 @@ export default function Novel() {
             >
               <CirclePlus className="w-4 h-4" />
               {t("create_new_novel")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="cursor-pointer"
-              onClick={handleExcelExport}
-              disabled={isLoadingExcel}
-            >
-              <FileUp className="h-4 w-4" />
-             {t("export_data")}
             </Button>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">

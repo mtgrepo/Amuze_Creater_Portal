@@ -1,17 +1,17 @@
 import React from "react";
-import { 
-  Building2, 
-  Calendar, 
-  CaseUpper, 
-  CreditCard, 
-  HomeIcon, 
-  Mail, 
-  Map, 
-  Phone 
+import {
+  Building2,
+  Calendar,
+  CaseUpper,
+  CheckCircle,
+  CreditCard,
+  GraduationCap,
+  HomeIcon,
+  Mail,
+  Phone
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator"; // Ensure correct path
 import type { LoginCreatorResponse } from "@/types/response/auth/loginCreatorResponse";
-import { SidebarInset } from "../ui/sidebar";
 
 
 interface ProfileInfoProps {
@@ -22,6 +22,7 @@ type InfoProps = {
   label: string;
   value: string | number | undefined | null;
   icon?: React.ReactNode;
+  className?: string;
 };
 
 type CardProps = {
@@ -40,79 +41,76 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
   }
 
   return (
-     <SidebarInset>
-      <div className="flex flex-1 flex-col gap-4 px-4">
-        <div className="w-full mt-5 ">
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6">
-        {/* Contact Details Card */}
-        <Card title="Contact Details">
-          <Info
-            label="Name"
-            value={account.name}
-            icon={<CaseUpper className="w-4 h-4" />}
-          />
-          <Info
-            label="Email"
-            value={account.email}
-            icon={<Mail className="w-4 h-4" />}
-          />
-          <Info
-            label="Phone Number"
-            value={account.phone_no}
-            icon={<Phone className="w-4 h-4" />}
-          />
-          <Info
-            label="Job Role"
-            value={account.job}
-            icon={<Building2 className="w-4 h-4" />}
-          />
-        </Card>
+      <div className="flex flex-1 flex-col gap-4">
+        <div className="w-full">
+            <div className="grid grid-cols-1 gap-6">
+              {/* Contact Details Card */}
+              <Card title="Contact Details">
+                <Info
+                  label="Name"
+                  value={account.name}
+                  icon={<CaseUpper className="w-4 h-4" />}
+                />
+                <Info
+                  label="Email"
+                  value={account.email}
+                  icon={<Mail className="w-4 h-4" />}
+                />
+                <Info
+                  label="Phone Number"
+                  value={account.phone_no}
+                  icon={<Phone className="w-4 h-4" />}
+                />
+                <Info
+                  label="Job Role"
+                  value={account.job}
+                  icon={<Building2 className="w-4 h-4" />}
+                />
+              </Card>
 
-        {/* Address Information Card */}
-        <Card title="Address Information">
-          <Info
-            label="Address"
-            value={account.address}
-            icon={<HomeIcon className="w-4 h-4" />}
-          />
-          <Info
-            label="Education"
-            value={account.education}
-            icon={<Map className="w-4 h-4" />}
-          />
-          <Info
-            label="Bio"
-            value={account.bio}
-            icon={<CaseUpper className="w-4 h-4" />}
-          />
-        </Card>
+              {/* Address Information Card */}
+              <Card title="Address Information">
+                <Info
+                  label="Address"
+                  value={account.address}
+                  icon={<HomeIcon className="w-4 h-4" />}
+                />
+                <Info
+                  label="Education"
+                  value={account.education}
+                  icon={<GraduationCap className="w-4 h-4" />}
+                />
+                <Info
+                  label="Bio"
+                  value={account.bio}
+                  icon={<CaseUpper className="w-4 h-4" />}
+                />
+              </Card>
 
-        {/* Identification Card */}
-        <Card title="Identification & Verification" className="md:col-span-2">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6">
-            <Info
-              label="NRC Number"
-              value={account.nrc}
-              icon={<CreditCard className="w-4 h-4" />}
-            />
-            <Info
-              label="Verification Status"
-              value={account.confirm_status}
-              icon={<Calendar className="w-4 h-4" />}
-            />
-            <Info
-              label="Member Since"
-              value={account.created_at ? new Date(account.created_at).toLocaleDateString() : "N/A"}
-              icon={<Calendar className="w-4 h-4" />}
-            />
+              {/* Identification Card */}
+              <Card title="Identification & Verification" className="md:col-span-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6">
+                  <Info
+                    label="NRC Number"
+                    value={account.nrc}
+                    icon={<CreditCard className="w-4 h-4" />}
+                  />
+                  <Info
+                    label="Verification Status"
+                    value={account.confirm_status}
+                    icon={<CheckCircle className="w-4 h-4" />}
+                    className={`${account.confirm_status ? "text-green-500" : "text-red-500"}`}
+                  />
+                  <Info
+                    label="Member Since"
+                    value={account.created_at ? new Date(account.created_at).toLocaleDateString() : "N/A"}
+                    icon={<Calendar className="w-4 h-4" />}
+                  />
+                </div>
+              </Card>
           </div>
-        </Card>
+        </div>
       </div>
-    </div>
-    </div>
-    </div>
-    </SidebarInset>
   );
 }
 
@@ -120,7 +118,7 @@ export default function ProfileInfoComponent({ account }: ProfileInfoProps) {
 function Card({ title, children, className = "" }: CardProps) {
   return (
     <div
-      className={`bg-slate-50/50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 rounded-md p-5 ${className}`}
+      className={`bg-card border border-slate-200 dark:border-slate-800 rounded-md p-5 ${className}`}
     >
       <h3 className="text-base font-bold mb-3">{title}</h3>
       <Separator className="mb-3" />
@@ -129,7 +127,7 @@ function Card({ title, children, className = "" }: CardProps) {
   );
 }
 
-function Info({ label, value, icon }: InfoProps) {
+function Info({ label, value, icon, className }: InfoProps) {
   return (
     <div className="flex items-start gap-3 text-sm py-2">
       {icon && (
@@ -142,8 +140,8 @@ function Info({ label, value, icon }: InfoProps) {
         <span className="font-semibold text-slate-700 dark:text-slate-300 leading-tight">
           {label}:
         </span>
-        
-        <span className="text-slate-600 dark:text-slate-400 wrap-break-word min-w-0">
+
+        <span className={`${className} wrap-break-word min-w-0`}>
           {value || (
             <span className="text-slate-400 dark:text-slate-500 italic">
               Not provided

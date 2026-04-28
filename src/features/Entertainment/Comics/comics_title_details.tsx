@@ -140,24 +140,24 @@ export default function ComicsTitleDetails() {
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${comic?.price ?? 0} Ks`}
-                  label="Price"
+                  label={t('price')}
                 />
                 <Stat
                   icon={
                     <Star className="text-amber-400 fill-amber-400" size={20} />
                   }
                   value={comic?.rating ?? "0"}
-                  label="Rating"
+                  label={t('rating')}
                 />
                 <Stat
                   icon={<Eye className="text-sky-400" size={20} />}
                   value={(comic?.views ?? 0).toLocaleString()}
-                  label="Views"
+                  label={t('views')}
                 />
                 <Stat
                   icon={<ThumbsUp className="text-rose-400" size={20} />}
                   value={comic?.likes ?? "0"}
-                  label="Likes"
+                  label={t('likes')}
                 />
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function ComicsTitleDetails() {
           <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
             <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
               <span className="w-1 h-6 bg-primary rounded-full" />
-              Description
+              {t('description')}
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               {comic?.description || "No description available for this title."}
@@ -179,7 +179,7 @@ export default function ComicsTitleDetails() {
         {/* --- EPISODE LIST SECTION --- */}
         <div className="bg-card border border-border p-5 md:p-8 rounded-3xl shadow-sm">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">Episode Lists</h2>
+            <h2 className="text-2xl font-bold">{t('episode_list')}</h2>
             <Button
               onClick={() =>
                 navigate(`/entertainment/comics/episode/create/${id}`, {

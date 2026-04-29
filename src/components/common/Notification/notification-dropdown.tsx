@@ -34,12 +34,9 @@ const CreatorNotiDropdown = () => {
 
   const handleNotificationItem = (noti: any) => {
     handleMarkAsRead(noti.id);
-
-    console.log("noti type", noti.data.type)
     navigate(getNotificationRoute(noti.data.type, noti.data));
 
     closeDropdown();
-    
   };
 
   if (!isDropdownOpen) return null;

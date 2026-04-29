@@ -44,7 +44,7 @@ import { usePostMediaUpdate } from "@/composable/Command/Entertainment/Posts/use
 function normalizeMedia(media: any[] = []) {
   return media.map((m) => ({
     id: crypto.randomUUID(),
-    mediaId: m.id,
+    mediaId: String(m.index),
     url: m.url,
     alt: m.alt || "",
     type: m.type || "image",
@@ -56,7 +56,7 @@ function createFormSchema() {
   return z.object({
     description: z.string().min(1, "Description is required."),
     visibility: z.string(),
-    isVideo: z.boolean(),
+    isVideo: z.boolean().optional(),
     created_by: z.union([z.string(), z.number()]).optional(),
     media: z
       .array(
@@ -104,7 +104,7 @@ export default function PostForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: defaultValues?.description || "",
-      visibility: "public",
+      visibility: defaultValues?.visibility || "public",
       isVideo: false,
       created_by: creatorId,
       media: [],
@@ -151,14 +151,12 @@ export default function PostForm({
 
       formData.append("description", values.description);
       formData.append("visibility", values.visibility);
-      formData.append("isVideo", String(values.isVideo));
+      if (mode === "add") {
+        formData.append("isVideo", String(values.isVideo));
+      }
       formData.append("created_by", String(values.created_by));
 
       const currentMedia = values.media || [];
-      const hasNewFiles = values.media?.some((m) => m.file);
-
-      console.log("current media", currentMedia)
-
       if (mode === "add") {
         currentMedia.forEach((item: any, index: number) => {
           if (item.file) {
@@ -169,18 +167,6 @@ export default function PostForm({
         await createMutation(formData);
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
-
-        const originalMedia = originalMediaRef.current;
-
-        const originalIds = originalMedia.map((m) => m.url);
-        const currentIds = currentMedia
-          .filter((m) => !m.file)
-          .map((m) => m.url);
-        const hasDeleted = originalIds.some((id) => !currentIds.includes(id));
-        console.log("has deleted", hasDeleted);
-
-        console.log("original media", originalMedia)
-
         const fd = new FormData();
 
         fd.append("description", values.description);
@@ -191,35 +177,42 @@ export default function PostForm({
           data: fd,
         });
 
-        if (hasNewFiles) {
-          const fd = new FormData();
+        for (const item of currentMedia) {
+          if (item.mediaId) {
+            const original = originalMediaRef.current.find(
+              (m) => m.mediaId === item.mediaId
+            );
 
-          currentMedia.forEach((item, index) => {
-            if (item.file) {
-              fd.append(`file[${index}][images]`, item.file);
-              fd.append(`file[${index}][alt]`, item.alt || "");
+            const altChanged = original && original.alt !== item.alt;
+            const fileReplaced = !!item.file;
+
+            if (altChanged || fileReplaced) {
+              const replaceFd = new FormData();
+              replaceFd.append("fileId", item.mediaId);
+              replaceFd.append("alt", item.alt || "");
+
+              if (item.file) {
+                replaceFd.append("image", item.file);
+              }
+
+              await updateMediaMutation({
+                id: Number(defaultValues.id),
+                data: replaceFd,
+              });
             }
-          });
-          await updateMutation({
-            id: Number(defaultValues.id),
-            data: fd,
-          });
+          }
         }
 
-        if (hasDeleted) {
-          const fd = new FormData();
-
-          currentMedia.forEach((item) => {
-            if (!item.file && item.mediaId && item.url) {
-              fd.append("fileId", item.mediaId);
-              fd.append("image", item.url!);
-              fd.append("alt", item.alt || "");
+        const newUploads = currentMedia.filter((item) => item.file && !item.mediaId);
+        if (newUploads.length > 0) {
+          const newFilesFd = new FormData();
+          newUploads.forEach((item, index) => {
+            if (item.file) {
+              newFilesFd.append(`file[${index}][images]`, item.file);
+              newFilesFd.append(`file[${index}][alt]`, item.alt || "");
             }
           });
-          await updateMediaMutation({
-            id: Number(defaultValues.id),
-            data: fd,
-          });
+          await updateMutation({ id: Number(defaultValues.id), data: newFilesFd });
         }
       }
       if (onSuccess) onSuccess();
@@ -269,7 +262,7 @@ export default function PostForm({
                     <FormLabel>Visibility</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -295,25 +288,28 @@ export default function PostForm({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="isVideo"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                    <div>
-                      <FormLabel>Video Mode</FormLabel>
-                      <p className="text-xs text-muted-foreground">
-                        Enable if uploading a video
-                      </p>
-                    </div>
+              {mode === "add" && (
+                <FormField
+                  control={form.control}
+                  name="isVideo"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                      <div>
+                        <FormLabel>Video Mode</FormLabel>
+                        <p className="text-xs text-muted-foreground">
+                          Enable if uploading a video
+                        </p>
+                      </div>
 
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormItem>
-                )}
-              />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormItem>
+                  )}
+                />
+              )}
+
             </div>
           </div>
 
@@ -330,6 +326,7 @@ export default function PostForm({
                   <MediaUpload
                     value={(field.value as MediaItem[]) || []}
                     onChange={field.onChange}
+                    mode={mode}
                   />
 
                   <FormMessage />
@@ -350,17 +347,6 @@ export default function PostForm({
             >
               Cancel & Reset
             </Button>
-
-            {/* <Button type="submit" className="flex-1" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2" />
-                  {mode === "add" ? "Creating..." : "Updating..."}
-                </>
-              ) : (
-                <>{mode === "add" ? "Create Post" : "Save Changes"}</>
-              )}
-            </Button> */}
 
             <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button

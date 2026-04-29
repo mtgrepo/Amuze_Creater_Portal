@@ -7,10 +7,6 @@ import { SidebarInset } from "./ui/sidebar";
 export default function NotFound() {
   return (
     <SidebarInset>
-      {/* 1. Added "relative" to keep the footer contained.
-         2. Added "min-h-[calc(100vh-4rem)]" to take up full available height.
-         3. Added "items-center" and "justify-center" to center the content.
-      */}
       <div className="relative flex flex-1 flex-col items-center justify-center gap-8 px-4 min-h-[calc(100vh-4rem)]">
         
         {/* LOGO SECTION */}

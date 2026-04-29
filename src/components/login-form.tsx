@@ -137,17 +137,13 @@ export function LoginForm({
           </Form>
 
           <div className="relative hidden md:flex flex-col items-center justify-center overflow-hidden rounded-r-2xl">
-            {/* 1. DYNAMIC MESH BACKGROUND */}
+            {/* DYNAMIC MESH BACKGROUND */}
             <div
               className="absolute inset-0 z-0 transition-all duration-700"
               style={{
-                background: `
-        /* Light Mode Gradients */
-        radial-gradient(circle at 20% 30%, oklch(0.9 0.05 264.376), transparent), 
-        radial-gradient(circle at 80% 70%, oklch(0.85 0.1 240), transparent),
-        /* Default Light Base: Very soft blue/white */
-        oklch(0.98 0.01 264.376)
-      `,
+                background: `radial-gradient(circle at 20% 30%, oklch(0.9 0.05 264.376), transparent), 
+                             radial-gradient(circle at 80% 70%, oklch(0.85 0.1 240), transparent),
+                             oklch(0.98 0.01 264.376)`,
               }}
             />
 
@@ -155,15 +151,13 @@ export function LoginForm({
             <div
               className="absolute inset-0 z-1 opacity-0 dark:opacity-100 transition-opacity duration-700"
               style={{
-                background: `
-        radial-gradient(circle at 20% 30%, oklch(0.488 0.243 264.376 / 0.2), transparent), 
-        radial-gradient(circle at 80% 70%, oklch(0.488 0.243 264.376 / 0.1), transparent),
-        oklch(0.25 0.05 264.376)
-      `,
+                background: `radial-gradient(circle at 20% 30%, oklch(0.488 0.243 264.376 / 0.2), transparent), 
+                             radial-gradient(circle at 80% 70%, oklch(0.488 0.243 264.376 / 0.1), transparent),
+                             oklch(0.25 0.05 264.376)`,
               }}
             />
 
-            {/* 2. THE LOGO SECTION */}
+            {/* THE LOGO SECTION */}
             <div className="relative z-10 flex flex-col items-center gap-6 p-12">
               {/* Soft Glow - Switches color based on mode */}
               <div

@@ -1,5 +1,5 @@
 import { useDropzone } from "react-dropzone";
-import { X, Play } from "lucide-react";
+import { X, Play, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
 
@@ -15,6 +15,7 @@ export type MediaItem = {
 type MediaUploadProps = {
   value?: MediaItem[];
   onChange: (items: MediaItem[]) => void;
+  mode: "add" | "edit"
 };
 
 const getFileType = (file: File) => {
@@ -23,12 +24,13 @@ const getFileType = (file: File) => {
   return "unknown";
 };
 
-export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
+export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadProps) {
   const hasVideo = value.some((v) => v.type === "video");
   const hasMaxImages = value.filter((v) => v.type === "image").length >= 10;
   const isDisabled = hasVideo || hasMaxImages;
+
   const onDrop = (acceptedFiles: File[]) => {
-    const currentItems = value || [];
+    const currentItems = [...(value || [])];;
 
     const currentImages = currentItems.filter((i) => i.type === "image");
     const currentVideos = currentItems.filter((i) => i.type === "video");
@@ -64,20 +66,25 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
       });
     }
 
-    const updated = [...currentItems];
+    const updated = currentItems;
 
-    // Replace first empty slot (if exists)
-    let insertIndex = updated.findIndex((i) => !i.file && !i.url);
+    newItems.forEach((newItem) => {
+      const replaceIndex = updated.findIndex(
+        (i) => i.mediaId && !i.file && !i.url
+      );
 
-    if (insertIndex !== -1) {
-      updated[insertIndex] = newItems[0];
-      if (newItems[1]) updated.push(...newItems.slice(1));
-    } else {
-      updated.push(...newItems);
-    }
+      if (replaceIndex !== -1) {
+        updated[replaceIndex] = {
+          ...updated[replaceIndex],
+          ...newItem,
+          mediaId: updated[replaceIndex].mediaId,
+        };
+      } else {
+        updated.push(newItem);
+      }
+    });
 
     onChange(updated);
-    // onChange([...currentItems, ...newItems]);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -91,9 +98,32 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
   });
 
   const removeItem = (index: number) => {
-    const updated = value.filter((_, i) => i !== index);
-    onChange(updated);
+    const updated = [...value];
+    const target = updated[index];
+
+    if (target.mediaId) {
+      updated[index] = {
+        id: crypto.randomUUID(),
+        mediaId: target.mediaId,
+        alt: target.alt,
+        type: target.type
+      };
+    } else {
+      updated.splice(index, 1)
+    }
+    onChange(updated)
   };
+
+
+  //   const removeItem = (index: number) => {
+  //   // Use filter to create a new array without the item at that index
+  //   // This physically removes the object, so the count decreases correctly
+  //   const updated = value.filter((_, i) => i !== index);
+
+  //   onChange(updated);
+  // };
+
+
 
   const updateAlt = (index: number, alt: string) => {
     const updated = [...value];
@@ -107,115 +137,115 @@ export function MediaUpload({ value = [], onChange }: MediaUploadProps) {
     return null;
   };
 
-  const getType = (item: MediaItem) => {
-    if (item.file) {
-      if (item.file.type.startsWith("image")) return "image";
-      if (item.file.type.startsWith("video")) return "video";
-    }
-    return item.type;
-  };
-
   return (
-    <div className="w-full">
+    <div className="w-full space-y-6">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition
-        ${
-          isDisabled
-            ? "opacity-50 cursor-not-allowed bg-muted"
+        className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all
+        ${isDisabled
+            ? "opacity-50 cursor-not-allowed bg-muted/50"
             : isDragActive
-              ? "border-primary bg-primary/10 cursor-pointer"
-              : "border-muted-foreground/30 hover:bg-muted/30 cursor-pointer"
-        }`}
+              ? "border-primary bg-primary/5 ring-4 ring-primary/5"
+              : "border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/30"
+          }`}
       >
         <input {...getInputProps()} />
-
-        <p className="text-sm font-medium">
-          {isDragActive
-            ? "Drop files here..."
-            : "Drag & drop images/videos here, or click to upload"}
-        </p>
-
-        <p className="text-xs text-muted-foreground mt-1">
-          Maximum: 10 images or 1 video. You cannot upload images and a video
-          together.
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="p-3 bg-background rounded-full shadow-sm border">
+            <ImageIcon className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold tracking-tight">
+              {isDragActive ? "Drop to upload" : "Drag & drop or click to upload"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Max 10 images or 1 video (Images and videos cannot mix)
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-4 mt-4">
-        {value?.map((item: MediaItem, index: number) => {
-          return (
-            <div
-              key={item.id}
-              className="relative flex gap-4 border rounded-xl p-3 bg-card shadow-sm"
-            >
-              <button
-                type="button"
-                className="absolute top-1 right-1 w-7 h-7 flex items-center justify-center 
-              rounded-full bg-background/80 hover:bg-red-500 hover:text-white 
-              transition text-sm shadow"
-                onClick={() => removeItem(index)}
+      {value.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {value?.map((item: MediaItem, index: number) => {
+            const isReadOnly = mode === "edit" && !!item.mediaId;
+            const src = getPreviewSrc(item);
+            const type = item.file ? getFileType(item.file) : item.type;
+
+            return (
+              <div
+                key={item.id}
+                className="group relative flex flex-col gap-0 border rounded-2xl bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
-                <X size={16} />
-              </button>
+                <button
+                  type="button"
+                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center 
+                rounded-full bg-background/80 text-destructive backdrop-blur-md shadow-sm border
+                transition-all z-20 opacity-0 group-hover:opacity-100"
+                  onClick={() => removeItem(index)}
+                >
+                  <X size={16} />
+                </button>
 
-              <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0 relative">
-                {(() => {
-                  const src = getPreviewSrc(item);
-                  const type = getType(item);
-
-                  if (!src) {
-                    return (
-                      <span className="text-xs text-muted-foreground">
-                        No preview
-                      </span>
-                    );
-                  }
-
-                  if (type === "image") {
-                    return (
-                      <img src={src} className="w-full h-full object-cover" />
-                    );
-                  }
-
-                  if (type === "video") {
-                    return (
-                      <>
-                        <video
-                          src={src}
-                          muted
-                          className="w-full h-full object-cover"
-                        />
-
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="bg-background/60 p-1 rounded-full">
-                            <Play size={12} />
+                <div className="aspect-video w-full bg-muted flex items-center justify-center relative overflow-hidden">
+                  {src ? (
+                    type === "video" ? (
+                      <div className="relative w-full h-full">
+                        <video src={src} className="w-full h-full object-cover" controls={false} />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                          <div className="bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30">
+                            <Play size={24} className="text-white fill-current" />
                           </div>
                         </div>
-                      </>
-                    );
-                  }
+                      </div>
+                    ) : (
+                      <img
+                        src={src}
+                        alt="preview"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground/60">
+                      <ImageIcon size={32} strokeWidth={1} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">No Preview</span>
+                    </div>
+                  )}
+                </div>
 
-                  return (
-                    <span className="text-xs text-muted-foreground">
-                      Unsupported
-                    </span>
-                  );
-                })()}
-              </div>
+                <div className="p-4 flex-1 bg-card">
+                  {isReadOnly ? (
+                    item.alt && (
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
+                          Caption
+                        </span>
+                        <div className="p-3 rounded-xl bg-muted/40 border border-transparent text-sm text-foreground/80 leading-relaxed min-h-15">
+                          {item.alt}
+                        </div>
+                      </div>
+                    )
 
-              <div className="flex-1">
-                <Textarea
-                  className="w-full"
-                  placeholder="Add a caption..."
-                  value={item.alt}
-                  onChange={(e) => updateAlt(index, e.target.value)}
-                />
+                  ) : (
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                        Caption
+                      </span>
+                      <Textarea
+                        className="w-full min-h-25 text-sm bg-muted/20 border-muted-foreground/10 focus:bg-background focus:ring-1 focus:ring-primary/20 resize-none rounded-xl transition-all"
+                        placeholder="Add a caption..."
+                        value={item.alt}
+                        onChange={(e) => updateAlt(index, e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
+
     </div>
   );
 }

@@ -65,6 +65,12 @@
   "total_revenue": "Total Revenue",
 
   "banner_title": "Marketing Assets",
+  "episode_list": "Episode List",
+
+  "novel": "Novel",
+  "comics": "Comics",
+  "storytelling": "Story Telling",
+  "magazine": "Magazine",
 
   "novel_form" : {
     "description": "Fill in the information of your novel here."
@@ -111,5 +117,12 @@
     "create_title": "Create New Course",
     "description": "Fill in the information of your course here.",
     "update_title": "Update Course"
+  },
+
+  "story_telling_form": {
+    "create_button": "Create Story Telling",
+    "create_title": "Create New Story Telling",
+    "description": "Fill in the information of your story telling here.",
+    "update_title": "Update Story Telling"
   }
 }

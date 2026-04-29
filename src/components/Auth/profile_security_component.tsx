@@ -85,7 +85,7 @@ export default function PasswordForm({ onSuccess, onCancel }: PasswordFormProps)
 
 
   return (
-    <div className="w-full bg-white dark:bg-[#17171A] rounded-xl overflow-hidden">
+    <div className="w-full bg-card rounded-xl overflow-hidden">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-6">
           <div className="border-b dark:border-[#252525] pb-4">

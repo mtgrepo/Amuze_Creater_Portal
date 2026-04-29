@@ -10,7 +10,7 @@ export interface CreatorDetails {
   uuid: string;
   name: string;
   email: string;
-  avatar?: string;
+  profile?: string;
   phone_no?: string;
   session: string;
   role_id: number;

@@ -15,7 +15,7 @@ import {
 import {  Layers, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "../redux/store/store"
-
+import { useLoginCreatorQuery } from "../composable/Query/Auth/useLoginCreatorQuery"
 
 // This is sample data.
 const data = {
@@ -124,7 +124,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const creator = useSelector((state: RootState) => state.auth.creator);
-
+  const { creatorData } = useLoginCreatorQuery(creator?.id!); 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -135,7 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        { creator && <NavUser creator={creator} /> }
+        { creator && <NavUser creator={creatorData || creator} /> }
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

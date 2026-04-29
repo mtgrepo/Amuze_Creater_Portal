@@ -6,8 +6,7 @@ interface ProfileHistoryProps {
 }
 
 export default function ProfileHistoryComponent({ history }: ProfileHistoryProps) {
-    console.log("profile data", history)
-    // const profile = history?.photos;
+
   if (!history || history?.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-card rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 mt-5">

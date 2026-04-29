@@ -1,7 +1,16 @@
 import ConfirmCard from "@/components/common/confirm_card";
 import ImageUpload from "@/components/common/image_upload";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import RequiredLabel from "@/components/common/required_label";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,6 +30,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useBlocker, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -52,14 +63,15 @@ export default function MuseumForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
-    const resetToken = useRef(defaultValues?.id);
-   const storedData = localStorage.getItem("creator");
-const loginCreator = storedData ? decryptAuthData(storedData) : null;
-const creatorId = loginCreator?.creator?.id;
+  const resetToken = useRef(defaultValues?.id);
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id;
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
-
 
   const { createMutation, isCreatePending } = useMuseumCreate();
   const { updateMuseumMutation, isMuseumUpdatePending } = useMuseumUpdate();
@@ -83,7 +95,11 @@ const creatorId = loginCreator?.creator?.id;
   });
 
   useEffect(() => {
-    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
       form.reset({
         name: defaultValues.name || "",
         description: defaultValues.description || "",
@@ -92,12 +108,31 @@ const creatorId = loginCreator?.creator?.id;
         created_by: creatorId,
       });
       resetToken.current = defaultValues.id;
+    } else if (mode === "add" && creatorId) {
+      form.setValue("created_by", creatorId);
     }
-      if(mode === "add" && creatorId){
-    form.setValue("created_by", creatorId)
-   }
   }, [defaultValues, mode, creatorId, form]);
 
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting &&
+      !isSubmitSuccessful &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -173,10 +208,14 @@ const creatorId = loginCreator?.creator?.id;
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Museum" : "Edit Museum Details"}
+              {mode === "add"
+                ? t("museum.create_header")
+                : t("museum.update_header")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your museum.
+              {mode === "add"
+                ? t("museum.create_header_description")
+                : t("museum.update_header_description")}
             </p>
           </div>
 
@@ -188,7 +227,7 @@ const creatorId = loginCreator?.creator?.id;
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label={t("thumbnail")} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -211,7 +250,9 @@ const creatorId = loginCreator?.creator?.id;
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Museum</FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label={t("title")} />
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter museum name" {...field} />
                       </FormControl>
@@ -226,7 +267,9 @@ const creatorId = loginCreator?.creator?.id;
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label={t("description")} />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -249,7 +292,7 @@ const creatorId = loginCreator?.creator?.id;
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Horizontal Thumbnail
+                      <RequiredLabel label={t("horizontal_thumbnail")} />
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">
@@ -274,10 +317,10 @@ const creatorId = loginCreator?.creator?.id;
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                navigate("/entertainment/museum");
               }}
             >
-              Cancel & Reset
+              {t("cancel")}
             </Button>
 
             <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
@@ -290,14 +333,14 @@ const creatorId = loginCreator?.creator?.id;
                   if (isValid) {
                     setConfirmDialog(true);
                   } else {
-                    toast.error("Please fill in all required fields correctly.");
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
                   }
                 }}
               >
-                {(isLoading) && (
-                  <Spinner className="mr-2 w-4 h-4" />
-                )}
-                {mode === "add" ? "Create Museum" : "Save Changes"}
+                {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                {mode === "add" ? t("create") : t("update")}
               </Button>
               <DialogContent className="max-w-md">
                 <DialogHeader>
@@ -312,7 +355,10 @@ const creatorId = loginCreator?.creator?.id;
                   </DialogDescription>
                 </DialogHeader>
 
-                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+                <ConfirmCard
+                  name={form.getValues("name")}
+                  description={form.getValues("description")}
+                />
 
                 <DialogFooter className="sm:justify-center gap-2">
                   <Button
@@ -325,19 +371,17 @@ const creatorId = loginCreator?.creator?.id;
                   <Button
                     onClick={form.handleSubmit(onSubmit)}
                     className="flex-1"
-                    disabled={
-                      isLoading
-                    }
+                    disabled={isLoading}
                   >
-                    {(isLoading) && (
-                      <Spinner className="mr-2 w-4 h-4" />
-                    )}
-                    Confirm & {mode === "add" ? "Create Museum" : "Update Museum"}
+                    {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                    Confirm &{" "}
+                    {mode === "add" ? "Create Museum" : "Update Museum"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

@@ -1,4 +1,3 @@
-"use client";
 
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import { ClipboardPenLine, Info, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { MuseumEpisode } from "@/types/response/entertainment/museum/museumEpisodeResponse";
+import { useTranslation } from "react-i18next";
 
 interface ActionsProps {
   episode: MuseumEpisode;
@@ -25,6 +25,7 @@ export default function EpisodeActions({
   titleId,
 }: ActionsProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleEdit = () => {
     navigate(
@@ -40,15 +41,17 @@ export default function EpisodeActions({
   };
 
   const handleViewDetails = () => {
-    navigate(`/entertainment/museum/${museumId}/title/${titleId}/episode/details/${episode.id}`, {
-      state: {
-        episode,
-        museumId,
-        titleId
+    navigate(
+      `/entertainment/museum/${museumId}/title/${titleId}/episode/details/${episode.id}`,
+      {
+        state: {
+          episode,
+          museumId,
+          titleId,
+        },
       },
-    });
-  }
-
+    );
+  };
 
   return (
     <>
@@ -63,17 +66,13 @@ export default function EpisodeActions({
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleViewDetails}>
-            <Info className="mr-2 h-4 w-4" /> View Details
+            <Info className="mr-2 h-4 w-4" /> {t("actions.view_details")}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleEdit}>
-            <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
+            <ClipboardPenLine className="mr-2 h-4 w-4" /> {t("actions.edit")}
           </DropdownMenuItem>
-
-
-
         </DropdownMenuContent>
       </DropdownMenu>
-
     </>
   );
 }

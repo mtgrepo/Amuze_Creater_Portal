@@ -1,7 +1,6 @@
 import CommentsSection from "@/components/common/comment_component";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
-import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,10 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
+import Stat from "@/components/common/details_stat";
 
 export default function StoryTellingTitleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const {
     storyTellingTitleDetails: story,
@@ -73,7 +75,7 @@ export default function StoryTellingTitleDetails() {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            Back
+            {t("back")}
           </Button>
         </div>
 
@@ -107,23 +109,23 @@ export default function StoryTellingTitleDetails() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status
-                  icon={<Star size={16} />}
-                  value={story.rating}
-                  color="yellow"
+              
+               <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">            
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={story?.rating ?? "0"}
                   label="Rating"
                 />
-                <Status
-                  icon={<Eye size={16} />}
-                  value={story.views}
-                  color="gray"
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(story?.views ?? 0).toLocaleString()}
                   label="Views"
                 />
-                <Status
-                  icon={<ThumbsUp size={16} />}
-                  value={story.likes}
-                  color="blue"
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={story?.likes ?? "0"}
                   label="Likes"
                 />
               </div>
@@ -134,7 +136,7 @@ export default function StoryTellingTitleDetails() {
         <div className="bg-card border border-border p-6 rounded-3xl">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t("description")}
           </h3>
           {story.description ? (
             <LongText text={story.description} />
@@ -147,7 +149,7 @@ export default function StoryTellingTitleDetails() {
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Episodes</h2>
+            <h2 className="text-xl font-bold">{t('episodes')}</h2>
             <Button
               onClick={() =>
                 navigate(`/entertainment/storytelling/${id}/episode/create`, {
@@ -155,7 +157,7 @@ export default function StoryTellingTitleDetails() {
                 })
               }
             >
-              Add Episode
+              {t("add_new_episode")}
             </Button>
           </div>
 
@@ -250,7 +252,6 @@ export default function StoryTellingTitleDetails() {
         </div>
 
         <div className="bg-card border border-border p-6 rounded-3xl">
-          <h3 className="text-xl font-bold mb-4">Reader Feedback</h3>
           <CommentsSection category="story" commentsList={commentsList} />
         </div>
       </div>

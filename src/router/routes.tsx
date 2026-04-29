@@ -733,7 +733,7 @@ path: "/entertainment/posts/edit/:id",
       ),
     },
   ],
-  { basename: "/creator-portal" },
+  { basename: "/creator-portal/" },
 );
 
 export default router;

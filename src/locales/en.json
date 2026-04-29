@@ -10,8 +10,10 @@
   "noti_status": "Status",
   "sender": "Sender",
   "is_read": "Is Read",
+  "active_status": "Active",
+  "banned_status": "Banned",
 
-  "thumbnail" : "Thumbnail",
+  "thumbnail": "Thumbnail",
   "title": "Title",
   "price": "Price",
   "description": "Description",
@@ -52,9 +54,19 @@
   "create": "Create",
   "update": "Update",
   "cancel": "Cancel",
+  "back": "Back",
+
+  "actions": {
+    "view_details": "View Details",
+    "edit": "Edit"
+  },
+
+  "images": "Images",
+  "episodes": "Episodes",
 
   "create_new_comic": "Create New Comic",
   "add_new_episode": "Add New Episode",
+  "add_new_title": "Add New Title",
   "create_new_gallery": "Create New Gallery",
   "create_new_muze_box": "Create New MuzeBox",
   "create_new_grade": "Create New Grade",
@@ -66,19 +78,20 @@
 
   "banner_title": "Marketing Assets",
   "episode_list": "Episode List",
+  "title_list": "Title List",
 
   "novel": "Novel",
   "comics": "Comics",
   "storytelling": "Story Telling",
   "magazine": "Magazine",
 
-  "novel_form" : {
+  "novel_form": {
     "description": "Fill in the information of your novel here."
   },
 
-  "comics_form" : {
-    "create_title" : "Create New Comics",
-    "description" : "Fill in the information of your comics title here.",
+  "comics_form": {
+    "create_title": "Create New Comics",
+    "description": "Fill in the information of your comics title here.",
     "update_title": "Update Comics Title"
   },
 
@@ -88,7 +101,7 @@
     "update_title": "Update Gallery Title"
   },
 
-  "episode_form" : {
+  "episode_form": {
     "create_title": "Add New Episode",
     "description": "Fill in the information of your episode here.",
     "update_title": "Edit Episode",
@@ -96,16 +109,17 @@
     "add_pages": "Add Pages",
     "comics_pages": "Comics Pages",
     "episode_cover": "Episode Cover",
-    "video": "Video"
+    "video": "Video",
+    "audio": "Audio(MP3)"
   },
 
-  "muze_box_form" : {
+  "muze_box_form": {
     "create_title": "Create New MuzeBox",
     "description": "Fill in the information of your muze box here.",
     "update_title": "Update MuzeBox"
   },
 
-  "grade_form" : {
+  "grade_form": {
     "create_title": "Create New Grade",
     "description": "Fill in the information of your grade here.",
     "update_title": "Update Grade",
@@ -124,5 +138,47 @@
     "create_title": "Create New Story Telling",
     "description": "Fill in the information of your story telling here.",
     "update_title": "Update Story Telling"
+  },
+
+  "story_telling_episode_form": {
+    "create_header_description": "Fill in the information for your storytelling episode here.",
+    "update_header_description": "Edit your storytelling episode details."
+  },
+
+  "museum": {
+    "create": "Create Museum",
+    "create_header": "Create New Museum",
+    "create_header_description": "Fill in the information for your museum here.",
+    "update_header": "Edit Museum",
+    "update_header_description": "Edit your museum details."
+  },
+
+  "museum_title": {
+    "create_header": "Create New Museum Title",
+    "create_header_description": "Fill in the information for your museum title here.",
+    "update_header": "Edit Museum Title",
+    "update_header_description": "Edit your museum title details."
+  },
+
+  "museum_episode": {
+    "create_header": "Create New Museum Episode",
+    "create_header_description": "Fill in the information for your museum episode here.",
+    "update_header": "Edit Museum Episode",
+    "update_header_description": "Edit your museum episode details.",
+    "image_description": "Create Image, Label, and Description"
+  },
+
+  "post": {
+    "media": "Media",
+    "create": "Create Post",
+    "post_description": "Post Content",
+    "visibility": "Visibility",
+    "video_mode": "Video Mode",
+    "video_description": "Enable if uploading a video",
+    "media_upload": "Media Upload",
+    "create_header": "Create New Post",
+    "create_header_description": "Share your thoughts, images, or videos with your audience.",
+    "update_header": "Edit Post",
+    "update_header_description": "Edit your post details."
   }
 }

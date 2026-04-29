@@ -1,4 +1,7 @@
-import { MediaUpload, type MediaItem } from "@/components/common/post_media_upload";
+import {
+  MediaUpload,
+  type MediaItem,
+} from "@/components/common/post_media_upload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -8,8 +11,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,13 +39,19 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import ConfirmCard from "@/components/common/confirm_card";
+import { usePostMediaUpdate } from "@/composable/Command/Entertainment/Posts/usePostMediaUpdate";
+import { useTranslation } from "react-i18next";
+import { useBlocker, useNavigate } from "react-router-dom";
+import RequiredLabel from "@/components/common/required_label";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
-function normalizeMedia(media: any[]) {
+function normalizeMedia(media: any[] = []) {
   return media.map((m) => ({
     id: crypto.randomUUID(),
+    mediaId: String(m.index),
     url: m.url,
-    alt: m.alt ?? "",
-    type: m.type ?? "image",
+    alt: m.alt || "",
+    type: m.type || "image",
     file: undefined,
   }));
 }
@@ -38,7 +60,7 @@ function createFormSchema() {
   return z.object({
     description: z.string().min(1, "Description is required."),
     visibility: z.string(),
-    isVideo: z.boolean(),
+    isVideo: z.boolean().optional(),
     created_by: z.union([z.string(), z.number()]).optional(),
     media: z
       .array(
@@ -48,7 +70,8 @@ function createFormSchema() {
           url: z.string().optional(),
           type: z.string().optional(),
           id: z.string().optional(),
-        })
+          mediaId: z.string().optional(),
+        }),
       )
       .optional(),
   });
@@ -68,31 +91,39 @@ export default function PostForm({
   onSuccess,
 }: FormProps) {
   const resetToken = useRef(defaultValues?.id);
+  const originalMediaRef = useRef<MediaItem[]>([]);
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id;
   const formSchema = createFormSchema();
   const [confirmDialog, setConfirmDialog] = useState(false);
 
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const { createMutation, isCreatePending } = usePostCreate();
   const { updateMutation, isUpdatePending } = usePostUpdate();
+  const { updateMediaMutation, isMediaUpdatePending } = usePostMediaUpdate();
 
-  const isLoading = isCreatePending || isUpdatePending;
+  const isLoading = isCreatePending || isUpdatePending || isMediaUpdatePending;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: defaultValues?.description || "",
-      visibility: "public",
+      visibility: defaultValues?.visibility || "public",
       isVideo: false,
       created_by: creatorId,
-      media: [],
+      media: mode === "edit" ? normalizeMedia(defaultValues?.media || []) : [],
     },
   });
 
   useEffect(() => {
-    if (mode === "edit" && defaultValues && defaultValues.id !== resetToken.current) {
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
       form.reset({
         description: defaultValues.description || "",
         visibility: defaultValues.visibility,
@@ -101,14 +132,33 @@ export default function PostForm({
         created_by: creatorId,
       });
       resetToken.current = defaultValues.id;
-
-    }
-    if (mode === "add" && creatorId) {
-      form.setValue("created_by", creatorId)
+      originalMediaRef.current = normalizeMedia(defaultValues.media || []);
+    } else if (mode === "add" && creatorId) {
+      form.setValue("created_by", creatorId);
     }
   }, [defaultValues, mode, creatorId, form]);
 
+  
+  const {isDirty, isSubmitting, isSubmitSuccessful} = form.formState;
 
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && 
+      !isSubmitSuccessful &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+    useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -116,28 +166,74 @@ export default function PostForm({
 
       formData.append("description", values.description);
       formData.append("visibility", values.visibility);
-      formData.append("isVideo", String(values.isVideo));
+      if (mode === "add") {
+        formData.append("isVideo", String(values.isVideo));
+      }
       formData.append("created_by", String(values.created_by));
 
-      if (values.media) {
-        values.media.forEach((item: any, index: number) => {
-          const key = mode === 'add' ? "media" : "images";
+      const currentMedia = values.media || [];
+      if (mode === "add") {
+        currentMedia.forEach((item: any, index: number) => {
           if (item.file) {
-            formData.append(`file[${index}][${key}]`, item.file);
-
+            formData.append(`file[${index}][media]`, item.file);
           }
           formData.append(`file[${index}][alt]`, item.alt || "");
         });
-      }
-
-      if (mode === "add") {
         await createMutation(formData);
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
+        const fd = new FormData();
+
+        fd.append("description", values.description);
+        fd.append("visibility", values.visibility);
+
         await updateMutation({
           id: Number(defaultValues.id),
-          data: formData
+          data: fd,
         });
+
+        for (const item of currentMedia) {
+          if (item.mediaId) {
+            const original = originalMediaRef.current.find(
+              (m) => m.mediaId === item.mediaId,
+            );
+
+            const altChanged = original && original.alt !== item.alt;
+            const fileReplaced = !!item.file;
+
+            if (altChanged || fileReplaced) {
+              const replaceFd = new FormData();
+              replaceFd.append("fileId", item.mediaId);
+              replaceFd.append("alt", item.alt || "");
+
+              if (item.file) {
+                replaceFd.append("image", item.file);
+              }
+
+              await updateMediaMutation({
+                id: Number(defaultValues.id),
+                data: replaceFd,
+              });
+            }
+          }
+        }
+
+        const newUploads = currentMedia.filter(
+          (item) => item.file && !item.mediaId,
+        );
+        if (newUploads.length > 0) {
+          const newFilesFd = new FormData();
+          newUploads.forEach((item, index) => {
+            if (item.file) {
+              newFilesFd.append(`file[${index}][images]`, item.file);
+              newFilesFd.append(`file[${index}][alt]`, item.alt || "");
+            }
+          });
+          await updateMutation({
+            id: Number(defaultValues.id),
+            data: newFilesFd,
+          });
+        }
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -149,13 +245,16 @@ export default function PostForm({
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add" ? "Create New Post" : "Edit Post"}
+              {mode === "add"
+                ? t("post.create_header")
+                : t("post.update_header")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Share your thoughts, images, or videos with your audience.
+              {mode === "add"
+                ? t("post.create_header_description")
+                : t("post.update_header_description")}
             </p>
           </div>
 
@@ -165,7 +264,9 @@ export default function PostForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Post Content</FormLabel>
+                  <FormLabel>
+                    <RequiredLabel label={t("post.post_description")} />
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="What's on your mind?"
@@ -184,11 +285,8 @@ export default function PostForm({
                 name="visibility"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Visibility</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <FormLabel>{t("post.visibility")}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select visibility" />
@@ -213,22 +311,27 @@ export default function PostForm({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="isVideo"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                    <div>
-                      <FormLabel>Video Mode</FormLabel>
-                      <p className="text-xs text-muted-foreground">
-                        Enable if uploading a video
-                      </p>
-                    </div>
+              {mode === "add" && (
+                <FormField
+                  control={form.control}
+                  name="isVideo"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                      <div>
+                        <FormLabel>{t("post.video_mode")}</FormLabel>
+                        <p className="text-xs text-muted-foreground">
+                          {t("post.video_description")}
+                        </p>
+                      </div>
 
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  </FormItem>
-                )}
-              />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
           </div>
 
@@ -239,12 +342,13 @@ export default function PostForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-semibold">
-                    Media Upload
+                    {t("post.media_upload")}
                   </FormLabel>
 
                   <MediaUpload
                     value={(field.value as MediaItem[]) || []}
                     onChange={field.onChange}
+                    mode={mode}
                   />
 
                   <FormMessage />
@@ -254,29 +358,17 @@ export default function PostForm({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t justify-between">
-
             <Button
               type="button"
               variant="outline"
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                navigate("/entertainment/posts");
               }}
             >
-              Cancel & Reset
+              {t("cancel")}
             </Button>
-
-            {/* <Button type="submit" className="flex-1" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2" />
-                  {mode === "add" ? "Creating..." : "Updating..."}
-                </>
-              ) : (
-                <>{mode === "add" ? "Create Post" : "Save Changes"}</>
-              )}
-            </Button> */}
 
             <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -288,14 +380,14 @@ export default function PostForm({
                   if (isValid) {
                     setConfirmDialog(true);
                   } else {
-                    toast.error("Please fill in all required fields correctly.");
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
                   }
                 }}
               >
-                {(isLoading) && (
-                  <Spinner className="mr-2 w-4 h-4" />
-                )}
-                {mode === "add" ? "Create Post" : "Save Changes"}
+                {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                {mode === "add" ? t("create") : t("update")}
               </Button>
               <DialogContent className="max-w-md">
                 <DialogHeader>
@@ -331,17 +423,14 @@ export default function PostForm({
                         {mode === "add" ? "Creating..." : "Updating..."}
                       </>
                     ) : (
-                      <>
-                        Confirm & {mode === "add" ? "Create" : "Update"}
-                      </>
+                      <>Confirm & {mode === "add" ? "Create" : "Update"}</>
                     )}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
           </div>
-
+          <NavigateConfirmDialog blocker={blocker}/>
         </form>
       </Form>
     </div>

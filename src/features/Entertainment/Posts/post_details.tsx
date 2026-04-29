@@ -13,12 +13,14 @@ import { usePostDetailQuery } from "@/composable/Query/Entertainment/Posts/usePo
 import LongText from "@/components/common/longtext";
 import CommentsSection from "@/components/common/comment_component";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
+import { useTranslation } from "react-i18next";
 // import { ImageCardSkeleton } from "@/components/ImageCardSkeleton";
 
 const PostsDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeImage, setActiveImage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const { postDetail, isDetailPending, error } = usePostDetailQuery(Number(id));
 
@@ -47,7 +49,7 @@ const PostsDetailPage: React.FC = () => {
           className="gap-2"
         >
           <ChevronLeft size={18} />
-          Back
+          {t('back')}
         </Button>
 
         <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
@@ -55,7 +57,6 @@ const PostsDetailPage: React.FC = () => {
           {
             isDetailPending ? (
               <span>loading...</span>
-              // <ImageCardSkeleton />
             ) : (
               postDetail && (
                 <>
@@ -64,9 +65,9 @@ const PostsDetailPage: React.FC = () => {
                       <h2 className="text-red-600 font-semibold">
                         This post is banned
                       </h2>
-                      <p className="text-sm text-red-500 mt-1">
+                      <h4 className="text-sm text-red-500 mt-1">
                         <LongText text={postDetail.ban_reason || "No reason provided"} />
-                      </p>
+                      </h4>
                     </div>
                   )}
 
@@ -123,13 +124,13 @@ const PostsDetailPage: React.FC = () => {
                         </div>
 
                         <div className="p-3 space-y-1">
-                          <p className="text-xs text-muted-foreground ">
+                          <>
                             {item.alt ? (
                               <LongText text={item.alt} />
                             ) : (
                               <span className="italic">No description</span>
                             )}
-                          </p>
+                          </>
                         </div>
                       </div>
                     ))}
@@ -158,7 +159,6 @@ const PostsDetailPage: React.FC = () => {
             )}
         </div>
         <div className="bg-card border border-border p-6 rounded-3xl">
-          <h3 className="text-xl font-bold mb-4">Reader Feedback</h3>
           <CommentsSection category="post" commentsList={commentsList} />
         </div>
       </div>

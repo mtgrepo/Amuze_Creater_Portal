@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 export default function PostUpdate() {
     const {id} = useParams();
     const {postDetail, isDetailPending} = usePostDetailQuery(Number(id));
-    console.log("post media", postDetail?.media)
     if(isDetailPending){
         <div>Loading...</div>
     }

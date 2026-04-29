@@ -1,6 +1,6 @@
+import Stat from "@/components/common/details_stat";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
-import { Status } from "@/components/common/status";
 import TitleActions from "@/components/Entertainment/Museum/Museum/title_actions";
 import { Button } from "@/components/ui/button";
 import { useMuseumDetailQuery } from "@/composable/Query/Entertainment/Museum/useMuseumDetailQuery";
@@ -51,7 +51,7 @@ export default function MuseumDetails() {
         <div className="flex items-center">
           <Button
             variant="outline"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/entertainment/museum")}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
@@ -82,23 +82,22 @@ export default function MuseumDetails() {
                 {museumDetail.name}
               </h1>
 
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status
-                  icon={<Star size={16} />}
-                  value={museumDetail.ratings}
-                  color="yellow"
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={museumDetail?.ratings ?? "0"}
                   label="Rating"
                 />
-                <Status
-                  icon={<Eye size={16} />}
-                  value={museumDetail.views}
-                  color="gray"
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(museumDetail?.views ?? 0).toLocaleString()}
                   label="Views"
                 />
-                <Status
-                  icon={<ThumbsUp size={16} />}
-                  value={museumDetail.likes}
-                  color="blue"
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={museumDetail?.likes ?? "0"}
                   label="Likes"
                 />
               </div>

@@ -1,7 +1,6 @@
 import CommentsSection from "@/components/common/comment_component";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
-import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/StoryTelling/Episodes/episode_actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import Stat from "@/components/common/details_stat";
 
 export default function StoryTellingTitleDetails() {
   const { id } = useParams();
@@ -109,23 +109,23 @@ export default function StoryTellingTitleDetails() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status
-                  icon={<Star size={16} />}
-                  value={story.rating}
-                  color="yellow"
+              
+               <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">            
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={story?.rating ?? "0"}
                   label="Rating"
                 />
-                <Status
-                  icon={<Eye size={16} />}
-                  value={story.views}
-                  color="gray"
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(story?.views ?? 0).toLocaleString()}
                   label="Views"
                 />
-                <Status
-                  icon={<ThumbsUp size={16} />}
-                  value={story.likes}
-                  color="blue"
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={story?.likes ?? "0"}
                   label="Likes"
                 />
               </div>

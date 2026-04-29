@@ -18,7 +18,6 @@ type CreatorNotiContextType = {
   unreadCount: number;
   isDropdownOpen: boolean;
 
-  // setUnreadCount: (count: number) => void
   handleMarkAsRead: (id: number) => Promise<void>;
   handleMarkAllAsRead: () => Promise<void>;
 
@@ -31,29 +30,7 @@ type CreatorNotiContextType = {
   hasNextPage: boolean;
   fetchNextPage: () => Promise<unknown>;
 
-  novelUnread: number;
-  comicUnread: number;
-  storyUnread: number;
-  magazineUnread: number;
-  galleryUnread: number;
-  muzeBoxUnread: number;
-  educationUnread: number;
-  museumUnread: number;
-  postUnread: number;
 };
-
-const CATEGORY_TYPES: Record<string, string[]> = {
-  novel: ["USER LIKED NOVEL"],
-  comic: ["USER LIKED COMIC"],
-  story: ["USER LIKED STORY"],
-  gallery: ["USER LIKED GALLERY"],
-  muzeBox: ["USER LIKED MUZEBOX"],
-  post: ["USER LIKED POST"],
-};
-
-const countUnreadByTypes = (notifications: Notification[], type?: string[]) =>
-  notifications.filter((n) => type?.includes(n?.type) && !n.reads[0]?.is_read)
-    .length;
 
 const CreatorNotiContext = createContext<CreatorNotiContextType | null>(null);
 
@@ -103,25 +80,6 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const closeDropdown = useCallback(() => setIsDropdownOpen(false), []);
 
-  const novelUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.novel);
-  const comicUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.comic);
-  const storyUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.story);
-  const magazineUnread = countUnreadByTypes(
-    notifications,
-    CATEGORY_TYPES.magazine,
-  );
-  const galleryUnread = countUnreadByTypes(
-    notifications,
-    CATEGORY_TYPES.gallery,
-  );
-  const muzeBoxUnread = countUnreadByTypes(
-    notifications,
-    CATEGORY_TYPES.muzeBox,
-  );
-  const educationUnread = countUnreadByTypes(notifications);
-  const museumUnread = countUnreadByTypes(notifications);
-  const postUnread = countUnreadByTypes(notifications, CATEGORY_TYPES.post);
-
   return (
     <CreatorNotiContext.Provider
       value={{
@@ -139,16 +97,6 @@ export const CreatorNotiProvider: React.FC<{ children: React.ReactNode }> = ({
         isFetchingNextPage,
         hasNextPage,
         fetchNextPage,
-
-        novelUnread,
-        comicUnread,
-        storyUnread,
-        magazineUnread,
-        galleryUnread,
-        muzeBoxUnread,
-        educationUnread,
-        museumUnread,
-        postUnread,
       }}
     >
       {children}

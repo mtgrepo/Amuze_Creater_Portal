@@ -8,8 +8,11 @@
   "publish_status": "ထုတ်ဝေမှု", 
   "approve_status": "အတည်ပြုမှူ",
   "noti_status": "အခြေအနေ",
+  "status": "အခြေအနေ",
   "sender": "ပေးပို့သူ",
   "is_read": "ဖတ်ပြီးခြင်း",
+  "active_status": "ပိတ်ပင်မထားသော",
+  "banned_status": "ပိတ်ပင်ထားသည်",
 
   "thumbnail": "ဓာတ်ပုံ",
   "title": "ခေါင်းစဉ်",
@@ -51,9 +54,20 @@
   "create": "အသစ်ထည့်ရန်",
   "update": "ပြင်ဆင်ရန်",
   "cancel": "ပြန်ထွက်ရန်",
+  "back" : "နောက်သို့",
+
+  "actions" : {
+  "view_details": "အသေးစိတ်ကြည့်ရှုရန်",
+  "edit": "ပြင်ဆင်ရန်"
+  },
+
+
+  "images" : "ပုံများ",
+  "episodes" : "အပိုင်းများ",
 
   "create_new_comic": "Comics အသစ်ထည့်ရန်",
   "add_new_episode": "အပိုင်းသစ်ထည့်ရန်",
+  "add_new_title": "ခေါင်းစဉ် အသစ်ထည့်ရန်",
   "create_new_gallery": "ပုံထည့်ရန်",
   "create_new_muze_box": "MuzeBox အသစ်ထည့်ရန်",
   "create_new_grade": "Grade အသစ်ထည့်ရန်",
@@ -65,6 +79,8 @@
   
   "banner_title": "ရုပ်ပြပုံများ",
   "episode_list": "အပိုင်းသစ်များ",
+  "title_list": "ခေါင်းစဉ်များ",
+
 
   "novel": "ဝတ္ထု",
   "comics": "ရုပ်ပြကာတွန်း",
@@ -95,7 +111,8 @@
     "add_pages": "ပုံထည့်ရန်",
     "comics_pages": "ရုပ်ပြပုံများ",
     "episode_cover": "ဇာတ်လမ်းတွဲ ကာဗာပုံ",
-    "video": "ဗီဒီယို"
+    "video": "ဗီဒီယို",
+    "audio": "အသံဖိုင်"
   },
 
   "muze_box_form": {
@@ -123,5 +140,51 @@
     "create_title": "ပုံပြင် အသစ်ထည့်ရန်",
     "description":"သင့် ပုံပြင် ၏ အချက်အလက်ကို ဤနေရာတွင် ဖြည့်ပါ။.",
     "update_title": "ပုံပြင် အချက်အလက်ပြင်ဆင်ရန်"
+  },
+
+   "story_telling_episode_form": {
+    "create_header_description" : "သင့်၏ ပုံပြင် အပိုင်းအချက်အလက်များကို ဤနေရာတွင် ဖြည့်သွင်းပါ။",
+    "update_header_description" : "သင့်၏ ပုံပြင် အပိုင်းအချက်အလက်များကို ပြင်ဆင်ပါ။"
+  },
+
+   "museum": {
+    "create" : "ပြတိုက် အသစ်ထည့်ရန်",
+    "create_header" : "ပြတိုက် အသစ်ထည့်ရန်",
+    "create_header_description" : "သင့်၏ ပြတိုက် အချက်အလက်များကို ဤနေရာတွင် ဖြည့်သွင်းပါ။",
+    "update_header": "ပြတိုက် အချက်အလက်ပြင်ဆင်ရန်",
+    "update_header_description" : "သင့်၏ ပြတိုက် အချက်အလက်များကို ပြင်ဆင်ပါ။"
+  },
+
+    "museum_title": {
+    "create_header" : "ပြတိုက်ခေါင်းစဉ် အသစ်ထည့်ရန်",
+    "create_header_description" : "သင့်၏ ပြတိုက်ခေါင်းစဉ် အချက်အလက်များကို ဤနေရာတွင် ဖြည့်သွင်းပါ။",
+    "update_header": "ပြတိုက်ခေါင်းစဉ် အချက်အလက်ပြင်ဆင်ရန်",
+    "update_header_description" : "သင့်၏ ပြတိုက်ခေါင်းစဉ် အချက်အလက်များကို ပြင်ဆင်ပါ။"
+  },
+
+  "museum_episode": {
+    "create_header" : "ပြတိုက်အပိုင်း အသစ်ထည့်ရန်",
+    "create_header_description" : "သင့်၏ ပြတိုက်အပိုင်း အချက်အလက်များကို ဤနေရာတွင် ဖြည့်သွင်းပါ။",
+    "update_header": "ပြတိုက်အပိုင်း အချက်အလက်ပြင်ဆင်ရန်",
+    "update_header_description" : "သင့်၏ ပြတိုက်အပိုင်း အချက်အလက်များကို ပြင်ဆင်ပါ။",
+    "create_image_description" : "ပုံ၊ ခေါင်းစဉ်နှင့် ဖော်ပြချက် ထည့်ရန်"
+  },
+
+  "post": {
+    "media": "မီဒီယာ",
+    "create": "ပိုစ့်အသစ် ထည့်ရန်",
+    "visibility": "မြင်နိုင်မှု",
+    "video_mode": "ဗီဒီယို မုဒ်",
+    "video_description": "ဗီဒီယို တင်နေပါက ဖွင့်ထားပါ",
+    "post_description": "ပိုစ့် အကြောင်းအရာ",
+    "media_upload": "မီဒီယာ တင်ရန်",
+    "create_header" : "ပိုစ့်အသစ် ထည့်ရန်",
+    "create_header_description" : "သင့်၏ အတွေးအမြင်၊ ပုံများ သို့မဟုတ် ဗီဒီယိုများကို ပရိသတ်နှင့် မျှဝေပါ။",
+    "update_header": "ပိုစ့် ပြင်ဆင်ရန်",
+    "update_header_description" : "သင့်၏ ပိုစ့် အချက်အလက်များကို ပြင်ဆင်ပါ။"
   }
+
+
+ 
+  
 }

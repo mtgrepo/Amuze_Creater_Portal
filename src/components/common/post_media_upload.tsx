@@ -2,6 +2,7 @@ import { useDropzone } from "react-dropzone";
 import { X, Play, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
+import LongText from "./longtext";
 
 export type MediaItem = {
   id: string;
@@ -213,15 +214,15 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
                   )}
                 </div>
 
-                <div className="p-4 flex-1 bg-card">
+                <div className="flex-1 bg-card">
                   {isReadOnly ? (
                     item.alt && (
-                      <div className="space-y-1.5">
+                      <div className="space-y-1.5 p-4">
                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
                           Caption
                         </span>
                         <div className="p-3 rounded-xl bg-muted/40 border border-transparent text-sm text-foreground/80 leading-relaxed min-h-15">
-                          {item.alt}
+                          <LongText text={item.alt}/>
                         </div>
                       </div>
                     )

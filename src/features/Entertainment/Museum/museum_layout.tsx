@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useMuseumQuery } from "@/composable/Query/Entertainment/Museum/useMuseumQuery";
 import { MuseumTable } from "@/components/Entertainment/Museum/Museum/museum_table";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function MuseumLayout() {
   const [tab, setTab] = React.useState<"all" | "approved">("all");
@@ -16,6 +17,7 @@ export default function MuseumLayout() {
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const handlePaginationChange = (newPage: number, newPageSize: number) => {
     setPage(newPage);
@@ -33,7 +35,7 @@ export default function MuseumLayout() {
     <div className="flex flex-1 flex-col gap-4 px-4">
       <div className="w-full mt-5">
         <div className="flex flex-row justify-end gap-3">
-<div className="relative">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Filter title name..."
@@ -56,13 +58,16 @@ export default function MuseumLayout() {
               </button>
             )}
           </div>
- <Button size="sm" className="cursor-pointer" onClick={() => navigate("/entertainment/museum/create")}>
-          <CirclePlus className="mr-2 h-4 w-4" />
-          Create Museum
-        </Button>
+          <Button
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => navigate("/entertainment/museum/create")}
+          >
+            <CirclePlus className="mr-2 h-4 w-4" />
+            {t('museum.create')}
+          </Button>
         </div>
       </div>
-
 
       <div className="border p-3 rounded-lg space-y-3">
         <Tabs
@@ -75,10 +80,10 @@ export default function MuseumLayout() {
             variant={"line"}
           >
             <TabsTrigger value="all" className="w-full text-center">
-              All
+              {t("all")}
             </TabsTrigger>
             <TabsTrigger value="approved" className="w-full text-center">
-              Approved
+              {t("approved")}
             </TabsTrigger>
           </TabsList>
 

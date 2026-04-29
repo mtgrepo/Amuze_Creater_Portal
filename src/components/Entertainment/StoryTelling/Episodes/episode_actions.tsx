@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { AudioView } from "@/components/common/audio_view";
 import type { StoryEpisodeResponse } from "@/types/response/entertainment/storytelling/storytellingResponse";
+import { useTranslation } from "react-i18next";
 
 interface EpisodeActionsProps {
   episode: StoryEpisodeResponse;
@@ -24,6 +25,7 @@ interface EpisodeActionsProps {
 export default function EpisodeActions({ episode, titleId, titleName }: EpisodeActionsProps) {
   const navigate = useNavigate();
   const [showAudio, setShowAudio] = React.useState(false);
+  const {t} = useTranslation();
   const handleEditEpisode = () => {
     navigate(`/entertainment/storytelling/${titleId}/episode/edit/${episode?.id}`, {
       state: {
@@ -49,11 +51,11 @@ export default function EpisodeActions({ episode, titleId, titleName }: EpisodeA
 
 
           <DropdownMenuItem onSelect={handleEditEpisode}>
-            <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
+            <ClipboardPenLine className="mr-2 h-4 w-4" /> {t("edit")}
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={() => setShowAudio(true)}>
-            <FileMusic className="mr-2 h-4 w-4" /> Audio
+            <FileMusic className="mr-2 h-4 w-4" /> {t("episode_form.audio")}
 
           </DropdownMenuItem>
         </DropdownMenuContent>

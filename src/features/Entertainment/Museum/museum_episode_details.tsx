@@ -2,11 +2,14 @@ import { Status } from "@/components/common/status";
 import { Button } from "@/components/ui/button";
 import { useMuseumEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumEpisodeDetailsQuery";
 import { ArrowLeft, Eye, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MuseumEpisodeDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const {t} = useTranslation();
+    const {museumId, titleId} = useParams();
 
     const { episodeDetails, isEpisodeLoading } =
         useMuseumEpisodeDetailsQuery(Number(id));
@@ -38,11 +41,11 @@ export default function MuseumEpisodeDetails() {
                 <div className="flex items-center">
                     <Button
                         variant="outline"
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate(`/entertainment/museum/${museumId}/title/details/${titleId}`)}
                         className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
                     >
                         <ArrowLeft size={18} />
-                        Back
+                        {t('back')}
                     </Button>
                 </div>
                 <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
@@ -74,7 +77,7 @@ export default function MuseumEpisodeDetails() {
                 <div className="bg-card border border-border p-6 rounded-3xl">
                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                         <span className="w-1 h-6 bg-primary rounded-full" />
-                        Images
+                        {t('images')}
                     </h3>
 
                     {episodeDetails.files_path?.length > 0 ? (

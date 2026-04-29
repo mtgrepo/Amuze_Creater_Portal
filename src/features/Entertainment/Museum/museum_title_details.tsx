@@ -4,7 +4,6 @@ import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/Museum/Episodes/episode_actions";
 import { Button } from "@/components/ui/button";
 import { useMuseumTitleDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumTitleDetailQuery";
-import router from "@/router/routes";
 import {
   ArrowLeft,
   CircleCheckBig,
@@ -14,11 +13,13 @@ import {
   ThumbsUp,
   XCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MuseumTitleDetails() {
   const { museumId, titleId } = useParams();
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const { titleDetails, isTitleLoading, error } =
     useMuseumTitleDetailsQuery(Number(titleId));
@@ -53,7 +54,7 @@ export default function MuseumTitleDetails() {
                         className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
                     >
                         <ArrowLeft size={18} />
-                        Back
+                        {t("back")}
                     </Button>
                 </div>
         <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
@@ -82,7 +83,7 @@ export default function MuseumTitleDetails() {
         <div className="bg-card border border-border p-6 rounded-3xl">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t("description")}
           </h3>
 
           {titleDetails.description ? (
@@ -96,16 +97,16 @@ export default function MuseumTitleDetails() {
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Episodes</h2>
+            <h2 className="text-xl font-bold">{t('episode_list')}</h2>
 
             <Button
               onClick={() =>
-                router.navigate(
+                navigate(
                   `/entertainment/museum/${museumId}/title/${titleId}/episode/create`
                 )
               }
             >
-              Add Episode
+              {t("add_new_episode")}
             </Button>
           </div>
 

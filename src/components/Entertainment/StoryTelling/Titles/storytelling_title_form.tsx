@@ -35,6 +35,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import ConfirmCard from "../../../common/confirm_card";
 import { useTranslation } from "react-i18next";
+import RequiredLabel from "@/components/common/required_label";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
@@ -65,6 +68,7 @@ export default function StoryTellingTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
+  const navigate = useNavigate();
     const resetToken = useRef(defaultValues?.id);
     const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
@@ -111,6 +115,29 @@ export default function StoryTellingTitleForm({
     form.setValue("created_by", creatorId)
    }
   }, [defaultValues, mode, creatorId, form]);
+
+  const { t } = useTranslation();
+
+  const {isDirty, isSubmitting, isSubmitSuccessful} = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && 
+      !isSubmitSuccessful &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+    useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
 
   const onSubmit = async (values: TitleFormValues) => {
@@ -181,7 +208,6 @@ export default function StoryTellingTitleForm({
     }
   };
 
-  const { t } = useTranslation();
 
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
@@ -206,7 +232,7 @@ export default function StoryTellingTitleForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      {t('thumbnail')}
+                      <RequiredLabel label={t('thumbnail')}/>
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -229,7 +255,7 @@ export default function StoryTellingTitleForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('title')}</FormLabel>
+                      <FormLabel><RequiredLabel label={t('title')}/></FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Title Name" {...field} />
                       </FormControl>
@@ -244,7 +270,9 @@ export default function StoryTellingTitleForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('description')}</FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label={t('description')}/>
+                      </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -272,7 +300,7 @@ export default function StoryTellingTitleForm({
 
                   return (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-base">{t('genres')}</FormLabel>
+                      <FormLabel className="text-base"><RequiredLabel label={t('genres')}/></FormLabel>
                       <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-muted/5 min-h-25">
                         {genresList?.length ? (
                           genresList.map((g: any) => {
@@ -316,7 +344,7 @@ export default function StoryTellingTitleForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      {t('horizontal_thumbnail')}
+                      <RequiredLabel label={t('horizontal_thumbnail')}/>                   
                     </FormLabel>
                     <FormControl>
                       <div className="mt-2">
@@ -341,7 +369,7 @@ export default function StoryTellingTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                navigate("/entertainment/storytelling")
               }}
             >
               {t('cancel')}
@@ -405,6 +433,7 @@ export default function StoryTellingTitleForm({
               </AlertDialogContent>
             </AlertDialog>
           </div>
+          <NavigateConfirmDialog blocker={blocker}/>
         </form>
       </Form>
     </div>

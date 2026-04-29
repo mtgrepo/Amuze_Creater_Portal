@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePostQuery } from "@/composable/Query/Entertainment/Posts/usePostQuery";
 import { PostTable } from "@/components/Entertainment/Post/post_table";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function PostLayout() {
   const [tab, setTab] = React.useState<"all" | "banned">("all");
@@ -14,6 +15,7 @@ export default function PostLayout() {
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handlePaginationChange = (newPage: number, newPageSize: number) => {
     setPage(newPage);
@@ -31,13 +33,16 @@ export default function PostLayout() {
     <div className="flex flex-1 flex-col gap-4 px-4">
       <div className="w-full mt-5">
         <div className="flex flex-row justify-end gap-3">
- <Button size="sm" className="cursor-pointer" onClick={() => navigate("/entertainment/posts/create")}>
-          <CirclePlus className="mr-2 h-4 w-4" />
-          Create Post
-        </Button>
+          <Button
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => navigate("/entertainment/posts/create")}
+          >
+            <CirclePlus className="mr-2 h-4 w-4" />
+            {t("post.create")}
+          </Button>
         </div>
       </div>
-
 
       <div className="border p-3 rounded-lg space-y-3">
         <Tabs
@@ -50,10 +55,10 @@ export default function PostLayout() {
             variant={"line"}
           >
             <TabsTrigger value="all" className="w-full text-center">
-              Active
+              {t("active_status")}
             </TabsTrigger>
             <TabsTrigger value="banned" className="w-full text-center">
-              Banned
+              {t("banned_status")}
             </TabsTrigger>
           </TabsList>
 

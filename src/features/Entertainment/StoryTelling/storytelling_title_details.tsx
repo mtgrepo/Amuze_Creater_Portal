@@ -26,10 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export default function StoryTellingTitleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const {
     storyTellingTitleDetails: story,
@@ -73,7 +75,7 @@ export default function StoryTellingTitleDetails() {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            Back
+            {t("back")}
           </Button>
         </div>
 
@@ -134,7 +136,7 @@ export default function StoryTellingTitleDetails() {
         <div className="bg-card border border-border p-6 rounded-3xl">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t("description")}
           </h3>
           {story.description ? (
             <LongText text={story.description} />
@@ -147,7 +149,7 @@ export default function StoryTellingTitleDetails() {
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Episodes</h2>
+            <h2 className="text-xl font-bold">{t('episodes')}</h2>
             <Button
               onClick={() =>
                 navigate(`/entertainment/storytelling/${id}/episode/create`, {
@@ -155,7 +157,7 @@ export default function StoryTellingTitleDetails() {
                 })
               }
             >
-              Add Episode
+              {t("add_new_episode")}
             </Button>
           </div>
 
@@ -250,7 +252,6 @@ export default function StoryTellingTitleDetails() {
         </div>
 
         <div className="bg-card border border-border p-6 rounded-3xl">
-          <h3 className="text-xl font-bold mb-4">Reader Feedback</h3>
           <CommentsSection category="story" commentsList={commentsList} />
         </div>
       </div>

@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import LongText from "@/components/common/longtext";
+import { useTranslation } from "react-i18next";
 
 export default function PostColumns({ is_banned }: { is_banned: boolean }) {
   const navigate = useNavigate();
+    const { t } = useTranslation();
+  
 
   const columns: ColumnDef<PostResponse>[] = [
     {
-      header: "No",
+      header: t("no"),
       cell: ({ row, table }) => {
         const pageIndex = table.getState().pagination.pageIndex;
         const pageSize = table.getState().pagination.pageSize;
@@ -27,7 +30,7 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
 
     {
       accessorKey: "description",
-      header: "Post Content",
+      header: t("description"),
       cell: ({ row }) => {
         const name = row.getValue("description") as string;
         return (
@@ -38,7 +41,8 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
       },
     },
     {
-      header: "Media",
+      accessorKey: "media",
+      header: t("post.media"),
       accessorFn: (row) => row.media,
       cell: ({ row }) => {
         const media = row.original.media || [];
@@ -90,7 +94,7 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
 
     {
       accessorKey: "view_count",
-      header: "Views",
+      header:  t('views'),
       cell: ({ row }) => {
         const views = row.getValue("view_count") as number;
         return <div>{views || 0}</div>;
@@ -141,14 +145,14 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
                 }
               >
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t("actions.view_details")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
                 onClick={() => navigate(`/entertainment/posts/edit/${post.id}`)}
               >
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {t("actions.edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

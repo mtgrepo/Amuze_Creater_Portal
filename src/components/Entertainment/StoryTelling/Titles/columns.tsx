@@ -9,12 +9,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { CircleCheckBig, Eye, MoreHorizontal, Pencil, XCircle } from "lucide-react";
+import {
+  CircleCheckBig,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  XCircle,
+} from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
+} from "@/components/ui/hover-card";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../i18n";
 import { useNavigate } from "react-router-dom";
@@ -24,12 +30,12 @@ export default function StoryTellingColumns() {
   const navigate = useNavigate();
   const columns: ColumnDef<StoryTellingTitleResponse>[] = [
     {
-      header: t('no'),
+      header: t("no"),
       cell: ({ row, table }) => {
         const pageIndex = table.getState().pagination.pageIndex;
         const pageSize = table.getState().pagination.pageSize;
-        if (i18n.language === 'en') {
-          <div>{pageIndex * pageSize + row.index + 1}</div>
+        if (i18n.language === "en") {
+          <div>{pageIndex * pageSize + row.index + 1}</div>;
         }
 
         return <div>{pageIndex * pageSize + row.index + 1}</div>;
@@ -39,20 +45,16 @@ export default function StoryTellingColumns() {
     },
     {
       accessorKey: "name",
-      header: t('title'),
+      header: t("title"),
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
 
-        return (
-          <div className="">
-            {name}
-          </div>
-        );
+        return <div className="">{name}</div>;
       },
     },
     {
       accessorKey: "description",
-      header: t('description'),
+      header: t("description"),
       cell: ({ row }) => {
         const name = row.getValue("description") as string;
 
@@ -65,7 +67,7 @@ export default function StoryTellingColumns() {
     },
     {
       accessorKey: "price",
-      header: t('price'),
+      header: t("price"),
       cell: ({ row }) => {
         const price = row.getValue("price") as number;
         return <div>{price ? price.toLocaleString() : "0"}</div>;
@@ -74,7 +76,7 @@ export default function StoryTellingColumns() {
     {
       accessorFn: (row) => row?.generes,
       id: "generes",
-      header: t('genres'),
+      header: t("genres"),
       cell: ({ row }) => {
         const genres = row.getValue("generes") as {
           id: number;
@@ -91,29 +93,29 @@ export default function StoryTellingColumns() {
             {visibleGenres.map((genre) => (
               <Badge key={genre.id}>{genre?.name}</Badge>
             ))}
-            {hasMore &&
+            {hasMore && (
               <HoverCard openDelay={100} closeDelay={200}>
                 <HoverCardTrigger className="cursor-pointer">
-                  <span className="text-gray-800 dark:text-gray-400 font-semibold italic">+ {hiddenGenres.length} more</span>
+                  <span className="text-gray-800 dark:text-gray-400 font-semibold italic">
+                    + {hiddenGenres.length} more
+                  </span>
                 </HoverCardTrigger>
                 <HoverCardContent side="right">
                   <div className="flex flex-wrap gap-2 max-w-xs">
                     {hiddenGenres.map((genre) => (
-                      <Badge key={genre.id}>
-                        {genre.name}
-                      </Badge>
+                      <Badge key={genre.id}>{genre.name}</Badge>
                     ))}
                   </div>
                 </HoverCardContent>
               </HoverCard>
-            }
+            )}
           </div>
         );
       },
     },
     {
       accessorKey: "views",
-      header: t('views'),
+      header: t("views"),
       cell: ({ row }) => {
         const views = row.getValue("views") as number;
         return <div>{views ? views.toLocaleString() : "0"}</div>;
@@ -121,7 +123,7 @@ export default function StoryTellingColumns() {
     },
     {
       accessorKey: "likes",
-      header: t('likes'),
+      header: t("likes"),
       cell: ({ row }) => {
         const likes = row.getValue("likes") as number;
         return <div>{likes ? likes.toLocaleString() : "0"}</div>;
@@ -129,7 +131,7 @@ export default function StoryTellingColumns() {
     },
     {
       accessorKey: "ratings",
-      header: t('rating'),
+      header: t("rating"),
       cell: ({ row }) => {
         const ratings = row.getValue("ratings") as number;
         return <div>{ratings ? ratings.toLocaleString() : "0"}</div>;
@@ -138,10 +140,10 @@ export default function StoryTellingColumns() {
     {
       accessorFn: (row) => ({
         approved: row.approve_status,
-        published: row.is_publish
+        published: row.is_publish,
       }),
       id: "status",
-      header: t('noti_status'),
+      header: t("noti_status"),
       cell: ({ row }) => {
         const approved = row.original.approve_status as number;
         const published = row.original.is_publish as boolean;
@@ -160,20 +162,24 @@ export default function StoryTellingColumns() {
           icon = <XCircle className="text-red-500 w-4 h-4" />;
         }
 
-        return <div className="relative group inline-block">
-          {icon}
+        return (
+          <div className="relative group inline-block">
+            {icon}
 
-          <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden group-hover:flex
+            <div
+              className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden group-hover:flex
                   max-w-xs wrap-break-word whitespace-normal rounded bg-gray-800 text-white text-xs 
-                  px-2 py-1 shadow-lg pointer-events-none">
-            {tooltip}
+                  px-2 py-1 shadow-lg pointer-events-none"
+            >
+              {tooltip}
+            </div>
           </div>
-        </div>;
+        );
       },
     },
     {
       accessorKey: "created_at",
-      header: t('date'),
+      header: t("date"),
       cell: ({ row }) => {
         const val = row.getValue("created_at") as string | null;
         return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
@@ -189,18 +195,18 @@ export default function StoryTellingColumns() {
           navigate(`/entertainment/storytelling/details/${title.id}`, {
             state: {
               titleName: title?.name,
-              titleId: title?.id
-            }
-          })
-        }
+              titleId: title?.id,
+            },
+          });
+        };
         const handleEditTitle = () => {
           navigate(`/entertainment/storytelling/edit/${title.id}`, {
             state: {
               titleName: title?.name,
-              titleId: title?.id
+              titleId: title?.id,
             },
-          })
-        }
+          });
+        };
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -212,18 +218,16 @@ export default function StoryTellingColumns() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleViewDetails}>
-                <Eye /> View Details
+                <Eye /> {t("actions.view_details")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleEditTitle}>
-                <Pencil /> Edit
+                <Pencil /> {t("actions.edit")}
               </DropdownMenuItem>
-
             </DropdownMenuContent>
           </DropdownMenu>
         );
       },
-    }
-
+    },
   ];
   return columns;
 }

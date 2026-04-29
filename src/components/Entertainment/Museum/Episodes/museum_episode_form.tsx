@@ -18,13 +18,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
 import ConfirmCard from "@/components/common/confirm_card";
 import { useMuseumEpisodeCreate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeCreate";
 import { useMuseumEpisodeUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeUpdate";
 import { useMuseumEpisodeThumbnailUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeThumbnailUpdate";
-
+import { useTranslation } from "react-i18next";
+import { useBlocker, useNavigate, useParams } from "react-router-dom";
+import RequiredLabel from "@/components/common/required_label";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
 
 const FileItemSchema = (mode: "add" | "edit") =>
   z
@@ -77,13 +87,16 @@ export default function MuseumEpisodeForm({
 }: TitleFormProps) {
   const resetToken = useRef(defaultValues?.id);
   const storedData = localStorage.getItem("creator");
-const loginCreator = storedData ? decryptAuthData(storedData) : null;
-const creatorId = loginCreator?.creator?.id;
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id;
 
+  const {museumId} = useParams();
+
+  const {t} = useTranslation();
+const navigate = useNavigate();
 
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
-  
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
@@ -108,21 +121,46 @@ const creatorId = loginCreator?.creator?.id;
     isCreatePending || isUpdatePending || isThumbnailUpdatePending;
 
   useEffect(() => {
-    if(mode === "edit" && defaultValues && defaultValues.id !== resetToken.current){
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues.id !== resetToken.current
+    ) {
       form.reset({
         titleId: defaultValues.titleId,
         name: defaultValues.name || "",
         description: defaultValues.description || "",
         thumbnail: defaultValues.thumbnail,
         museum_file: defaultValues.museum_file,
-        created_by: creatorId, 
+        created_by: creatorId,
       });
       resetToken.current = defaultValues.id;
     }
-   if(mode === "add" && creatorId){
-    form.setValue("created_by", creatorId)
-   }
+    if (mode === "add" && creatorId) {
+      form.setValue("created_by", creatorId);
+    }
   }, [defaultValues, mode, creatorId, form]);
+
+    const {isDirty, isSubmitting, isSubmitSuccessful} = form.formState;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting && 
+      !isSubmitSuccessful &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+    useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
@@ -193,12 +231,11 @@ const creatorId = loginCreator?.creator?.id;
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "add"
-                ? "Create New Museum Episode"
-                : "Edit Museum Episode Details"}
+                           {mode === "add" ? t('museum_episode.create_header') : t('museum_episode.update_header')}
+
             </h2>
             <p className="text-muted-foreground text-sm">
-              Fill in the information for your museum episode.
+              {mode === "add" ? t('museum_episode.create_header_description') : t('museum_episode.update_header_description')}
             </p>
           </div>
 
@@ -210,7 +247,7 @@ const creatorId = loginCreator?.creator?.id;
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      Thumbnail
+                      <RequiredLabel label={t('thumbnail')} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -233,7 +270,7 @@ const creatorId = loginCreator?.creator?.id;
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Museum</FormLabel>
+                      <FormLabel><RequiredLabel label={t('title')} /></FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter museum title name"
@@ -251,7 +288,7 @@ const creatorId = loginCreator?.creator?.id;
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel><RequiredLabel label={t('description')} /></FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -273,7 +310,7 @@ const creatorId = loginCreator?.creator?.id;
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Create Image, Label, and Description</FormLabel>
+                    <FormLabel>{t("museum_episode.create_image_description")}</FormLabel>
                     <FormControl>
                       <MuseumImageUploader
                         value={(field.value || []).map((item) => ({
@@ -299,10 +336,10 @@ const creatorId = loginCreator?.creator?.id;
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                navigate(`/entertainment/museum/${museumId}/title/details/${titleId}`)
               }}
             >
-              Cancel & Reset
+              {t('cancel')}
             </Button>
             <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -314,14 +351,14 @@ const creatorId = loginCreator?.creator?.id;
                   if (isValid) {
                     setConfirmDialog(true);
                   } else {
-                    toast.error("Please fill in all required fields correctly.");
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
                   }
                 }}
               >
-                {(isLoading) && (
-                  <Spinner className="mr-2 w-4 h-4" />
-                )}
-                {mode === "add" ? "Create Episode" : "Save Changes"}
+                {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                {mode === "add" ? t("create") : t("update")}
               </Button>
               <DialogContent className="max-w-md">
                 <DialogHeader>
@@ -336,7 +373,10 @@ const creatorId = loginCreator?.creator?.id;
                   </DialogDescription>
                 </DialogHeader>
 
-                <ConfirmCard name={form.getValues("name")} description={form.getValues("description")} />
+                <ConfirmCard
+                  name={form.getValues("name")}
+                  description={form.getValues("description")}
+                />
 
                 <DialogFooter className="sm:justify-center gap-2">
                   <Button
@@ -349,19 +389,17 @@ const creatorId = loginCreator?.creator?.id;
                   <Button
                     onClick={form.handleSubmit(onSubmit)}
                     className="flex-1"
-                    disabled={
-                      isLoading
-                    }
+                    disabled={isLoading}
                   >
-                    {(isLoading) && (
-                      <Spinner className="mr-2 w-4 h-4" />
-                    )}
-                    Confirm & {mode === "add" ? "Create Episode" : "Update Episode"}
+                    {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                    Confirm &{" "}
+                    {mode === "add" ? "Create Episode" : "Update Episode"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
+          <NavigateConfirmDialog blocker={blocker}/>
         </form>
       </Form>
     </div>

@@ -12,6 +12,7 @@ import { ClipboardPenLine, Info, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { MuseumTitleDetailResponse } from "@/types/response/entertainment/museum/museumTitleDetailResponse";
+import { useTranslation } from "react-i18next";
 
 interface TitleActionsProps {
   title: MuseumTitleDetailResponse;
@@ -20,6 +21,7 @@ interface TitleActionsProps {
 
 export default function TitleActions({title, museumId }: TitleActionsProps) {
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const handleEdit = () => {
     navigate(`/entertainment/museum/${museumId}/title/edit/${title?.id}`, {
@@ -52,11 +54,11 @@ export default function TitleActions({title, museumId }: TitleActionsProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onSelect={handleViewDetails}>
-          <Info className="mr-2 h-4 w-4" /> View Details
+          <Info className="mr-2 h-4 w-4" /> {t("actions.view_details")}
         </DropdownMenuItem>
 
         <DropdownMenuItem onSelect={handleEdit}>
-          <ClipboardPenLine className="mr-2 h-4 w-4" /> Edit
+          <ClipboardPenLine className="mr-2 h-4 w-4" /> {t("actions.edit")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

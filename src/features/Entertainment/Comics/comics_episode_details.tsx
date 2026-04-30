@@ -142,7 +142,7 @@ export default function ComicEpisodeDetails() {
             </div>
             <Separator className="my-4" />
           </CardHeader>
-          <CardContent className="px-0 sm:px-6 pb-6">
+          <CardContent className="flex-1 w-full overflow-auto min-w-0">
             <ImageCarousel images={images} />
           </CardContent>
         </Card>

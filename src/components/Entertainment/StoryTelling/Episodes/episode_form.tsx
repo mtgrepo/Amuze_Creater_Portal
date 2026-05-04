@@ -132,7 +132,7 @@ export default function StoryTellingEpisodeForm({
     } else if (mode === "add") {
       form.setValue("created_by", creatorId);
     }
-  }, [form, defaultValues, mode, creatorId]);
+  }, [form, defaultValues, mode, creatorId, titleId]);
 
   const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
   const blocker = useBlocker(

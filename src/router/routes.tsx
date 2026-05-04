@@ -619,7 +619,7 @@ const router = createBrowserRouter(
           },
         },
         {
-          path: "/entertainment/museum/:museumId/title/:titleId/episode/edit/:id",
+          path: "/entertainment/museum/:museumId/title/:titleId/episode/edit/:episodeId",
           element: <MuseumEpisodeUpdatePage />,
           handle: {
             crumb: ({ params }: any) => [
@@ -633,8 +633,8 @@ const router = createBrowserRouter(
                 href: `/entertainment/museum/${params?.museumId}/title/details/${params.titleId}`,
               },
               {
-                label: `Episode ${params?.id} Edit`,
-                href: `entertainment/museum/${params?.museumId}/title/${params?.titleId}/episode/${params?.id}`
+                label: `Episode ${params?.episodeId} Edit`,
+                href: `entertainment/museum/${params?.museumId}/title/${params?.titleId}/episode/${params?.episodeId}`
               },
               {
                 label: "Episode Edit"

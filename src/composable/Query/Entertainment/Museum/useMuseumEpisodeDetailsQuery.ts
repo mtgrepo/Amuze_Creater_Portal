@@ -2,11 +2,11 @@ import { getMuseumEpisodeDetail } from "@/http/apis/entertainment/museum/museumE
 import type { MuseumEpisode } from "@/types/response/entertainment/museum/museumEpisodeResponse";
 import { useQuery } from "@tanstack/react-query"
 
-export const useMuseumEpisodeDetailsQuery = (id: number) => {
+export const useMuseumEpisodeDetailsQuery = (episodeId: number) => {
     const museumEpisodeDetails = useQuery<MuseumEpisode>({
-        queryKey: ["museumEpisodeDetail", id],
-        queryFn: () => getMuseumEpisodeDetail(Number(id)),
-        enabled: !!id
+        queryKey: ["museumEpisodeDetail", episodeId],
+        queryFn: () => getMuseumEpisodeDetail(Number(episodeId)),
+        enabled: !!episodeId
     });
     return{
         episodeDetails:  museumEpisodeDetails.data,

@@ -89,11 +89,16 @@ export default function MuseumEpisodeForm({
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id;
+    const [imagesToRemove, setImagesToRemove] = useState<number[]>([]);
+      const [editedImages, setEditedImages] = useState<
+    { id: number; image: File; label?: string; description?: string }[]
+  >([]);
 
-  const {museumId} = useParams();
 
-  const {t} = useTranslation();
-const navigate = useNavigate();
+  const { museumId } = useParams();
+
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const formSchema = createFormSchema(mode);
   const [confirmDialog, setConfirmDialog] = useState(false);
@@ -107,7 +112,7 @@ const navigate = useNavigate();
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       thumbnail: defaultValues?.thumbnail || undefined,
-      museum_file: [],
+      museum_file: mode === "edit" ? defaultValues?.museum_file: [],
       created_by: creatorId,
     },
   });
@@ -141,17 +146,17 @@ const navigate = useNavigate();
     }
   }, [defaultValues, mode, creatorId, form]);
 
-    const {isDirty, isSubmitting, isSubmitSuccessful} = form.formState;
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       isDirty &&
-      !isSubmitting && 
+      !isSubmitting &&
       !isSubmitSuccessful &&
       currentLocation.pathname !== nextLocation.pathname,
   );
 
-    useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!isDirty) return;
 
@@ -231,11 +236,14 @@ const navigate = useNavigate();
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
-                           {mode === "add" ? t('museum_episode.create_header') : t('museum_episode.update_header')}
-
+              {mode === "add"
+                ? t("museum_episode.create_header")
+                : t("museum_episode.update_header")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              {mode === "add" ? t('museum_episode.create_header_description') : t('museum_episode.update_header_description')}
+              {mode === "add"
+                ? t("museum_episode.create_header_description")
+                : t("museum_episode.update_header_description")}
             </p>
           </div>
 
@@ -247,7 +255,7 @@ const navigate = useNavigate();
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center">
                     <FormLabel className="text-base font-semibold">
-                      <RequiredLabel label={t('thumbnail')} />
+                      <RequiredLabel label={t("thumbnail")} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -270,7 +278,9 @@ const navigate = useNavigate();
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel><RequiredLabel label={t('title')} /></FormLabel>
+                      <FormLabel>
+                        <RequiredLabel label={t("title")} />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter museum title name"
@@ -288,7 +298,9 @@ const navigate = useNavigate();
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel><RequiredLabel label={t('description')} /></FormLabel>
+                    <FormLabel>
+                      <RequiredLabel label={t("description")} />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What is this story about?"
@@ -310,9 +322,11 @@ const navigate = useNavigate();
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>{t("museum_episode.create_image_description")}</FormLabel>
+                    <FormLabel>
+                      {t("museum_episode.image_description")}
+                    </FormLabel>
                     <FormControl>
-                      <MuseumImageUploader
+                       <MuseumImageUploader
                         value={(field.value || []).map((item) => ({
                           localId: crypto.randomUUID(),
                           ...item,
@@ -320,6 +334,15 @@ const navigate = useNavigate();
                         onChange={field.onChange}
                         control={form.control}
                         name="museum_file"
+                        onDelete={(id) => {
+                          if (id) setImagesToRemove((prev) => [...prev, id]);
+                        }}
+                        onEdit={(id, image, label, description) => {
+                          setEditedImages((prev) => [
+                            ...prev.filter((img) => img.id !== id),
+                            { id, image, label, description },
+                          ]);
+                        }}
                         errors={form.formState.errors.museum_file as any}
                       />
                     </FormControl>
@@ -336,10 +359,12 @@ const navigate = useNavigate();
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                navigate(`/entertainment/museum/${museumId}/title/details/${titleId}`)
+                navigate(
+                  `/entertainment/museum/${museumId}/title/details/${titleId}`,
+                );
               }}
             >
-              {t('cancel')}
+              {t("cancel")}
             </Button>
             <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
               <Button
@@ -399,7 +424,7 @@ const navigate = useNavigate();
               </DialogContent>
             </Dialog>
           </div>
-          <NavigateConfirmDialog blocker={blocker}/>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

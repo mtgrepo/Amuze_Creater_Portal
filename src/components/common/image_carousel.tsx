@@ -22,15 +22,25 @@ export function ImageCarousel({ images }: { images: ImageItem[] }) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    if (!api) return;
-    const onSelect = () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    };
-    api.on("select", onSelect);
-    setCurrent(api.selectedScrollSnap() + 1);
-    return () => {api.off("select", onSelect)};
-  }, [api]);
+    useEffect(() => {
+        if (!api) return;
+
+        // Use a timeout to move the initial state update out of the synchronous execution thread
+        const timeoutId = setTimeout(() => {
+            setCurrent(api.selectedScrollSnap() + 1);
+        }, 0);
+
+        const onSelect = () => {
+            setCurrent(api.selectedScrollSnap() + 1);
+        };
+
+        api.on("select", onSelect);
+
+        return () => {
+            clearTimeout(timeoutId);
+            api.off("select", onSelect);
+        };
+    }, [api]);
 
   return (
     <div className="grid grid-cols-1 min-w-0 w-full relative mx-auto px-4 md:px-12">

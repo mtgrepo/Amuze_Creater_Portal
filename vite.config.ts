@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
 server: {
-  host: true,
+  // host: true,
     proxy: {
       // When the frontend calls "/api", Vite redirects it
       '/api': {

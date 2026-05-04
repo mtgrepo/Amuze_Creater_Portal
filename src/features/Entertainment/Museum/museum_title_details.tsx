@@ -1,10 +1,9 @@
+import Stat from "@/components/common/details_stat";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
-import { Status } from "@/components/common/status";
 import EpisodeActions from "@/components/Entertainment/Museum/Episodes/episode_actions";
 import { Button } from "@/components/ui/button";
 import { useMuseumTitleDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumTitleDetailQuery";
-import router from "@/router/routes";
 import {
   ArrowLeft,
   CircleCheckBig,
@@ -14,14 +13,17 @@ import {
   ThumbsUp,
   XCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MuseumTitleDetails() {
   const { museumId, titleId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const { titleDetails, isTitleLoading, error } =
-    useMuseumTitleDetailsQuery(Number(titleId));
+  const { titleDetails, isTitleLoading, error } = useMuseumTitleDetailsQuery(
+    Number(titleId),
+  );
 
   if (isTitleLoading) {
     return (
@@ -46,43 +48,56 @@ export default function MuseumTitleDetails() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
-                <div className="flex items-center">
-                    <Button
-                        variant="outline"
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-                    >
-                        <ArrowLeft size={18} />
-                        Back
-                    </Button>
-                </div>
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/entertainment/museum/details/${museumId}`)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft size={18} />
+            {t("back")}
+          </Button>
+        </div>
         <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
+          <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
+            <img
+              src={titleDetails.thumbnail}
+              alt={titleDetails.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-            <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
-              <img
-                src={titleDetails.thumbnail}
-                alt={titleDetails.name}
-                className="w-full h-full object-cover"
+          <div className="flex-1 space-y-4 text-center md:text-left">
+            <h1 className="text-2xl md:text-3xl font-black">
+              {titleDetails.name}
+            </h1>
+
+            <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">
+              <Stat
+                icon={
+                  <Star className="text-amber-400 fill-amber-400" size={20} />
+                }
+                value={titleDetails?.ratings ?? "0"}
+                label="Rating"
+              />
+              <Stat
+                icon={<Eye className="text-sky-400" size={20} />}
+                value={(titleDetails?.views ?? 0).toLocaleString()}
+                label="Views"
+              />
+              <Stat
+                icon={<ThumbsUp className="text-rose-400" size={20} />}
+                value={titleDetails?.likes ?? "0"}
+                label="Likes"
               />
             </div>
-
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-black">
-                {titleDetails.name}
-              </h1>
-
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status icon={<Star size={16} />} value={titleDetails.ratings} color="yellow" label="Rating" />
-                <Status icon={<Eye size={16} />} value={titleDetails.views} color="gray" label="Views" />
-                <Status icon={<ThumbsUp size={16} />} value={titleDetails.likes} color="blue" label="Likes" />
-              </div>
-            </div>
+          </div>
         </div>
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t("description")}
           </h3>
 
           {titleDetails.description ? (
@@ -96,16 +111,16 @@ export default function MuseumTitleDetails() {
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Episodes</h2>
+            <h2 className="text-xl font-bold">{t("episodes")}</h2>
 
             <Button
               onClick={() =>
-                router.navigate(
-                  `/entertainment/museum/${museumId}/title/${titleId}/episode/create`
+                navigate(
+                  `/entertainment/museum/${museumId}/title/${titleId}/episode/create`,
                 )
               }
             >
-              Add Episode
+              {t("add_new_episode")}
             </Button>
           </div>
 
@@ -120,7 +135,9 @@ export default function MuseumTitleDetails() {
 
                 if (approved === 1 && published) {
                   tooltip = "Approved & Published";
-                  icon = <CircleCheckBig className="w-5 h-5 text-emerald-500" />;
+                  icon = (
+                    <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                  );
                 } else if (approved === 1 && !published) {
                   tooltip = "Approved (Not Published)";
                   icon = <CircleCheckBig className="w-5 h-5 text-yellow-500" />;
@@ -156,7 +173,6 @@ export default function MuseumTitleDetails() {
                     </div>
 
                     <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
-
                       <IconWithTooltip tooltip={tooltip} icon={icon} />
 
                       <EpisodeActions
@@ -177,7 +193,6 @@ export default function MuseumTitleDetails() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

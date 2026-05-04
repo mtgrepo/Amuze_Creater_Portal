@@ -10,6 +10,7 @@ import { useState } from "react";
         </p>
       {isLong && (
         <button
+        type="button"
         onClick={() => setExpanded((prev) => !prev)}
           className="underline text-xs"
         >

@@ -11,17 +11,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import LongText from "@/components/common/longtext";
+import { useTranslation } from "react-i18next";
 
-export default function PostColumns({
-  is_banned,
-}: {
-  is_banned: boolean;
-}) {
+export default function PostColumns({ is_banned }: { is_banned: boolean }) {
   const navigate = useNavigate();
+    const { t } = useTranslation();
+  
 
   const columns: ColumnDef<PostResponse>[] = [
     {
-      header: "No",
+      header: t("no"),
       cell: ({ row, table }) => {
         const pageIndex = table.getState().pagination.pageIndex;
         const pageSize = table.getState().pagination.pageSize;
@@ -29,61 +28,65 @@ export default function PostColumns({
       },
     },
 
-   {
-  accessorKey: "description",
-  header: "Post Content",
-  cell: ({ row }) => {
-          const name = row.getValue("description") as string;
-          return (
-            <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
-          {name}
-        </div>
-          )
-  }
-},
     {
-      header: "Media",
+      accessorKey: "description",
+      header: t("description"),
+      cell: ({ row }) => {
+        const name = row.getValue("description") as string;
+        return (
+          <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
+            {name}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "media",
+      header: t("post.media"),
       accessorFn: (row) => row.media,
       cell: ({ row }) => {
         const media = row.original.media || [];
 
         if (media.length === 0) {
-          return <span className="text-muted-foreground text-xs">No Media</span>;
+          return (
+            <span className="text-muted-foreground text-xs">No Media</span>
+          );
         }
 
+        const firstItem = media[0];
+
         return (
-          <div className="relative h-12 w-12">
-            {media.slice(0, 3).map((m, i) => (
-              <div
-                key={m.url}
-                className="absolute h-10 w-10 border rounded overflow-hidden bg-background"
-                style={{
-                  top: i * 4,
-                  left: i * 4,
-                  zIndex: 10 - i,
-                }}
-              >
-                {m.type === "image" ? (
-                  <img
-                    src={m.url}
-                    className="w-full h-full object-cover"
+          <div className="relative h-10 w-10">
+            <div className="h-10 w-10 rounded-md overflow-hidden border bg-muted">
+              {firstItem.type === "image" ? (
+                <img
+                  src={firstItem.url}
+                  alt="preview"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="relative h-full w-full">
+                  <video
+                    src={firstItem.url}
+                    muted
+                    className="h-full w-full object-cover"
                   />
-                ) : (
-                  <>
-                    <video
-                      src={m.url}
-                      muted
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-background/60 p-1 rounded-full">
-                        <Play size={12} />
-                      </div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="bg-white/80 p-0.5 rounded-full shadow-sm">
+                      <Play size={10} className="fill-current text-black" />
                     </div>
-                  </>
-                )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {media.length > 1 && (
+              <div className="absolute -top-1 -right-1 bg-black/70 backdrop-blur-sm px-1.5 py-0.5 rounded-md flex items-center gap-0.5 border border-white/20 shadow-sm">
+                <span className="text-[9px] font-bold text-white leading-none">
+                  +{media.length - 1}
+                </span>
               </div>
-            ))}
+            )}
           </div>
         );
       },
@@ -91,7 +94,7 @@ export default function PostColumns({
 
     {
       accessorKey: "view_count",
-      header: "Views",
+      header:  t('views'),
       cell: ({ row }) => {
         const views = row.getValue("view_count") as number;
         return <div>{views || 0}</div>;
@@ -100,24 +103,24 @@ export default function PostColumns({
 
     ...(is_banned
       ? [
-          {
-            accessorKey: "ban_reason",
-            header: "Ban Reason",
-            cell: ({ row }: any) => (
-              <span>
-                <LongText text={row.getValue("ban_reason") || "-"} />
-              </span>
-            ),
-          },
-          {
-            accessorFn: (row: any) => row.bannedByUser?.name,
-            id: "bannedBy",
-            header: "Banned By",
-            cell: ({ row }: any) => (
-              <span>{row.original.bannedByUser?.name || "-"}</span>
-            ),
-          },
-        ]
+        {
+          accessorKey: "ban_reason",
+          header: "Ban Reason",
+          cell: ({ row }: any) => (
+            <span>
+              <LongText text={row.getValue("ban_reason") || "-"} />
+            </span>
+          ),
+        },
+        {
+          accessorFn: (row: any) => row.bannedByUser?.name,
+          id: "bannedBy",
+          header: "Banned By",
+          cell: ({ row }: any) => (
+            <span>{row.original.bannedByUser?.name || "-"}</span>
+          ),
+        },
+      ]
       : []),
 
     {
@@ -137,19 +140,20 @@ export default function PostColumns({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
               <DropdownMenuItem
-                onClick={() => navigate(`/entertainment/posts/details/${post.id}`)}
+                onClick={() =>
+                  navigate(`/entertainment/posts/details/${post.id}`)
+                }
               >
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t("actions.view_details")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
                 onClick={() => navigate(`/entertainment/posts/edit/${post.id}`)}
               >
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {t("actions.edit")}
               </DropdownMenuItem>
-
             </DropdownMenuContent>
           </DropdownMenu>
         );

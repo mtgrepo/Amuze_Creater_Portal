@@ -23,15 +23,15 @@ export default function NotificationPage() {
     throw new Error("Creator ID is missing");
   }
 
-  const creatorId = loginCreator.creator.id;
+  // const creatorId = loginCreator.creator.id;
   const [debouncedSearch] = useDebounce(search, 700);
 
-  const { notificationsList, isLoading } = useNotificationsQuery({
+  const { notifications, total, isLoading } = useNotificationsQuery({
     page,
-    pageSize: limit,
-    userId: Number(creatorId),
-    role_id: Number(loginCreator.creator.role_id),
-    is_read: false,
+    limit,
+    // userId: Number(creatorId),
+    // role_id: Number(loginCreator.creator.role_id),
+    // is_read: false,
   });
 
   const { markAllReadMutation } = useMarkAllReadCommand();
@@ -84,9 +84,8 @@ export default function NotificationPage() {
 
           <div className="my-6">
             <NotificationComponent
-              data={notificationsList?.notifications ?? []}
-              total={notificationsList?.total ?? 0}
-              totalPages={notificationsList?.totalPage ?? 0}
+              data={notifications ?? []}
+              total={total}
               page={page}
               limit={limit}
               onPaginationChange={handlePaginationChange}

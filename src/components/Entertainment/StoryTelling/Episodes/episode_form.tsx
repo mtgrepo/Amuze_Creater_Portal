@@ -20,7 +20,7 @@ import { useEpisodeCreateCommand } from "@/composable/Command/Entertainment/Stor
 import { useEpisodeUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeUpdateCommand";
 import { useEpisodeThumbnailUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeThumbnailUpdateCommand";
 import { useEpisodeAudioUpdateCommand } from "@/composable/Command/Entertainment/StoryTelling/useEpisodeAudioUpdateCommand";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { decryptAuthData } from "@/lib/helper";
 import { generateStoryEpisodePresignedUrl } from "@/http/apis/entertainment/storytelling/storyTellingEpisodeApi";
 import {
@@ -32,8 +32,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import ConfirmCard from "../../../common/confirm_card";
+import { useBlocker, useNavigate } from "react-router-dom";
+import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import { useTranslation } from "react-i18next";
+import RequiredLabel from "@/components/common/required_label";
 function createFormSchema(mode: "add" | "edit") {
   const imageSchema =
     mode === "add"
@@ -70,8 +74,16 @@ export default function StoryTellingEpisodeForm({
   onSuccess,
 }: EpisodeFormProps) {
   const [confirmDialog, setConfirmDialog] = useState(false);
+  const storedData = localStorage.getItem("creator");
+  const loginCreator = storedData ? decryptAuthData(storedData) : null;
+  const creatorId = loginCreator?.creator?.id || "";
+  const resetToken = useRef(defaultValues?.id);
+  const navigate = useNavigate();
+
+  const {t} = useTranslation();
 
   const formSchema = createFormSchema(mode);
+  
 
   const form = useForm<EpisodeFormValues>({
     resolver: zodResolver(formSchema),
@@ -80,10 +92,10 @@ export default function StoryTellingEpisodeForm({
     defaultValues: {
       name: defaultValues?.name || "",
       title_id: titleId,
-      price: defaultValues?.price ?? undefined,
+      price: defaultValues?.price ?? 0,
       thumbnail: defaultValues?.thumbnail,
       file_path: defaultValues?.file_path,
-      created_by: "",
+      created_by: creatorId,
     },
   });
 
@@ -103,17 +115,44 @@ export default function StoryTellingEpisodeForm({
     isUpdateEpisodeAudioPending;
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem("creator");
-      if (storedData) {
-        const loginCreator = decryptAuthData(storedData);
-        const id = loginCreator?.creator?.id;
-        if (id) form.setValue("created_by", id);
-      }
-    } catch (error) {
-      console.error("Auth sync error:", error);
+    if (
+      mode === "edit" &&
+      defaultValues &&
+      defaultValues?.id !== resetToken.current
+    ) {
+      form.reset({
+        name: defaultValues?.name || "",
+        title_id: titleId,
+        price: defaultValues?.price ?? 0,
+        thumbnail: defaultValues?.thumbnail,
+        file_path: defaultValues?.file_path,
+        created_by: creatorId,
+      });
+      resetToken.current = defaultValues.id;
+    } else if (mode === "add") {
+      form.setValue("created_by", creatorId);
     }
-  }, [form]);
+  }, [form, defaultValues, mode, creatorId]);
+
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSubmitting &&
+      !isSubmitSuccessful &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const onSubmit = async (values: EpisodeFormValues) => {
     try {
@@ -211,12 +250,12 @@ export default function StoryTellingEpisodeForm({
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight uppercase ">
-              {mode === "add" ? "New Episode" : "Edit Episode"}
+              {mode === "add" ? t('episode_form.create_title') : t('episode_form.update_title')}
             </h1>
             <p className="text-muted-foreground text-sm">
               {mode === "add"
-                ? "Create New Storytelling Episode"
-                : "Edit Storytelling Episode Details"}
+                ? t('story_telling_episode_form.create_header_description')
+                :  t('story_telling_episode_form.update_header_description')}
             </p>
           </div>
         </div>
@@ -231,7 +270,7 @@ export default function StoryTellingEpisodeForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center text-center">
                   <FormLabel className="text-sm uppercase font-bold tracking-widest text-muted-foreground mb-4">
-                    Episode Thumbnail
+                    <RequiredLabel label={t('episode_form.episode_cover')}/>
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -252,7 +291,9 @@ export default function StoryTellingEpisodeForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Episode Name</FormLabel>
+                  <FormLabel className="font-bold ">
+                    <RequiredLabel label={t('episode_form.episode_name')}/>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter episode name" {...field} />
                   </FormControl>
@@ -266,7 +307,9 @@ export default function StoryTellingEpisodeForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold ">Price</FormLabel>
+                  <FormLabel className="font-bold ">
+                    <RequiredLabel label={t('price')}/>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -285,7 +328,9 @@ export default function StoryTellingEpisodeForm({
               name="file_path"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="font-bold">Audio(MP3)</FormLabel>
+                  <FormLabel className="font-bold">
+                    <RequiredLabel label={t('episode_form.audio')}/>
+                  </FormLabel>
 
                   <FormControl>
                     <AudioUpload
@@ -307,31 +352,31 @@ export default function StoryTellingEpisodeForm({
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                toast.info("Form cleared");
+                navigate(`/entertainment/storytelling/details/${titleId}`)
               }}
             >
-              Cancle & Reset
+              {t('cancel')}
             </Button>
 
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
-                <Button
+              <Button
                 type="button"
-                  className="flex-1 cursor-pointer"
-                  onClick={async () => {
-                    const isValid = await form.trigger();
+                className="flex-1 cursor-pointer"
+                onClick={async () => {
+                  const isValid = await form.trigger();
 
-                    if (isValid) {
-                      setConfirmDialog(true);
-                    } else {
-                      toast.error("Please fill in all required fields correctly.");
-                    }
-                  }}
-                >
-                  {(isLoading) && (
-                    <Spinner className="mr-2 w-4 h-4" />
-                  )}
-                  {mode === "add" ? "Create Episode" : "Save Changes"}
-                </Button>
+                  if (isValid) {
+                    setConfirmDialog(true);
+                  } else {
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
+                  }
+                }}
+              >
+                {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                {mode === "add" ? t('create') : t('update')}
+              </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
@@ -345,7 +390,10 @@ export default function StoryTellingEpisodeForm({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} />
+                <ConfirmCard
+                  name={form.getValues("name")}
+                  price={form.getValues("price")}
+                />
 
                 <AlertDialogFooter className="sm:justify-center gap-2">
                   <AlertDialogCancel className="flex-1 cursor-pointer">
@@ -356,15 +404,15 @@ export default function StoryTellingEpisodeForm({
                     className="flex-1 cursor-pointer"
                     disabled={isLoading}
                   >
-                    {(isLoading) && (
-                      <Spinner className="mr-2 w-4 h-4" />
-                    )}
-                    Confirm & {mode === "add" ? "Create Episode" : "Update Episode"}
+                    {isLoading && <Spinner className="mr-2 w-4 h-4" />}
+                    Confirm &{" "}
+                    {mode === "add" ? "Create Episode" : "Update Episode"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           </div>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

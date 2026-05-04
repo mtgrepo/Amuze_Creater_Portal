@@ -1,17 +1,29 @@
+import Stat from "@/components/common/details_stat";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
-import { Status } from "@/components/common/status";
 import TitleActions from "@/components/Entertainment/Museum/Museum/title_actions";
 import { Button } from "@/components/ui/button";
 import { useMuseumDetailQuery } from "@/composable/Query/Entertainment/Museum/useMuseumDetailQuery";
 import { format } from "date-fns";
-import { ArrowLeft, CircleCheckBig, Eye, Loader2, Star, ThumbsUp, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleCheckBig,
+  Eye,
+  Loader2,
+  Star,
+  ThumbsUp,
+  XCircle,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MuseumDetails() {
   const { id } = useParams();
-  const { museumDetail, isDetailPending, error } = useMuseumDetailQuery(Number(id));
+  const { museumDetail, isDetailPending, error } = useMuseumDetailQuery(
+    Number(id),
+  );
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (isDetailPending) {
     return (
@@ -36,26 +48,27 @@ export default function MuseumDetails() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
-                <div className="flex items-center">
-                    <Button
-                        variant="outline"
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-                    >
-                        <ArrowLeft size={18} />
-                        Back
-                    </Button>
-                </div>
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/entertainment/museum")}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft size={18} />
+            {t("back")}
+          </Button>
+        </div>
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
           <div
             className="absolute inset-0 bg-cover bg-center scale-105"
-            style={{ backgroundImage: `url(${museumDetail.horizontal_thumbnail})` }}
+            style={{
+              backgroundImage: `url(${museumDetail.horizontal_thumbnail})`,
+            }}
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent" />
 
           <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center md:items-end">
-
             <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
               <img
                 src={museumDetail.thumbnail}
@@ -69,10 +82,24 @@ export default function MuseumDetails() {
                 {museumDetail.name}
               </h1>
 
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Status icon={<Star size={16} />} value={museumDetail.ratings} color="yellow" label="Rating" />
-                <Status icon={<Eye size={16} />} value={museumDetail.views} color="gray" label="Views" />
-                <Status icon={<ThumbsUp size={16} />} value={museumDetail.likes} color="blue" label="Likes" />
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">
+                <Stat
+                  icon={
+                    <Star className="text-amber-400 fill-amber-400" size={20} />
+                  }
+                  value={museumDetail?.ratings ?? "0"}
+                  label="Rating"
+                />
+                <Stat
+                  icon={<Eye className="text-sky-400" size={20} />}
+                  value={(museumDetail?.views ?? 0).toLocaleString()}
+                  label="Views"
+                />
+                <Stat
+                  icon={<ThumbsUp className="text-rose-400" size={20} />}
+                  value={museumDetail?.likes ?? "0"}
+                  label="Likes"
+                />
               </div>
             </div>
           </div>
@@ -81,31 +108,34 @@ export default function MuseumDetails() {
         <div className="bg-card border border-border p-6 rounded-3xl">
           <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
             <span className="w-1 h-6 bg-primary rounded-full" />
-            Description
+            {t("description")}
           </h3>
 
           {museumDetail.description ? (
             <LongText text={museumDetail.description} />
           ) : (
-            <p className="text-muted-foreground italic">No description available.</p>
+            <p className="text-muted-foreground italic">
+              No description available.
+            </p>
           )}
         </div>
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Title Lists</h2>
+            <h2 className="text-xl font-bold">{t("title_list")}</h2>
 
             <Button
               onClick={() =>
                 navigate(`/entertainment/museum/${id}/title/create`)
               }
             >
-              Add Title
+              {t("add_new_title")}
             </Button>
           </div>
 
           <div className="grid gap-3">
-            {museumDetail?.museum_title && museumDetail.museum_title.length > 0 ? (
+            {museumDetail?.museum_title &&
+            museumDetail.museum_title.length > 0 ? (
               museumDetail.museum_title.map((title: any, index: number) => (
                 <div
                   key={title.id}
@@ -141,14 +171,13 @@ export default function MuseumDetails() {
                     ) : (
                       <IconWithTooltip
                         tooltip="Approved"
-                        icon={<CircleCheckBig className="w-5 h-5 text-emerald-500" />}
+                        icon={
+                          <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                        }
                       />
                     )}
 
-                    <TitleActions
-                      title={title}
-                      museumId={museumDetail.id}
-                    />
+                    <TitleActions title={title} museumId={museumDetail.id} />
                   </div>
                 </div>
               ))
@@ -161,7 +190,6 @@ export default function MuseumDetails() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

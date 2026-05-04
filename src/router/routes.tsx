@@ -739,7 +739,7 @@ const router = createBrowserRouter(
       ),
     },
   ],
-  { basename: "/creator-portal" },
+  { basename: "/creator-portal/" },
 );
 
 export default router;

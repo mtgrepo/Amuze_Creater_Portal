@@ -24,14 +24,14 @@ import {
 } from "@/components/ui/table";
 
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
-import Paginator from "@/components/common/Pagination/paginator";
+// import Paginator from "@/components/common/Pagination/paginator";
 import type { Notification } from "@/types/response/notification/notificationResponse";
 import NotificationColumn from "./column";
 
 export type NotificationProps = {
   data: Notification[];
   total: number;
-  totalPages: number;
+  // totalPages: number;
   page: number;
   limit: number;
   onPaginationChange: (page: number, limit: number) => void;
@@ -47,7 +47,6 @@ export type NotificationProps = {
 
 export function NotificationComponent({
   data,
-  totalPages,
   isFetching = false,
   total,
   page,
@@ -180,14 +179,14 @@ export function NotificationComponent({
               }
             />
 
-            <Paginator
+            {/* <Paginator
               currentPage={page}
               totalPages={totalPages}
               onPageChange={(pageNumber) =>
                 onPaginationChange(pageNumber, limit)
               }
               showPreviousNext
-            />
+            /> */}
           </div>
         )}
       </div>

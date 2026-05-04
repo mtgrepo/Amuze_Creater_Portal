@@ -11,8 +11,8 @@ import { toast } from 'sonner'
 import { TooltipProvider } from './components/ui/tooltip.tsx'
 import './i18n.ts'
 import { Toaster } from './components/ui/sonner.tsx'
+import { registerServiceWorker } from './registerSW.ts'
 
-// Include Global Error Handler For Queries ( Mutation will be handled manually )
 const queryClient = new QueryClient(({
   queryCache: new QueryCache({
     onError: (error) => {
@@ -20,6 +20,8 @@ const queryClient = new QueryClient(({
     }
   })
 }));
+
+registerServiceWorker();
 
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>

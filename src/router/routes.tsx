@@ -708,7 +708,7 @@ const router = createBrowserRouter(
           },
         },
 
-        // Genres
+        // notification
         {
           path: "/notifications",
           element: <NotificationPage />,

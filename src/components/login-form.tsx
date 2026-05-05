@@ -21,6 +21,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useLoginCommand } from "@/composable/Command/auth/useLoginCommand";
 import { Spinner } from "./ui/spinner";
 import { requestPermissionAndGetToken } from "@/notification";
+import { Link } from "react-router-dom";
 
 const formSchema = z.object({
   emailOrPhone: z.string().min(1, { message: "Email is required." }),
@@ -55,9 +56,18 @@ export function LoginForm({
       if (fcmToken) {
         localStorage.setItem("fcm_token", fcmToken);
       }
-      // console.log("form values", values);
-    } catch (error) {
-      toast.error(`${error}`);
+    } catch (error: any) {
+      const message =
+        error?.message || "Login Failed!";
+
+      if (message === "Invalid password") {
+        form.setError("password", {
+          type: "manual",
+          message: "Incorrect password",
+        });
+      } else {
+        toast.error(message);
+      }
     }
   }
   return (
@@ -94,35 +104,48 @@ export function LoginForm({
                 <FormField
                   control={form.control}
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel htmlFor="password">Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            id="password"
-                            placeholder="Enter your password"
-                            type={isVisible ? "text" : "password"}
-                            className="pr-9"
-                            {...field}
-                          />
-                          <Button
-                            variant="ghost"
-                            type="button"
-                            size="icon"
-                            onClick={toggleVisibility}
-                            className="absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent"
-                          >
-                            {isVisible ? <EyeOffIcon /> : <EyeIcon />}
-                            <span className="sr-only">
-                              {isVisible ? "Hide password" : "Show password"}
-                            </span>
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const hasError = !!form.formState.errors.password;
+                    return (
+                      <FormItem>
+                        <FormLabel htmlFor="password">Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              id="password"
+                              placeholder="Enter your password"
+                              type={isVisible ? "text" : "password"}
+                              className="pr-9"
+                              {...field}
+                            />
+                            <Button
+                              variant="ghost"
+                              type="button"
+                              size="icon"
+                              onClick={toggleVisibility}
+                              className="absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent"
+                            >
+                              {isVisible ? <EyeIcon /> : <EyeOffIcon /> }
+                              <span className="sr-only">
+                                {isVisible ? "Hide password" : "Show password"}
+                              </span>
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                        {hasError && (
+                          <p className="text-sm text-right">
+                            <Link
+                              to="/forgot-password"
+                              className="text-primary hover:underline"
+                            >
+                              Forgot password?
+                            </Link>
+                          </p>
+                        )}
+                      </FormItem>
+                    )
+                  }}
                 />
                 <Field>
                   <Button type="submit" disabled={isPending}>

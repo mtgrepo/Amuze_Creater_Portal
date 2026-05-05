@@ -57,6 +57,9 @@ import PostsDetailPage from "@/features/Entertainment/Posts/post_details";
 import PostCreate from "@/features/Entertainment/Posts/post_create";
 import PostUpdate from "@/features/Entertainment/Posts/post_update";
 import PurchaseReport from "../features/Report/purchase_report";
+import RequestOTPForm from "@/components/request-otp-form";
+import VerifyOtpPage from "@/components/verify-otp-page";
+import ResetPasswordPage from "@/components/reset-password-page";
 
 const router = createBrowserRouter(
   [
@@ -729,6 +732,30 @@ path: "/entertainment/posts/edit/:id",
       element: (
         <PublicRoute>
           <LoginPage />
+        </PublicRoute>
+      ),
+    },
+     {
+      path: "/forgot-password",
+      element: (
+        <PublicRoute>
+          <RequestOTPForm />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/verify-otp",
+      element: (
+        <PublicRoute>
+          <VerifyOtpPage />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/reset-password",
+      element: (
+        <PublicRoute>
+          <ResetPasswordPage />
         </PublicRoute>
       ),
     },

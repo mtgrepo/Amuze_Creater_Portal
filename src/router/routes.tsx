@@ -57,6 +57,9 @@ import PostsDetailPage from "@/features/Entertainment/Posts/post_details";
 import PostCreate from "@/features/Entertainment/Posts/post_create";
 import PostUpdate from "@/features/Entertainment/Posts/post_update";
 import PurchaseReport from "../features/Report/purchase_report";
+import RequestOTPForm from "@/components/request-otp-form";
+import VerifyOtpPage from "@/components/verify-otp-page";
+import ResetPasswordPage from "@/components/reset-password-page";
 
 const router = createBrowserRouter(
   [
@@ -619,7 +622,7 @@ const router = createBrowserRouter(
           },
         },
         {
-          path: "/entertainment/museum/:museumId/title/:titleId/episode/edit/:id",
+          path: "/entertainment/museum/:museumId/title/:titleId/episode/edit/:episodeId",
           element: <MuseumEpisodeUpdatePage />,
           handle: {
             crumb: ({ params }: any) => [
@@ -633,8 +636,8 @@ const router = createBrowserRouter(
                 href: `/entertainment/museum/${params?.museumId}/title/details/${params.titleId}`,
               },
               {
-                label: `Episode ${params?.id} Edit`,
-                href: `entertainment/museum/${params?.museumId}/title/${params?.titleId}/episode/${params?.id}`
+                label: `Episode ${params?.episodeId} Edit`,
+                href: `entertainment/museum/${params?.museumId}/title/${params?.titleId}/episode/${params?.episodeId}`
               },
               {
                 label: "Episode Edit"
@@ -729,6 +732,30 @@ path: "/entertainment/posts/edit/:id",
       element: (
         <PublicRoute>
           <LoginPage />
+        </PublicRoute>
+      ),
+    },
+     {
+      path: "/forgot-password",
+      element: (
+        <PublicRoute>
+          <RequestOTPForm />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/verify-otp",
+      element: (
+        <PublicRoute>
+          <VerifyOtpPage />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/reset-password",
+      element: (
+        <PublicRoute>
+          <ResetPasswordPage />
         </PublicRoute>
       ),
     },

@@ -1,36 +1,29 @@
-import { useState } from "react";
 import { useComicEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Comics/useComicsEpisodeDetailsQuery";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  ChevronRight,
   Users,
   Banknote,
   Eye,
   ArrowLeft,
-  ChevronLeft,
   Loader2,
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
 import { Separator } from "../../../components/ui/separator";
 import { t } from "i18next";
+import { ImageCarousel } from "../../../components/common/image_carousel";
+import StatusCard from "../../../components/common/details_page_stats_card";
 
 export default function ComicEpisodeDetails() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Viewer State
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const titleId = location.state?.titleId;
 
   const { episodeDetails, isLoading } = useComicEpisodeDetailsQuery(
@@ -42,53 +35,40 @@ export default function ComicEpisodeDetails() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        <p className="text-gray-400">Loading comic details...</p>
+        <p className="text-muted-foreground animate-pulse">Loading comic details...</p>
       </div>
     );
   }
 
-  if (!episodeDetails) {
-    return (
-      <div className="min-h-screen flex items-center justify-center ">
-        <p>Episode details not found.</p>
-      </div>
-    );
-  }
+  if (!episodeDetails) return <div className="p-10 text-center">Not found</div>;
 
   const images = episodeDetails.files_path || [];
 
-  const handleNext = () => {
-    if (currentImageIndex < images.length - 1) {
-      setCurrentImageIndex((prev) => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex((prev) => prev - 1);
-    }
-  };
-
   return (
     <div className="min-h-screen">
+      {/* Container with responsive padding */}
       <div className="max-w-7xl mx-auto space-y-6 px-6">
+        
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
           className="cursor-pointer"
         >
-          <ArrowLeft className=" h-4 w-4" />
-          Back to {location.state?.titleName}
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          <span className="truncate max-w-50 sm:max-w-none">
+            Back to {location.state?.titleName}
+          </span>
         </Button>
-        {/* HERO CARD */}
-        <div className="relative overflow-hidden rounded-2xl border border-border min-h-75  bg-zinc-400 dark:bg-zinc-900">
+
+        {/* HERO CARD - Responsive Flex and Padding */}
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-zinc-900 shadow-xl">
           <div
-            className="absolute inset-0 opacity-30  dark:grayscale-[0.5] blur-sm bg-cover bg-center"
+            className="absolute inset-0 opacity-20 blur-xl scale-110 bg-cover bg-center"
             style={{ backgroundImage: `url(${episodeDetails.thumbnail})` }}
           />
 
-          <div className="relative flex flex-col md:flex-row gap-8 p-8 h-full items-center ">
-            <div className="w-40 h-56 rounded-xl border-2 border-border overflow-hidden shadow-2xl shrink-0">
+          <div className="relative flex flex-col sm:flex-row gap-6 p-6 md:p-10 items-center sm:items-start">
+            <div className="w-48 h-64 md:w-56 md:h-80 rounded-xl border-2 border-white/10 overflow-hidden shadow-2xl shrink-0">
               <img
                 src={episodeDetails.thumbnail}
                 alt={episodeDetails.name}
@@ -96,32 +76,32 @@ export default function ComicEpisodeDetails() {
               />
             </div>
 
-            <div className="flex-1 space-y-6 text-center md:text-left">
+            <div className="flex-1 space-y-6 text-center sm:text-left">
               <div>
-                <h1 className="text-xl lg:text-2xl font-bold tracking-tight mb-2 uppercase text-white my-6">
-                  {episodeDetails.name || `Comic ${id}`}
+                <h1 className="text-2xl md:text-4xl font-black tracking-tight text-white uppercase leading-tight">
+                  {episodeDetails.name || `Episode ${id}`}
                 </h1>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-6 my-6">
-                  <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-4 md:gap-8 mt-6">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 mb-1 font-bold">
                       {t('price')}
                     </span>
-                    <div className="flex items-center gap-2 text-green-400 font-bold text-xl">
-                      <Banknote size={20} />
+                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-lg md:text-2xl">
+                      <Banknote className="w-5 h-5 md:w-6 md:h-6" />
                       <span>{episodeDetails.price ?? 0} Ks</span>
                     </div>
                   </div>
-                  <div className="h-10 w-px bg-white/10 hidden md:block" />
-                  <div className="flex flex-col items-center md:items-start">
-                    <span className=" text-xs uppercase tracking-widest mb-1 font-semibold">
+                  
+                  <div className="hidden sm:block h-12 w-px bg-white/10" />
+
+                  <div className="flex flex-col">
+                    <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 mb-1 font-bold">
                       {t('views')}
                     </span>
-                    <div className="flex items-center gap-2 text-primary dark:text-blue-400 font-bold text-xl">
-                      <Eye size={20} />
-                      <span>
-                        {(episodeDetails.views ?? 0).toLocaleString()}
-                      </span>
+                    <div className="flex items-center gap-2 text-sky-400 font-bold text-lg md:text-2xl">
+                      <Eye className="w-5 h-5 md:w-6 md:h-6" />
+                      <span>{(episodeDetails.views ?? 0).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -130,99 +110,41 @@ export default function ComicEpisodeDetails() {
           </div>
         </div>
 
-        {/* STATS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
-            <div className="absolute top-0 right-0 p-4 text-primary opacity-5 group-hover:opacity-10 transition-opacity">
-              <TrendingUp size={120} />
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="bg-primary/10 p-5 rounded-2xl text-primary ring-1 ring-primary/20">
-                <Users size={32} />
-              </div>
-              <div>
-                <p className="text-muted-foreground font-medium">
-                  {t('total_sales')}
-                </p>
-                <h3 className="text-4xl font-black text-foreground tracking-tighter">
-                  {episodeDetails.total_sales || 0}
-                </h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="group relative bg-card border border-border p-8 rounded-3xl overflow-hidden transition-all hover:border-green-500/50 hover:shadow-lg">
-            <div className="absolute top-0 right-0 p-4 text-green-500 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Banknote size={120} />
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="bg-green-500/10 p-5 rounded-2xl text-green-500 ring-1 ring-green-500/20">
-                <Banknote size={32} />
-              </div>
-              <div>
-                <p className="text-muted-foreground font-medium">
-                  {t('total_revenue')}
-                </p>
-                <h3 className="text-4xl font-black text-foreground tracking-tighter">
-                  {(episodeDetails.total_sales_amount || 0).toLocaleString()}{" "}
-                  <span className="text-lg font-normal text-muted-foreground">
-                    Ks
-                  </span>
-                </h3>
-              </div>
-            </div>
-          </div>
+        {/* STATS GRID - 1 col on small, 2 on medium */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <StatusCard
+            icon={<Users size={32} />} 
+            label={t('total_sales')} 
+            value={episodeDetails.total_sales} 
+            color="primary"
+            bgIcon={<TrendingUp size={120} />}
+          />
+          <StatusCard 
+            icon={<Banknote size={32} />} 
+            label={t('total_revenue')} 
+            value={episodeDetails.total_sales_amount} 
+            suffix="Ks"
+            color="green"
+            bgIcon={<Banknote size={120} />}
+          />
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('episode_form.comics_pages')}</CardTitle>
-            <Separator />
-            <CardDescription>
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handlePrev}
-                  disabled={currentImageIndex === 0}
-                >
-                  <ChevronLeft size={20} />
-                </Button>
-
-                <span className="text-sm font-medium min-w-25 text-center">
-                  Page {currentImageIndex + 1} of {images.length}
+        {/* CAROUSEL SECTION */}
+        <Card className="border-none bg-transparent shadow-none sm:bg-card sm:border sm:shadow-sm">
+          <CardHeader className="px-2 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <CardTitle className="text-xl">{t('episode_form.comics_pages')}</CardTitle>
+              <div className="flex items-center gap-3 bg-muted/50 p-1 rounded-lg self-start sm:self-auto">
+                <span className="text-xs font-bold px-3">
+                  {images.length} PAGES
                 </span>
-
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handleNext}
-                  disabled={currentImageIndex === images.length - 1}
-                >
-                  <ChevronRight size={20} />
-                </Button>
               </div>
-            </CardDescription>
-            <CardContent>
-              <ScrollArea className="flex-1 w-full ">
-                <div className="flex items-start justify-center p-4 min-h-full">
-                  {images.length > 0 ? (
-                    <img
-                      src={images[currentImageIndex].url}
-                      alt={`Page ${currentImageIndex + 1}`}
-                      className="max-w-full max-h-[80vh] object-contain shadow-2xl"
-                    />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-zinc-500">
-                      No pages available
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
+            </div>
+            <Separator className="my-4" />
           </CardHeader>
+          <CardContent className="flex-1 w-full overflow-auto min-w-0">
+            <ImageCarousel images={images} />
+          </CardContent>
         </Card>
       </div>
     </div>

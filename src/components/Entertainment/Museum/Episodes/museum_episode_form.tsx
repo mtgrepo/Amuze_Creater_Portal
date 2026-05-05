@@ -89,10 +89,10 @@ export default function MuseumEpisodeForm({
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id;
-    const [imagesToRemove, setImagesToRemove] = useState<number[]>([]);
-      const [editedImages, setEditedImages] = useState<
-    { id: number; image: File; label?: string; description?: string }[]
-  >([]);
+  //   const [imagesToRemove, setImagesToRemove] = useState<number[]>([]);
+  //     const [editedImages, setEditedImages] = useState<
+  //   { id: number; image: File; label?: string; description?: string }[]
+  // >([]);
 
 
   const { museumId } = useParams();
@@ -334,15 +334,15 @@ export default function MuseumEpisodeForm({
                         onChange={field.onChange}
                         control={form.control}
                         name="museum_file"
-                        onDelete={(id) => {
-                          if (id) setImagesToRemove((prev) => [...prev, id]);
-                        }}
-                        onEdit={(id, image, label, description) => {
-                          setEditedImages((prev) => [
-                            ...prev.filter((img) => img.id !== id),
-                            { id, image, label, description },
-                          ]);
-                        }}
+                        // onDelete={(id) => {
+                        //   if (id) setImagesToRemove((prev) => [...prev, id]);
+                        // }}
+                        // onEdit={(id, image, label, description) => {
+                        //   setEditedImages((prev) => [
+                        //     ...prev.filter((img) => img.id !== id),
+                        //     { id, image, label, description },
+                        //   ]);
+                        // }}
                         errors={form.formState.errors.museum_file as any}
                       />
                     </FormControl>

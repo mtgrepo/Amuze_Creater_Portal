@@ -21,7 +21,7 @@ export default function WelcomeBanner() {
         <Spotlight />
 
         {/* CONTENT (on top) */}
-        <div className="relative z-10 h-full flex flex-col md:flex-row items-center justify-between px-6">
+        <div className="relative h-full flex flex-col md:flex-row items-center justify-between px-6">
 
           {/* LEFT: TEXT */}
           <div className=" text-center md:text-left space-y-3">

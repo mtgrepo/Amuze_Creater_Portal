@@ -1,13 +1,13 @@
 import { Calendar, ImageIcon } from "lucide-react";
 import type { ProfileHistory } from "@/types/response/auth/loginCreatorResponse";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface ProfileHistoryProps {
   history?: ProfileHistory[];
 }
 
 export default function ProfileHistoryComponent({ history }: ProfileHistoryProps) {
-    console.log("profile data", history)
-    // const profile = history?.photos;
+
   if (!history || history?.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-card rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 mt-5">
@@ -26,6 +26,7 @@ export default function ProfileHistoryComponent({ history }: ProfileHistoryProps
         </span>
       </div>
 
+      <ScrollArea className="h-100">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {history.map((item) => (
           <div 
@@ -57,6 +58,7 @@ export default function ProfileHistoryComponent({ history }: ProfileHistoryProps
           </div>
         ))}
       </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -10,6 +10,7 @@ export default function MuseumEpisodeDetails() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { museumId, titleId } = useParams();
+  
 
   const { episodeDetails, isEpisodeLoading } = useMuseumEpisodeDetailsQuery(
     Number(id),
@@ -34,10 +35,10 @@ export default function MuseumEpisodeDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 space-y-6">
         <div className="flex items-center">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() =>
               navigate(
                 `/entertainment/museum/${museumId}/title/details/${titleId}`,

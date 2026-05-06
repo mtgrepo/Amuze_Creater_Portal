@@ -67,15 +67,15 @@ export default function StoryTellingTitleDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 space-y-6">
         <div className="flex items-center">
           <Button
-            variant="outline"
-            onClick={() => navigate(-1)}
+            variant="ghost"
+            onClick={() => navigate('/entertainment/storytelling')}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            {t("back")}
+            Back to StoryTelling
           </Button>
         </div>
 

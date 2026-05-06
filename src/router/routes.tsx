@@ -81,6 +81,12 @@ const router = createBrowserRouter(
           element: <NotFound />,
           handle: { crumb: "Not Found" },
         },
+        //test
+        // {
+        //   path: "/test",
+        //   element: <ImageCarousel />,
+        //   handle: { crumb: "Test" },
+        // },
         // Report
         {
           path: "/report/author",
@@ -685,7 +691,7 @@ const router = createBrowserRouter(
           },
         },
         {
-path: "/entertainment/posts/edit/:id",
+          path: "/entertainment/posts/edit/:id",
           element: <PostUpdate />,
           handle: {
             crumb: [
@@ -705,7 +711,7 @@ path: "/entertainment/posts/edit/:id",
           },
         },
 
-        // Genres
+        // notification
         {
           path: "/notifications",
           element: <NotificationPage />,

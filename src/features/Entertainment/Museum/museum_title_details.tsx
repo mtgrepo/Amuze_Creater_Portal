@@ -47,15 +47,15 @@ export default function MuseumTitleDetails() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 space-y-6">
         <div className="flex items-center">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => navigate(`/entertainment/museum/details/${museumId}`)}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            {t("back")}
+            Back to Museum
           </Button>
         </div>
         <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">

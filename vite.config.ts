@@ -19,6 +19,7 @@ server: {
       '/api': {
         target: 'https://uat.api.amuze.com.mm/api/', 
                 // target: 'http://localhost:7000/api/', 
+
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

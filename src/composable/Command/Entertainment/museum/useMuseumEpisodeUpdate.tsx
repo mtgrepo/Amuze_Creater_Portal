@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export const useMuseumEpisodeUpdate = () => {
   const queryClient = useQueryClient();
-  const { id, museumId } = useParams();
+  const { titleId, museumId, episodeId } = useParams();
   const navigate = useNavigate();
   const updateMutation = useMutation({
     mutationFn: async ({
@@ -18,9 +18,10 @@ export const useMuseumEpisodeUpdate = () => {
       return await updateMuseumEpisode(episodeId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["museumTitleDetail"] });
+      // queryClient.invalidateQueries({ queryKey: ["museumTitleDetail"] });
+      queryClient.invalidateQueries({queryKey: ["museumEpisodeDetail", episodeId]});
       toast.success(`Museum episode updated successfully`);
-      navigate(`/entertainment/museum/${museumId}/title/details/${id}`, {
+      navigate(`/entertainment/museum/${museumId}/title/details/${titleId}`, {
         replace: true,
       });
     },

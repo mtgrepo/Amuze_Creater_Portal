@@ -29,7 +29,7 @@ const CreatorNotiDropdown = () => {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside); // Cleanup
-  }, []);
+  }, [closeDropdown]);
 
 
   const handleNotificationItem = (noti: any) => {

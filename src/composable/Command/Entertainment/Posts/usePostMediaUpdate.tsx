@@ -1,6 +1,5 @@
 import {updatePostMedia } from "@/http/apis/entertainment/posts/postApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export const usePostMediaUpdate = () => {
   const queryClient = useQueryClient();
@@ -12,9 +11,9 @@ export const usePostMediaUpdate = () => {
       queryClient.invalidateQueries({ queryKey: ["postList"] });
       queryClient.invalidateQueries({ queryKey: ["postDetail"] });
     },
-    onError: (error:any) => {
-      toast.error(error?.response?.data?.message || "Failed to update post media");
-    }
+    // onError: (error:any) => {
+    //   toast.error(error?.response?.data?.message || "Failed to update post media");
+    // }
   });
 
   return {

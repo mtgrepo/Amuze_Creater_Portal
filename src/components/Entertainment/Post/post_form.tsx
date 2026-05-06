@@ -27,7 +27,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { usePostCreate } from "@/composable/Command/Entertainment/Posts/usePostCreate";
 import { usePostUpdate } from "@/composable/Command/Entertainment/Posts/usePostUpdate";
@@ -44,6 +43,7 @@ import { useTranslation } from "react-i18next";
 import { useBlocker, useNavigate } from "react-router-dom";
 import RequiredLabel from "@/components/common/required_label";
 import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import { usePostMediaDelete } from "@/composable/Command/Entertainment/Posts/usePostMediaDelete";
 
 function normalizeMedia(media: any[] = []) {
   return media.map((m) => ({
@@ -97,15 +97,18 @@ export default function PostForm({
   const creatorId = loginCreator?.creator?.id;
   const formSchema = createFormSchema();
   const [confirmDialog, setConfirmDialog] = useState(false);
+  const deletedMediaRef = useRef<number[]>([]);
+  const [isSubmittingAll, setIsSubmittingAll] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { createMutation, isCreatePending } = usePostCreate();
-  const { updateMutation, isUpdatePending } = usePostUpdate();
-  const { updateMediaMutation, isMediaUpdatePending } = usePostMediaUpdate();
+  const { createMutation } = usePostCreate();
+  const { updateMutation } = usePostUpdate();
+  const { updateMediaMutation } = usePostMediaUpdate();
+  const { deleteMediaMutation } = usePostMediaDelete();
 
-  const isLoading = isCreatePending || isUpdatePending || isMediaUpdatePending;
+  const isLoading = isSubmittingAll;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -138,18 +141,17 @@ export default function PostForm({
     }
   }, [defaultValues, mode, creatorId, form]);
 
-  
-  const {isDirty, isSubmitting, isSubmitSuccessful} = form.formState;
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       isDirty &&
-      !isSubmitting && 
+      !isSubmitting &&
       !isSubmitSuccessful &&
       currentLocation.pathname !== nextLocation.pathname,
   );
 
-    useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!isDirty) return;
 
@@ -160,18 +162,27 @@ export default function PostForm({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
 
+  const getIsVideo = (media: MediaItem[] = []) => {
+    return media.some((m) => m.type === "video");
+  };
+
+  // const isVideo = form.watch("media")?.some(m => m.type === "video");
+
   const onSubmit = async (values: FormValues) => {
     try {
+      setIsSubmittingAll(true);
       const formData = new FormData();
+
+      const currentMedia = values.media || [];
+      const isVideo = getIsVideo(currentMedia);
 
       formData.append("description", values.description);
       formData.append("visibility", values.visibility);
-      if (mode === "add") {
-        formData.append("isVideo", String(values.isVideo));
+       if (mode === "add") {
+        formData.append("isVideo", String(isVideo));
       }
       formData.append("created_by", String(values.created_by));
 
-      const currentMedia = values.media || [];
       if (mode === "add") {
         currentMedia.forEach((item: any, index: number) => {
           if (item.file) {
@@ -183,6 +194,8 @@ export default function PostForm({
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
         const fd = new FormData();
+
+        console.log("current media", currentMedia)
 
         fd.append("description", values.description);
         fd.append("visibility", values.visibility);
@@ -234,10 +247,24 @@ export default function PostForm({
             data: newFilesFd,
           });
         }
+
+        if (deletedMediaRef.current.length > 0) {
+          for (const indexId of deletedMediaRef.current) {
+            await deleteMediaMutation({
+              id: Number(defaultValues.id),
+              indexId,
+            });
+          }
+
+          deletedMediaRef.current = [];
+        }
       }
+      navigate("/entertainment/posts");
       if (onSuccess) onSuccess();
     } catch (error: any) {
       toast.error(error.message || "An error occurred during post creation.");
+    } finally {
+      setIsSubmittingAll(false);
     }
   };
 
@@ -311,27 +338,6 @@ export default function PostForm({
                 )}
               />
 
-              {mode === "add" && (
-                <FormField
-                  control={form.control}
-                  name="isVideo"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                      <div>
-                        <FormLabel>{t("post.video_mode")}</FormLabel>
-                        <p className="text-xs text-muted-foreground">
-                          {t("post.video_description")}
-                        </p>
-                      </div>
-
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormItem>
-                  )}
-                />
-              )}
             </div>
           </div>
 
@@ -349,6 +355,9 @@ export default function PostForm({
                     value={(field.value as MediaItem[]) || []}
                     onChange={field.onChange}
                     mode={mode}
+                    onDelete={(mediaId: number) => {
+                      deletedMediaRef.current.push(mediaId);
+                    }}
                   />
 
                   <FormMessage />
@@ -430,7 +439,7 @@ export default function PostForm({
               </DialogContent>
             </Dialog>
           </div>
-          <NavigateConfirmDialog blocker={blocker}/>
+          <NavigateConfirmDialog blocker={blocker} />
         </form>
       </Form>
     </div>

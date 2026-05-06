@@ -5,18 +5,19 @@ import { Textarea } from "../ui/textarea";
 import LongText from "./longtext";
 
 export type MediaItem = {
-  id: string;
+  id?: string;
   mediaId?: string;
   file?: File;
   url?: string;
-  alt: string;
+  alt?: string;
   type?: string;
 };
 
 type MediaUploadProps = {
   value?: MediaItem[];
   onChange: (items: MediaItem[]) => void;
-  mode: "add" | "edit"
+  mode: "add" | "edit";
+  onDelete?: (mediaId: number) => void;
 };
 
 const getFileType = (file: File) => {
@@ -25,36 +26,65 @@ const getFileType = (file: File) => {
   return "unknown";
 };
 
-export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadProps) {
-  const hasVideo = value.some((v) => v.type === "video");
-  const hasMaxImages = value.filter((v) => v.type === "image").length >= 10;
+const getItemType = (item: MediaItem) => {
+  if (item.file) return getFileType(item.file);
+  if (item.type) return item.type;
+  if (item.url?.match(/\.(mp4|webm|ogg)$/i)) return "video";
+  return "image";
+};
+
+export function MediaUpload({
+  value = [],
+  onChange,
+  mode = "add",
+  onDelete,
+}: MediaUploadProps) {
+  // const hasVideo = value.some((v) => v.type === "video");
+  // const hasMaxImages = value.filter((v) => v.type === "image").length >= 10;
+  const hasVideo = value.some((v) => getItemType(v) === "video");
+
+const hasMaxImages =
+  value.filter((v) => getItemType(v) === "image").length >= 10;
   const isDisabled = hasVideo || hasMaxImages;
 
   const onDrop = (acceptedFiles: File[]) => {
-    const currentItems = [...(value || [])];;
+    const currentItems = [...(value || [])];
 
-    const currentImages = currentItems.filter((i) => i.type === "image");
-    const currentVideos = currentItems.filter((i) => i.type === "video");
+    console.log("current item", currentItems);
+
+    const incomingItems = acceptedFiles.map((file) => ({
+      type: getFileType(file),
+    }));
+
+    const allItems = [
+      ...currentItems.map((i) => ({
+        type: i.file ? getFileType(i.file) : i.type,
+      })),
+      ...incomingItems,
+    ];
+
+    const imageCount = allItems.filter((i) => i.type === "image").length;
+    const videoCount = allItems.filter((i) => i.type === "video").length;
+
+    console.log("current images", imageCount);
+    console.log("current video", videoCount);
 
     const newItems: MediaItem[] = [];
 
     for (const file of acceptedFiles) {
       const type = getFileType(file);
 
-      if (
-        (type === "video" && currentImages.length > 0) ||
-        (type === "image" && currentVideos.length > 0)
-      ) {
+      if (imageCount > 0 && videoCount > 0) {
         toast.warning("You cannot upload images and a video together.");
         return;
       }
 
-      if (type === "video" && currentVideos.length >= 1) {
+      if (videoCount > 1) {
         toast.warning("Only 1 video is allowed.");
         return;
       }
 
-      if (type === "image" && currentImages.length >= 10) {
+      if (imageCount > 10) {
         toast.warning("Maximum 10 images allowed.");
         return;
       }
@@ -67,11 +97,11 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
       });
     }
 
-    const updated = currentItems;
+    const updated = [...currentItems];
 
     newItems.forEach((newItem) => {
       const replaceIndex = updated.findIndex(
-        (i) => i.mediaId && !i.file && !i.url
+        (i) => i.mediaId && !i.file && !i.url,
       );
 
       if (replaceIndex !== -1) {
@@ -98,33 +128,14 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
     },
   });
 
-  const removeItem = (index: number) => {
-    const updated = [...value];
-    const target = updated[index];
-
-    if (target.mediaId) {
-      updated[index] = {
-        id: crypto.randomUUID(),
-        mediaId: target.mediaId,
-        alt: target.alt,
-        type: target.type
-      };
-    } else {
-      updated.splice(index, 1)
+  const removeItem = async (index: number) => {
+    const target = value[index];
+    if (mode === "edit" && target.mediaId) {
+      onDelete?.(Number(target.mediaId));
     }
-    onChange(updated)
+    const updated = value.filter((_, i) => i !== index);
+    onChange([...updated]);
   };
-
-
-  //   const removeItem = (index: number) => {
-  //   // Use filter to create a new array without the item at that index
-  //   // This physically removes the object, so the count decreases correctly
-  //   const updated = value.filter((_, i) => i !== index);
-
-  //   onChange(updated);
-  // };
-
-
 
   const updateAlt = (index: number, alt: string) => {
     const updated = [...value];
@@ -143,12 +154,13 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all
-        ${isDisabled
+        ${
+          isDisabled
             ? "opacity-50 cursor-not-allowed bg-muted/50"
             : isDragActive
               ? "border-primary bg-primary/5 ring-4 ring-primary/5"
               : "border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/30"
-          }`}
+        }`}
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center gap-3">
@@ -157,7 +169,9 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
           </div>
           <div>
             <p className="text-sm font-semibold tracking-tight">
-              {isDragActive ? "Drop to upload" : "Drag & drop or click to upload"}
+              {isDragActive
+                ? "Drop to upload"
+                : "Drag & drop or click to upload"}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Max 10 images or 1 video (Images and videos cannot mix)
@@ -192,10 +206,17 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
                   {src ? (
                     type === "video" ? (
                       <div className="relative w-full h-full">
-                        <video src={src} className="w-full h-full object-cover" controls={false} />
+                        <video
+                          src={src}
+                          className="w-full h-full object-cover"
+                          controls={false}
+                        />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
                           <div className="bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30">
-                            <Play size={24} className="text-white fill-current" />
+                            <Play
+                              size={24}
+                              className="text-white fill-current"
+                            />
                           </div>
                         </div>
                       </div>
@@ -209,7 +230,9 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-muted-foreground/60">
                       <ImageIcon size={32} strokeWidth={1} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">No Preview</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">
+                        No Preview
+                      </span>
                     </div>
                   )}
                 </div>
@@ -222,13 +245,12 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
                           Caption
                         </span>
                         <div className="p-3 rounded-xl bg-muted/40 border border-transparent text-sm text-foreground/80 leading-relaxed min-h-15">
-                          <LongText text={item.alt}/>
+                          <LongText text={item.alt} />
                         </div>
                       </div>
                     )
-
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 p-4">
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                         Caption
                       </span>
@@ -246,7 +268,6 @@ export function MediaUpload({ value = [], onChange, mode = "add" }: MediaUploadP
           })}
         </div>
       )}
-
     </div>
   );
 }

@@ -10,6 +10,8 @@ import {
   CircleCheckBig,
   ArrowLeft,
   Banknote,
+  Coins,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import IconWithTooltip from "@/components/common/IconWithTooltip";
@@ -232,8 +234,9 @@ export default function ComicsTitleDetails() {
                     </div>
 
                     <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
-                      <span className="hidden sm:inline-block text-sm font-bold text-yellow-600">
-                        🪙 {ep?.price}
+                      <span className="flex flex-row items-center justify-center text-sm font-bold text-yellow-600">
+                        <DollarSign className="w-4 h-4"/> 
+                        {ep?.price}
                       </span>
                       <div className="flex items-center gap-4">
                         {ep?.approve_status === 0 ? (

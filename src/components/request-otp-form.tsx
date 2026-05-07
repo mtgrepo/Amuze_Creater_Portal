@@ -13,8 +13,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ChevronLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSendOtpCommand } from "@/composable/Command/auth/useSendOTPCommand";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   phoneOrEmail: z
@@ -34,13 +35,34 @@ export default function RequestOTPForm() {
       otp_type: "phone",
     },
   });
+  const navigate = useNavigate();
+
 
   const { sendOtpMutation } = useSendOtpCommand();
 
   const isSubmitting = form.formState.isSubmitting;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await sendOtpMutation(values)
+    try {
+      const res = await sendOtpMutation(values);
+
+      if (res.status) {
+        toast.success("OTP sent successfully via SMS");
+
+        navigate(
+          `/verify-otp?identifier=${encodeURIComponent(values.phoneOrEmail)}`
+        );
+      } else {
+        toast.error(res?.message || "Failed to send OTP");
+      }
+    } catch (error: any) {
+      const message = error?.message || "Something went wrong";
+      if (message.includes("phone or email")) {
+        toast.error("Please enter your phone number.");
+      } else {
+        toast.error(message);
+      }
+    }
   }
 
   return (

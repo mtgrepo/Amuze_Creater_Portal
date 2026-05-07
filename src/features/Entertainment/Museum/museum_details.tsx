@@ -126,7 +126,11 @@ export default function MuseumDetails() {
 
             <Button
               onClick={() =>
-                navigate(`/entertainment/museum/${id}/title/create`)
+                navigate(`/entertainment/museum/${id}/title/create`, {
+                  state: {
+                    museumName: museumDetail?.name
+                  }
+                })
               }
             >
               {t("add_new_title")}
@@ -177,7 +181,7 @@ export default function MuseumDetails() {
                       />
                     )}
 
-                    <TitleActions title={title} museumId={museumDetail.id} />
+                    <TitleActions title={title} museumId={museumDetail.id} museumName={museumDetail?.name}/>
                   </div>
                 </div>
               ))

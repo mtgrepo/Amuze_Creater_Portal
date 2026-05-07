@@ -17,12 +17,14 @@ interface ActionsProps {
   episode: MuseumEpisode;
   museumId: number;
   titleId: number;
+  titleName: string;
 }
 
 export default function EpisodeActions({
   episode,
   museumId,
   titleId,
+  titleName
 }: ActionsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -35,6 +37,7 @@ export default function EpisodeActions({
           episode,
           museumId,
           titleId,
+          titleName
         },
       },
     );
@@ -48,6 +51,7 @@ export default function EpisodeActions({
           episode,
           museumId,
           titleId,
+          titleName
         },
       },
     );

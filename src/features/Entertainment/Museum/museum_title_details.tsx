@@ -116,7 +116,11 @@ export default function MuseumTitleDetails() {
             <Button
               onClick={() =>
                 navigate(
-                  `/entertainment/museum/${museumId}/title/${titleId}/episode/create`,
+                  `/entertainment/museum/${museumId}/title/${titleId}/episode/create`,{
+                    state: {
+                      titleName: titleDetails?.name
+                    }
+                  }
                 )
               }
             >
@@ -179,6 +183,7 @@ export default function MuseumTitleDetails() {
                         episode={ep}
                         museumId={titleDetails.museum_id}
                         titleId={titleDetails.id}
+                        titleName={titleDetails?.name}
                       />
                     </div>
                   </div>

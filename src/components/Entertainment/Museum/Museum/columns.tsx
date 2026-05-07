@@ -105,10 +105,18 @@ export default function MuseumColumns() {
         const museum = row.original;
 
         const handleViewDetails = () => {
-          navigate(`/entertainment/museum/details/${museum.id}`);
+          navigate(`/entertainment/museum/details/${museum.id}`, {
+            state: {
+              museumName: museum?.name
+            }
+          });
         };
         const handleEditTitle = () => {
-          navigate(`/entertainment/museum/edit/${museum.id}`);
+          navigate(`/entertainment/museum/edit/${museum.id}`, {
+             state: {
+              museumName: museum?.name
+            }
+          });
         };
         return (
           <DropdownMenu>

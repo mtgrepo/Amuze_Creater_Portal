@@ -1,22 +1,26 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   LoginCreatorResponse,
   ProfileHistory,
 } from "@/types/response/auth/loginCreatorResponse";
-import {  Mail, Phone, Tag, Lock } from "lucide-react";
+import {  Mail, Phone, Tag, Lock, Calendar } from "lucide-react";
 import ProfileInfoComponent from "./profile_info_component";
 import ProfileWalletComponent from "./income_component";
 import ProfileHistoryComponent from "./profile_history_component";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PasswordForm from "./profile_security_component";
 import ImageUpload from "../common/image_upload";
 import { toast } from "sonner";
 import { useProfileUpdateCommand } from "@/composable/Command/auth/useProfileUpdateCommand";
 import { decryptAuthData } from "@/lib/helper";
+import { useSendOtpCommand } from "@/composable/Command/auth/useSendOTPCommand";
+import { Input } from "../ui/input";
+import ResetPasswordForm from "../reset-password-form";
+import { useNavigate } from "react-router-dom";
 
 export interface CreatorDetailsProps {
   info: LoginCreatorResponse;
@@ -29,8 +33,13 @@ export default function ProfileDetailsComponent({
   profile,
 }: CreatorDetailsProps) {
   const { profileUpdateMutation, isPending } = useProfileUpdateCommand();
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [count, setCount] = useState(60);
+  const canResend = count === 0;
+  const navigate = useNavigate();
 
-  // Using useMemo to get the ID safely on the client side without triggering cascading renders
   const creatorId = useMemo(() => {
     if (typeof window !== "undefined") {
       const data = localStorage.getItem("creator");
@@ -43,8 +52,8 @@ export default function ProfileDetailsComponent({
   }, []);
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
 
-  // Initialize state directly from props to avoid the useEffect setState error
   const [profileImage, setProfileImage] = useState<File | string | null>(
     info?.profile || null,
   );
@@ -69,6 +78,61 @@ export default function ProfileDetailsComponent({
       toast.error((error as string) || "Failed to update profile");
     }
   };
+
+  const { sendOtpMutation } = useSendOtpCommand();
+
+  const handleSendOTP = async (isResend = false) => {
+    if (!info.phone_no) {
+      toast.error("Phone number not found");
+      return;
+    }
+    try {
+      setIsSendingOtp(true);
+      await sendOtpMutation({
+        phoneOrEmail: info.phone_no,
+        isRegister: false,
+        otp_type: "phone",
+      });
+      toast.success(isResend ? "OTP resent successfully" : "OTP sent successfully");
+      setOtp("");
+      setOtpSent(true);
+      setCount(60);
+    } finally {
+      setIsSendingOtp(false);
+    }
+  }
+
+  const handleVerifyOTP = () => {
+    if (!otp) {
+      toast.error("Please enter OTP");
+      return;
+    }
+    setIsResetPasswordModalOpen(true);
+  }
+
+  useEffect(() => {
+    if (!otpSent) return;
+    if (count <= 0) return;
+
+    const timer = setTimeout(() => {
+      setCount((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [count, otpSent]);
+
+  //  useEffect(() => {
+  //   if (count === 0) {
+  //     return;
+  //   }
+
+  //   const timer = setTimeout(() => {
+  //     setCount((prev) => prev - 1);
+  //   }, 1000);
+
+  //   return () => clearTimeout(timer);
+  // }, [count]);
+
 
   return (
     <div className="">
@@ -146,6 +210,22 @@ export default function ProfileDetailsComponent({
                 <div className="p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 italic text-slate-600 dark:text-slate-300 leading-relaxed">
                   {info?.bio || "This user hasn't written a bio yet..."}
                 </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-sm font-semibold">
+                    Joined{" "}
+                    {info?.acount?.created_at
+                      ? new Date(info.acount.created_at).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        },
+                      )
+                      : "N/A"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -198,15 +278,42 @@ export default function ProfileDetailsComponent({
                   <div>
                     <p className="font-medium">Password Recovery</p>
                     <p className="text-sm text-slate-500">
-                      Send a reset link to {info?.email}.
+                      {`${otpSent ? "OTP code has been sent to" : "Send an OTP code to"} ${info?.phone_no}.`}
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="cursor-pointer text-primary"
-                  >
-                    Send Reset Link
-                  </Button>
+                  <div>
+                    {!otpSent ? (
+                      <Button
+                        variant="ghost"
+                        className="cursor-pointer text-primary"
+                        onClick={() => handleSendOTP(false)}
+                        disabled={isSendingOtp}
+                      >
+                        {isSendingOtp ? "Sending..." : "Send code"}
+                      </Button>
+                    ) : (
+                      <div className="space-y-3">
+                        <Input
+                          placeholder="Enter OTP"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                        />
+                        <div className="flex gap-2">
+                          <Button onClick={handleVerifyOTP}>
+                            Verify OTP
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="link"
+                            onClick={() => handleSendOTP(true)}
+                            disabled={!canResend}
+                          >
+                            {canResend ? "Resend" : `Resend in ${count}s`}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -214,17 +321,53 @@ export default function ProfileDetailsComponent({
         </Tabs>
 
         {/* Password Update Modal */}
-        <Dialog
-          open={isPasswordModalOpen}
-          onOpenChange={setIsPasswordModalOpen}
-        >
-          <DialogContent className="max-w-2xl p-0 border-none bg-transparent">
+        <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+          <DialogContent >
+            <DialogHeader className="border-b dark:border-[#252525] pb-4">
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <Lock className="w-6 h-6 text-blue-500" />
+                Security Update
+              </DialogTitle>
+              <DialogDescription className="text-sm text-slate-500 mt-1">
+                Set a strong password to protect your account.
+              </DialogDescription>
+            </DialogHeader>
             <PasswordForm
               onSuccess={() => setIsPasswordModalOpen(false)}
               onCancel={() => setIsPasswordModalOpen(false)}
             />
           </DialogContent>
         </Dialog>
+
+        {/* reset password modal */}
+        <Dialog open={isResetPasswordModalOpen} onOpenChange={setIsResetPasswordModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Reset Password</DialogTitle>
+              <DialogDescription>
+                Set a new password for your account.
+              </DialogDescription>
+            </DialogHeader>
+            <ResetPasswordForm
+              identifier={info.phone_no}
+              otp={otp}
+              onSuccess={(type) => {
+                if (type === "success") {
+                  setIsResetPasswordModalOpen(false)
+                  navigate("/")
+                }
+
+                if (type === "otp_error") {
+                  setIsResetPasswordModalOpen(false);
+                  setIsResetPasswordModalOpen(true);
+                }
+
+              }
+              }
+            />
+          </DialogContent>
+        </Dialog>
+
       </div>
     </div>
   );

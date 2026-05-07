@@ -24,12 +24,11 @@ const formSchema = z.object({
 
 export default function VerifyOtpPage() {
   const [params] = useSearchParams();
-  const [count, setCount] = useState(30);
+  const [count, setCount] = useState(60);
   const canResend = count === 0;
 
 
   const identifier = params.get("identifier");
-
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,24 +53,39 @@ export default function VerifyOtpPage() {
 
   const { sendOtpMutation } = useSendOtpCommand();
 
+  const error = params.get("error");
+
+  useEffect(() => {
+  if (error === "invalid_otp") {
+    form.setError("otp", {
+      type: "manual",
+      message: "Invalid OTP. Please try again.",
+    });
+  }
+}, [error, form]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     navigate(`/reset-password?identifier=${identifier}&otp=${values.otp}`)
   }
 
   async function handleResendOtp() {
-    try {
-      await sendOtpMutation({
-        phoneOrEmail: identifier!,
-        isRegister: false,
-        otp_type: "phone",
-      });
+  try {
+    const res = await sendOtpMutation({
+      phoneOrEmail: identifier!,
+      isRegister: false,
+      otp_type: "phone",
+    });
 
+    if (res.status) {
       toast.success("OTP resent successfully");
-    } catch {
-      toast.error("Failed to resend OTP");
+    } else {
+      toast.error(res.message || "Failed to resend OTP");
     }
+  } catch (error: any) {
+    toast.error(error?.message || "Failed to resend OTP");
   }
+}
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -94,7 +108,10 @@ export default function VerifyOtpPage() {
                   <FormItem>
                     <FormLabel>OTP Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter 6-digit OTP" {...field} />
+                      <Input placeholder="Enter 6-digit OTP" {...field}  onChange={(e) => {
+    field.onChange(e);
+    form.clearErrors("otp");
+  }}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EyeIcon, EyeOffIcon, Lock } from "lucide-react";
+import { EyeIcon, EyeOffIcon} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -87,16 +87,7 @@ export default function PasswordForm({ onSuccess, onCancel }: PasswordFormProps)
   return (
     <div className="w-full bg-card rounded-xl overflow-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-6">
-          <div className="border-b dark:border-[#252525] pb-4">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Lock className="w-6 h-6 text-blue-500" />
-              Security Update
-            </h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Set a strong password to protect your account.
-            </p>
-          </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="p-4 space-y-6">
 
           <div className="space-y-4">
             {/* Current Password Field */}

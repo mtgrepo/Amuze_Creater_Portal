@@ -198,7 +198,7 @@ export default function GradesForm({
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6 border rounded-xl shadow-sm">
+        <div className="max-w-6xl mx-auto p-6 border rounded-xl shadow-sm">
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}

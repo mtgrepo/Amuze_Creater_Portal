@@ -6,7 +6,7 @@ import type {
   LoginCreatorResponse,
   ProfileHistory,
 } from "@/types/response/auth/loginCreatorResponse";
-import { Calendar, Mail, Phone, Tag, Lock } from "lucide-react";
+import {  Mail, Phone, Tag, Lock } from "lucide-react";
 import ProfileInfoComponent from "./profile_info_component";
 import ProfileWalletComponent from "./income_component";
 import ProfileHistoryComponent from "./profile_history_component";
@@ -46,9 +46,8 @@ export default function ProfileDetailsComponent({
 
   // Initialize state directly from props to avoid the useEffect setState error
   const [profileImage, setProfileImage] = useState<File | string | null>(
-    info?.profile || null
+    info?.profile || null,
   );
-
 
   const [prevInfoProfile, setPrevInfoProfile] = useState(info?.profile);
   if (info?.profile !== prevInfoProfile) {
@@ -85,7 +84,7 @@ export default function ProfileDetailsComponent({
                   if (isPending) return;
 
                   if (file) {
-                    setProfileImage(file); 
+                    setProfileImage(file);
                     handleUpdateProfile(file);
                   } else {
                     setProfileImage(null);
@@ -95,13 +94,41 @@ export default function ProfileDetailsComponent({
 
               {isPending && (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-md">
-                  <p className="text-white text-sm font-medium animate-pulse">Uploading...</p>
+                  <p className="text-white text-sm font-medium animate-pulse">
+                    Uploading...
+                  </p>
                 </div>
               )}
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-bold">{info?.name}</h1>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2 text-slate-600 dark:text-slate-400">
+            <div className="flex-1  text-center md:text-left">
+              <div className="flex flex-row gap-3 my-3">
+                <h1 className="text-3xl font-bold">{info?.name}</h1>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                    <Tag className="w-4 h-4" />
+                    <span className="text-sm font-semibold">
+                      {info?.role?.name || "Standard User"}
+                    </span>
+                  </div>
+                  {/* <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm font-semibold">
+                      Joined{" "}
+                      {info?.acount?.created_at
+                        ? new Date(info.acount.created_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            },
+                          )
+                        : "N/A"}
+                    </span>
+                  </div> */}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4  text-slate-600 dark:text-slate-400">
                 <div className="flex items-center gap-1">
                   <Mail className="w-4 h-4" />
                   <span className="text-sm">{info?.email}</span>
@@ -112,34 +139,17 @@ export default function ProfileDetailsComponent({
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-                  <Tag className="w-4 h-4" />
-                  <span className="text-sm font-semibold">
-                    {info?.role?.name || "Standard User"}
-                  </span>
+              <div className="mt-8 relative">
+                <div className="absolute -top-3 left-4 px-2 bg-white dark:bg-[#1a1a1a] text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Biography
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-semibold">
-                    Joined{" "}
-                    {info?.acount?.created_at
-                      ? new Date(info.acount.created_at).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        },
-                      )
-                      : "N/A"}
-                  </span>
-                </div> 
+                <div className="p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 italic text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {info?.bio || "This user hasn't written a bio yet..."}
+                </div>
               </div>
             </div>
           </div>
         </div>
-
         <Tabs defaultValue="info">
           <TabsList className="w-full grid grid-cols-4" variant={"line"}>
             <TabsTrigger value="info">General Info</TabsTrigger>
@@ -149,7 +159,7 @@ export default function ProfileDetailsComponent({
           </TabsList>
 
           <TabsContent value="info" className="mt-6">
-            <ProfileInfoComponent account={info?.acount} />
+            <ProfileInfoComponent account={info?.acount} data={info} />
           </TabsContent>
 
           <TabsContent value="wallet" className="mt-6">
@@ -204,7 +214,10 @@ export default function ProfileDetailsComponent({
         </Tabs>
 
         {/* Password Update Modal */}
-        <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+        <Dialog
+          open={isPasswordModalOpen}
+          onOpenChange={setIsPasswordModalOpen}
+        >
           <DialogContent className="max-w-2xl p-0 border-none bg-transparent">
             <PasswordForm
               onSuccess={() => setIsPasswordModalOpen(false)}

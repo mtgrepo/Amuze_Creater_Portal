@@ -161,18 +161,37 @@ export default function NovelColumn() {
                 return <div>{ratings ? ratings.toLocaleString() : "0"}</div>;
             },
         },
-        {
-            accessorKey: "is_published",
-            header: t('publish_status'),
-            cell: ({ row }) => {
-                const published = row.getValue("is_published") as boolean;
+        // {
+        //     accessorKey: "is_published",
+        //     header: t('publish_status'),
+        //     cell: ({ row }) => {
+        //         const published = row.getValue("is_published") as boolean;
 
-                return published ? (
-                    <IconWithTooltip tooltip="Published" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
-                ) : (
-                    <IconWithTooltip tooltip="Unpublished" icon={<XCircle className="text-red-500 w-4 h-4" />} />
-                );
-            },
+        //         return published ? (
+        //             <IconWithTooltip tooltip="Published" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
+        //         ) : (
+        //             <IconWithTooltip tooltip="Unpublished" icon={<XCircle className="text-red-500 w-4 h-4" />} />
+        //         );
+        //     },
+        // },
+        {
+            accessorFn: (row) => ({
+                is_published: row.is_published,
+                approve_status: row.approve_status
+            }),
+            id: "status",
+            header: t('status'),
+            cell: ({ row }) => {
+                const is_published = row.original.is_published as boolean;
+                const approve_status = row.original.approve_status as number;
+                if(approve_status === 1 && is_published) {
+                   return <IconWithTooltip tooltip="Approved & Published" icon={<CircleCheckBig className="text-green-500 w-4 h-4" />} />
+                } else if(approve_status === 1 && !is_published) {
+                   return  <IconWithTooltip tooltip="Approved but Not Published" icon={<CircleCheckBig className="text-yellow-500 w-4 h-4" />} />
+                } else if(approve_status === 0) {
+                    return <IconWithTooltip tooltip="Not Approved" icon={<XCircle className="text-red-500 w-4 h-4" />} />
+                }
+            }
         },
         {
             accessorKey: "created_at",

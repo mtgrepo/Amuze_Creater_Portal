@@ -36,9 +36,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import ConfirmCard from "../../../common/confirm_card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Video } from "lucide-react";
 import RequiredLabel from "../../../common/required_label";
 import NavigateConfirmDialog from "../../../common/navigate_confirm_dialog";
 import { useTranslation } from "react-i18next";
@@ -77,7 +77,6 @@ export default function MuzeBoxEpisodeForm({
   mode,
   defaultValues,
 }: MuzeBoxFormProps) {
-
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id || "";
@@ -97,14 +96,17 @@ export default function MuzeBoxEpisodeForm({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    values: mode === "edit" ? {
-      name: defaultValues?.name || "",
-      description: defaultValues?.description || "",
-      price: defaultValues?.price ?? 0,
-      thumbnail: defaultValues?.thumbnail,
-      video: defaultValues?.video,
-      created_by: creatorId,
-    } : undefined,
+    values:
+      mode === "edit"
+        ? {
+            name: defaultValues?.name || "",
+            description: defaultValues?.description || "",
+            price: defaultValues?.price ?? 0,
+            thumbnail: defaultValues?.thumbnail,
+            video: defaultValues?.video,
+            created_by: creatorId,
+          }
+        : undefined,
     defaultValues: {
       id: defaultValues?.id ? Number(defaultValues.id) : undefined,
       name: defaultValues?.name || "",
@@ -122,7 +124,7 @@ export default function MuzeBoxEpisodeForm({
       defaultValues &&
       defaultValues.id !== resetToken.current
     ) {
-      console.log("enter edit mode")
+      console.log("enter edit mode");
       form.reset({
         ...defaultValues,
         created_by: creatorId,
@@ -315,16 +317,25 @@ export default function MuzeBoxEpisodeForm({
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 border rounded-xl shadow-sm">
+    <div className="max-w-6xl mx-auto p-6 border rounded-xl shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <div className="border-b pb-4">
-            <h2 className="text-2xl font-bold">
-              {mode === "add" ? t('episode_form.create_title') : t('episode_form.update_title')}
-            </h2>
-            <p className="text-muted-foreground text-sm pt-2">
-              {t('episode_form.description')}
-            </p>
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-2xl">
+                <Video className="text-primary" size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {mode === "add"
+                    ? t("episode_form.create_title")
+                    : t("episode_form.update_title")}
+                </h2>
+                <p className="text-muted-foreground text-sm pt-2">
+                  {t("episode_form.description")}
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-6 max-w-sm mx-auto">
@@ -334,7 +345,7 @@ export default function MuzeBoxEpisodeForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    <RequiredLabel label={t('thumbnail')} />
+                    <RequiredLabel label={t("thumbnail")} />
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
@@ -357,7 +368,7 @@ export default function MuzeBoxEpisodeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label={t('title')} />
+                        <RequiredLabel label={t("title")} />
                       </FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Enter name..." />
@@ -373,7 +384,7 @@ export default function MuzeBoxEpisodeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <RequiredLabel label={t('price')} />
+                        <RequiredLabel label={t("price")} />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -397,7 +408,7 @@ export default function MuzeBoxEpisodeForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label={t('description')} />
+                      <RequiredLabel label={t("description")} />
                     </FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Enter description..." />
@@ -413,7 +424,7 @@ export default function MuzeBoxEpisodeForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <RequiredLabel label={t('episode_form.video')} />
+                      <RequiredLabel label={t("episode_form.video")} />
                     </FormLabel>
                     <FormControl>
                       <ImageUpload
@@ -434,11 +445,9 @@ export default function MuzeBoxEpisodeForm({
               className="flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() =>
-                navigate(-1)
-              }
+              onClick={() => navigate(-1)}
             >
-              {t('cancel')}
+              {t("cancel")}
             </Button>
 
             <AlertDialog open={confirmDialog} onOpenChange={setConfirmDialog}>
@@ -451,7 +460,9 @@ export default function MuzeBoxEpisodeForm({
                   if (isValid) {
                     setConfirmDialog(true);
                   } else {
-                    toast.error("Please fill in all required fields correctly.");
+                    toast.error(
+                      "Please fill in all required fields correctly.",
+                    );
                   }
                 }}
               >
@@ -459,10 +470,8 @@ export default function MuzeBoxEpisodeForm({
                   isPending ||
                   isTextUpdating ||
                   isThumbnailUpdating ||
-                  isVideoUpdating) && (
-                    <Spinner className="mr-2 w-4 h-4" />
-                  )}
-                {mode === "add" ? t('create') : t('update')}
+                  isVideoUpdating) && <Spinner className="mr-2 w-4 h-4" />}
+                {mode === "add" ? t("create") : t("update")}
               </Button>
               <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
@@ -479,7 +488,11 @@ export default function MuzeBoxEpisodeForm({
                 </AlertDialogHeader>
 
                 {/* Review Card */}
-                <ConfirmCard name={form.getValues("name")} price={form.getValues("price")} description={form.getValues("description")} />
+                <ConfirmCard
+                  name={form.getValues("name")}
+                  price={form.getValues("price")}
+                  description={form.getValues("description")}
+                />
 
                 <AlertDialogFooter className="sm:justify-center gap-2">
                   <AlertDialogCancel className="flex-1 cursor-pointer">
@@ -488,27 +501,24 @@ export default function MuzeBoxEpisodeForm({
                   <AlertDialogAction
                     onClick={form.handleSubmit(onSubmit)}
                     className="flex-1 cursor-pointer"
-                    disabled={isSubmit ||
+                    disabled={
+                      isSubmit ||
                       isPending ||
                       isTextUpdating ||
                       isThumbnailUpdating ||
-                      isVideoUpdating}
+                      isVideoUpdating
+                    }
                   >
                     {isSubmit ||
                       isPending ||
                       isTextUpdating ||
                       isThumbnailUpdating ||
-                      isVideoUpdating &&
-                      <Spinner className="mr-2 w-4 h-4" />
-                    }
-                    Confirm &
-                    {mode === "add" ? "Add Episode" : "Save Changes"}
-
+                      (isVideoUpdating && <Spinner className="mr-2 w-4 h-4" />)}
+                    Confirm &{mode === "add" ? "Add Episode" : "Save Changes"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
           </div>
           <NavigateConfirmDialog blocker={blocker} />
         </form>

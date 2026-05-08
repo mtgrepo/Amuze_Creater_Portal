@@ -21,7 +21,6 @@ interface TitleActionsProps {
 export default function TitleActions({title, museumId, museumName }: TitleActionsProps) {
   const navigate = useNavigate();
   const {t} = useTranslation();
-  console.log("museumname",museumName)
 
   const handleEdit = () => {
     navigate(`/entertainment/museum/${museumId}/title/edit/${title?.id}`, {

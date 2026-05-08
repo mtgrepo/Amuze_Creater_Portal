@@ -3,6 +3,7 @@ import IconWithTooltip from "@/components/common/IconWithTooltip";
 import LongText from "@/components/common/longtext";
 import EpisodeActions from "@/components/Entertainment/Museum/Episodes/episode_actions";
 import { Button } from "@/components/ui/button";
+import { useMuseumDetailQuery } from "@/composable/Query/Entertainment/Museum/useMuseumDetailQuery";
 import { useMuseumTitleDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumTitleDetailQuery";
 import {
   ArrowLeft,
@@ -24,6 +25,7 @@ export default function MuseumTitleDetails() {
   const { titleDetails, isTitleLoading, error } = useMuseumTitleDetailsQuery(
     Number(titleId),
   );
+  const {museumDetail} = useMuseumDetailQuery(Number(museumId));
 
   if (isTitleLoading) {
     return (
@@ -118,6 +120,7 @@ export default function MuseumTitleDetails() {
                 navigate(
                   `/entertainment/museum/${museumId}/title/${titleId}/episode/create`,{
                     state: {
+                      museumName: museumDetail?.name,
                       titleName: titleDetails?.name
                     }
                   }
@@ -184,6 +187,7 @@ export default function MuseumTitleDetails() {
                         museumId={titleDetails.museum_id}
                         titleId={titleDetails.id}
                         titleName={titleDetails?.name}
+                        museumName={museumDetail?.name ?? ""}
                       />
                     </div>
                   </div>

@@ -18,13 +18,15 @@ interface ActionsProps {
   museumId: number;
   titleId: number;
   titleName: string;
+  museumName: string;
 }
 
 export default function EpisodeActions({
   episode,
   museumId,
   titleId,
-  titleName
+  titleName,
+  museumName
 }: ActionsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -37,7 +39,8 @@ export default function EpisodeActions({
           episode,
           museumId,
           titleId,
-          titleName
+          titleName,
+          museumName
         },
       },
     );
@@ -51,7 +54,8 @@ export default function EpisodeActions({
           episode,
           museumId,
           titleId,
-          titleName
+          titleName,
+          museumName
         },
       },
     );

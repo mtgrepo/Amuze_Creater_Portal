@@ -645,10 +645,10 @@ const router = createBrowserRouter(
               return[
               { label: "Entertainment" },
               { label: "Museum", href: "/entertainment/museum" },
-              // {
-              //   label: `Museum ${params?.museumId}`,
-              //   href: `/entertainment/museum/details/${params?.museumId}`,
-              // },
+              {
+                label: location?.state?.museumName,
+                href: `/entertainment/museum/details/${params?.museumId}`,
+              },
               {
                 label: location?.state?.titleName,
                 href: `/entertainment/museum/${params?.museumId}/title/details/${params?.titleId}`,
@@ -664,23 +664,20 @@ const router = createBrowserRouter(
           path: "/entertainment/museum/:museumId/title/:titleId/episode/details/:id",
           element: <MuseumEpisodeDetails />,
           handle: {
-            crumb: ({ params, location }: any) => [
+            crumb: ({ params, location }: any) => {
+              return[
               { label: "Entertainment" },
               { label: "Museum", href: "/entertainment/museum" },
-              // {
-              //   label: `Museum ${params?.museumId}`,
-              //   href: `/entertainment/museum/details/${params?.museumId}`,
-              // },
-              // {
-              //   label: location?.state?.titleName,
-              //   href: `/entertainment/museum/title/details/${params?.titleId}`,
-              // },
+              {
+                label: location?.state?.museumName,
+                href: `/entertainment/museum/details/${params?.museumId}`,
+              },
               {
                 label: location?.state?.titleName,
-                href: `/entertainment/museum/${params?.museumId}/title/${params?.titleId}/episode/details/${params?.id}`
+                href: `/entertainment/museum/${params?.museumId}/title/details/${params?.titleId}`
               },
               { label: location?.state?.episode?.name},
-            ]
+            ]}
           }
         },
 

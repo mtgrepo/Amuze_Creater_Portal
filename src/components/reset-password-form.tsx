@@ -67,7 +67,7 @@ export default function ResetPasswordForm({ identifier, otp, onSuccess, showBack
                 otp: normalizedOtp!,
                 newPassword: values.newPassword,
             });
-            onSuccess?.();
+            onSuccess?.("success");
         } catch (error: any) {
             const message =
                 error?.message || "Something went wrong";
@@ -113,6 +113,8 @@ export default function ResetPasswordForm({ identifier, otp, onSuccess, showBack
                                                 type={showNewPassword ? "text" : "password"}
                                                 placeholder="Enter your new password" {...field}
                                                 className="pr-9"
+                                                autoComplete="new-password"
+
                                             />
                                             <Button
                                                 variant="ghost"
@@ -145,7 +147,9 @@ export default function ResetPasswordForm({ identifier, otp, onSuccess, showBack
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 placeholder="Re-enter password"
                                                 {...field}
-                                                className="pr-9" />
+                                                className="pr-9"
+                                                autoComplete="new-password"
+                                                />
                                             <Button
                                                 variant="ghost"
                                                 type="button"

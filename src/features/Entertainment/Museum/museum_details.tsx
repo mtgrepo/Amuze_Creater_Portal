@@ -46,8 +46,8 @@ export default function MuseumDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
         <div className="flex items-center">
           <Button
             variant="ghost"
@@ -68,7 +68,7 @@ export default function MuseumDetails() {
 
           <div className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent" />
 
-          <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center md:items-end">
+          <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center">
             <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
               <img
                 src={museumDetail.thumbnail}

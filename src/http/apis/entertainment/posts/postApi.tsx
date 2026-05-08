@@ -40,11 +40,7 @@ export const getPostById = async (id: number) => {
 
 export const createPost = async (postData: FormData) => {
   try {
-    const result = await axiosInstance.post(`post/create-post`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const result = await axiosInstance.post(`post/create-post`, postData);
     return result.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -56,11 +52,7 @@ export const createPost = async (postData: FormData) => {
 
 export const updatePost = async (id: number, postData: FormData) => {
   try {
-    const result = await axiosInstance.put(`post/update-post/${id}`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const result = await axiosInstance.put(`post/update-post/${id}`, postData);
     return result.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -74,12 +66,7 @@ export const updatePostMedia = async (id: number, mediaData: FormData) => {
   try {
     const result = await axiosInstance.put(
       `post/update-post-media/${id}`,
-      mediaData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      mediaData
     );
     return result.data;
   } catch (error) {

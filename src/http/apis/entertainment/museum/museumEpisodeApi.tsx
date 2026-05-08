@@ -5,12 +5,7 @@ export const createMuseumEpisode = async (data: FormData) => {
   try {
     const response = await axiosInstance.post(
       "museum/store-museum-episode",
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      data
     );
     return response.data;
   } catch (error) {
@@ -42,12 +37,7 @@ export const updateMuseumEpisodeThumbnail = async (
   try {
     const response = await axiosInstance.put(
       `museum/update-museum-episode-thumbnail/${episodeId}`,
-      thumbnail,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      thumbnail
     );
     return response.data;
   } catch (error) {
@@ -65,12 +55,7 @@ export const updateMuseumEpisode = async (
   try {
     const response = await axiosInstance.put(
       `museum/update-museum-episode/${episodeId}`,
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      data
     );
     return response.data;
   } catch (error) {
@@ -100,12 +85,7 @@ export const updateMuseumEpisodeFile = async (data: {
 
     const response = await axiosInstance.put(
       `museum/upate-file-museum-episode/${data.episodeId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      formData
     );
     return response.data;
   } catch (error) {

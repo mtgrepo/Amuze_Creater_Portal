@@ -1,7 +1,8 @@
 import Stat from "@/components/common/details_stat";
 import { Button } from "@/components/ui/button";
 import { useMuseumEpisodeDetailsQuery } from "@/composable/Query/Entertainment/Museum/useMuseumEpisodeDetailsQuery";
-import { ArrowLeft, Eye, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, Loader2, X } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -10,7 +11,7 @@ export default function MuseumEpisodeDetails() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { museumId, titleId } = useParams();
-  
+  const [activeImage, setActiveImage] = useState<string | null>(null);
 
   const { episodeDetails, isEpisodeLoading } = useMuseumEpisodeDetailsQuery(
     Number(id),
@@ -34,8 +35,8 @@ export default function MuseumEpisodeDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
         <div className="flex items-center">
           <Button
             variant="ghost"
@@ -50,7 +51,7 @@ export default function MuseumEpisodeDetails() {
             {t("back")}
           </Button>
         </div>
-        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
+        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center">
           <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border    ">
             <img
               src={episodeDetails.thumbnail}
@@ -91,7 +92,8 @@ export default function MuseumEpisodeDetails() {
                     <img
                       src={file.image}
                       alt="Episode"
-                      className="w-full h-40 object-cover group-hover:scale-105 transition duration-300"
+                      className="w-full h-40 object-cover cursor-pointer group-hover:scale-105 transition duration-300"
+                      onClick={() => setActiveImage(file.image)}
                     />
                   </div>
 
@@ -132,6 +134,26 @@ export default function MuseumEpisodeDetails() {
           )}
         </div>
       </div>
+      {activeImage && (
+        <div
+          className="fixed inset-0 z-50 bg-background flex items-center justify-center"
+          onClick={() => setActiveImage(null)}
+        >
+          <div className="relative max-w-4xl w-full p-4">
+            <button
+              className="absolute top-2 right-2 bg-white text-black rounded-full p-1"
+              onClick={() => setActiveImage(null)}
+            >
+              <X size={18} />
+            </button>
+
+            <img
+              src={activeImage}
+              className="w-full max-h-[80vh] object-contain rounded-xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

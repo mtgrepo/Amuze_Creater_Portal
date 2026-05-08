@@ -31,7 +31,7 @@ import Stat from "@/components/common/details_stat";
 export default function StoryTellingTitleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const {
     storyTellingTitleDetails: story,
@@ -40,7 +40,8 @@ export default function StoryTellingTitleDetails() {
   } = useStoryTellingTitleDetailsQuery(Number(id));
 
   const { commentsList } = useCommentQuery("story", Number(id));
-  const { updateSortingMutation, isPending } = useStoryTellingSortingUpdateCommand();
+  const { updateSortingMutation, isPending } =
+    useStoryTellingSortingUpdateCommand();
 
   if (isTitleLoading) {
     return (
@@ -66,12 +67,12 @@ export default function StoryTellingTitleDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
         <div className="flex items-center">
           <Button
             variant="ghost"
-            onClick={() => navigate('/entertainment/storytelling')}
+            onClick={() => navigate("/entertainment/storytelling")}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={18} />
@@ -90,7 +91,7 @@ export default function StoryTellingTitleDetails() {
   bg-linear-to-t 
   from-background via-background/30 to-transparent"
           />
-          <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center md:items-end">
+          <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center">
             <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
               <img
                 src={story.thumbnail}
@@ -109,8 +110,7 @@ export default function StoryTellingTitleDetails() {
                 ))}
               </div>
 
-              
-               <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">            
+              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-8  bg-muted/70 px-4 py-3 rounded-2xl">
                 <Stat
                   icon={
                     <Star className="text-amber-400 fill-amber-400" size={20} />
@@ -149,7 +149,7 @@ export default function StoryTellingTitleDetails() {
 
         <div className="bg-card border border-border p-6 rounded-3xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">{t('episodes')}</h2>
+            <h2 className="text-xl font-bold">{t("episodes")}</h2>
             <Button
               onClick={() =>
                 navigate(`/entertainment/storytelling/${id}/episode/create`, {

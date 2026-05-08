@@ -81,12 +81,6 @@ const router = createBrowserRouter(
           element: <NotFound />,
           handle: { crumb: "Not Found" },
         },
-        //test
-        // {
-        //   path: "/test",
-        //   element: <ImageCarousel />,
-        //   handle: { crumb: "Test" },
-        // },
         // Report
         {
           path: "/report/author",
@@ -376,7 +370,7 @@ const router = createBrowserRouter(
             crumb: [
               { label: "Entertainment" },
               { label: "Education", href: "/entertainment/education" },
-              { label: "Grades", href: "/entertainment/education/grades" },
+              { label: "Grades", href: "/entertainment/education" },
               { label: "Create" },
             ],
           }
@@ -463,7 +457,7 @@ const router = createBrowserRouter(
           element: <StoryTellingTitleCreate />,
           handle: {
             crumb: [
-              { label: ["StoryTelling"], href: "/entertainment/storytelling" },
+              { label: "StoryTelling", href: "/entertainment/storytelling" },
               { label: "Title Create" },
             ],
           },
@@ -531,7 +525,7 @@ const router = createBrowserRouter(
           element: <MuseumCreate />,
           handle: {
             crumb: [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               { label: "Museum Create" },
             ],
           },
@@ -541,7 +535,7 @@ const router = createBrowserRouter(
           element: <MuseumUpdate />,
           handle: {
             crumb: [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               { label: "Museum Edit" },
             ],
           },
@@ -551,7 +545,7 @@ const router = createBrowserRouter(
           element: <MuseumDetails />,
           handle: {
             crumb: ({ params, data }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               { label: data?.data?.name ?? `Museum ${params.id}` },
             ],
           },
@@ -562,7 +556,7 @@ const router = createBrowserRouter(
           element: <MuseumTitleCreate />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.id}`,
                 href: `/entertainment/museum/${params?.id}/title/create`,
@@ -576,7 +570,7 @@ const router = createBrowserRouter(
           element: < TitleUpdatePage />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.museumId}`,
                 href: `/entertainment/museum/details/${params?.museumId}`,
@@ -593,7 +587,7 @@ const router = createBrowserRouter(
           element: <MuseumTitleDetails />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.museumId}`,
                 href: `/entertainment/museum/details/${params?.museumId}`,
@@ -612,7 +606,7 @@ const router = createBrowserRouter(
           element: <MuseumEpisodeCreate />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.museumId}`,
                 href: `/entertainment/museum/details/${params?.museumId}`,
@@ -632,7 +626,7 @@ const router = createBrowserRouter(
           element: <MuseumEpisodeUpdatePage />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.museumId}`,
                 href: `/entertainment/museum/details/${params?.museumId}`,
@@ -656,7 +650,7 @@ const router = createBrowserRouter(
           element: <MuseumEpisodeDetails />,
           handle: {
             crumb: ({ params }: any) => [
-              { label: ["Museum"], href: "/entertainment/museum" },
+              { label: "Museum", href: "/entertainment/museum" },
               {
                 label: `Museum ${params?.museumId}`,
                 href: `/entertainment/museum/details/${params?.museumId}`,
@@ -685,7 +679,7 @@ const router = createBrowserRouter(
           element: <PostCreate />,
           handle: {
             crumb: [
-              { label: ["Posts"], href: "/entertainment/posts" },
+              { label: "Posts", href: "/entertainment/posts" },
               { label: "Post Create" },
             ],
           },
@@ -695,7 +689,7 @@ const router = createBrowserRouter(
           element: <PostUpdate />,
           handle: {
             crumb: [
-              { label: ["Posts"], href: "/entertainment/posts" },
+              { label: "Posts", href: "/entertainment/posts" },
               { label: "Post Edit" },
             ],
           },
@@ -705,7 +699,7 @@ const router = createBrowserRouter(
           element: <PostsDetailPage />,
           handle: {
             crumb: ({ params, data }: any) => [
-              { label: ["Posts"], href: "/entertainment/posts" },
+              { label: "Posts", href: "/entertainment/posts" },
               { label: data?.data?.name ?? `Post ${params.id}` },
             ],
           },

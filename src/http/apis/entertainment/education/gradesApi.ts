@@ -46,9 +46,9 @@ export const createGrades = async (data: FormData) => {
     }
 }
 
-export const updateGradeText = async (gradeId: number, name: string) => {
+export const updateGradeText = async (gradeId: number, name: string, is_old_question: boolean) => {
     try {
-        const response = await axiosInstance.put(`education/update-grade/${gradeId}`, {name});
+        const response = await axiosInstance.put(`education/update-grade/${gradeId}`, {name, is_old_question});
         return response?.data;
     } catch (error) {
         if (error instanceof AxiosError) {

@@ -6,7 +6,7 @@ import type {
   LoginCreatorResponse,
   ProfileHistory,
 } from "@/types/response/auth/loginCreatorResponse";
-import {  Mail, Phone, Tag, Lock, Calendar } from "lucide-react";
+import {  Mail, Phone, Tag, Lock } from "lucide-react";
 import ProfileInfoComponent from "./profile_info_component";
 import ProfileWalletComponent from "./income_component";
 import ProfileHistoryComponent from "./profile_history_component";
@@ -174,22 +174,6 @@ export default function ProfileDetailsComponent({
                       {info?.role?.name || "Standard User"}
                     </span>
                   </div>
-                  {/* <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm font-semibold">
-                      Joined{" "}
-                      {info?.acount?.created_at
-                        ? new Date(info.acount.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            },
-                          )
-                        : "N/A"}
-                    </span>
-                  </div> */}
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4  text-slate-600 dark:text-slate-400">
@@ -209,22 +193,6 @@ export default function ProfileDetailsComponent({
                 </div>
                 <div className="p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 italic text-slate-600 dark:text-slate-300 leading-relaxed">
                   {info?.bio || "This user hasn't written a bio yet..."}
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-semibold">
-                    Joined{" "}
-                    {info?.acount?.created_at
-                      ? new Date(info.acount.created_at).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        },
-                      )
-                      : "N/A"}
-                  </span>
                 </div>
               </div>
             </div>

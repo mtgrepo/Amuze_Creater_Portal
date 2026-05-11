@@ -81,12 +81,6 @@ const router = createBrowserRouter(
           element: <NotFound />,
           handle: { crumb: "Not Found" },
         },
-        //test
-        // {
-        //   path: "/test",
-        //   element: <ImageCarousel />,
-        //   handle: { crumb: "Test" },
-        // },
         // Report
         {
           path: "/report/author",
@@ -375,7 +369,7 @@ const router = createBrowserRouter(
             crumb: [
               { label: "Entertainment" },
               { label: "Education", href: "/entertainment/education" },
-              { label: "Grades", href: "/entertainment/education/grades" },
+              { label: "Grades", href: "/entertainment/education" },
               { label: "Create" },
             ],
           }

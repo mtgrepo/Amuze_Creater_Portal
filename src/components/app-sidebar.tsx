@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {  Layers, BellRing, Settings, FileChartColumnIncreasing, CreditCard, Eye, ThumbsUp, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
+import {  Layers, BellRing,  FileChartColumnIncreasing, CreditCard, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "../redux/store/store"
 import { useLoginCreatorQuery } from "../composable/Query/Auth/useLoginCreatorQuery"
@@ -48,16 +48,6 @@ const data = {
           url: "/report/purchase",
           icon: CreditCard,
         },
-        {
-          title: "View",
-          url: "/report/view",
-          icon: Eye,
-        }, 
-        {
-          title: "Likes",
-          url: "/report/likes",
-          icon: ThumbsUp
-        }
       ],
     },
     {
@@ -113,11 +103,6 @@ const data = {
       name: "Notifications",
       url: "/notifications",
       icon: BellRing,
-    },
-    {
-      name: "Setting",
-      url: "/setting",
-      icon: Settings,
     },
   ],
 }

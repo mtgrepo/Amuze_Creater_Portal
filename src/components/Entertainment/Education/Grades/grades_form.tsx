@@ -186,7 +186,7 @@ export default function GradesForm({
                     });
                 }
 
-                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name });
+                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name, is_old_question: values?.is_old_question!});
             }
             form.reset();
             setCreateDialog(false);
@@ -256,7 +256,7 @@ export default function GradesForm({
                                     </FormItem>
                                 )}
                             />
-
+                    
                             <FormField
                                 control={form.control}
                                 name="is_old_question"

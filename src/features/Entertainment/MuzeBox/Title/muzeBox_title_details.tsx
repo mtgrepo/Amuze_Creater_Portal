@@ -186,7 +186,7 @@ export default function MuzeBoxTitleDetails() {
           <div className="grid gap-3">
             {titleDetails?.muze_box_episodes?.length > 0 ? (
               titleDetails.muze_box_episodes
-                .sort((a: any, b: any) => a.sorting - b.sorting) // Sort episodes by sorting number
+                .sort((a: any, b: any) => a.sorting - b.sorting) 
                 .map((ep: any, index: number) => (
                   <div
                     key={ep.id}
@@ -205,9 +205,6 @@ export default function MuzeBoxTitleDetails() {
                         <h4 className="font-bold text-sm">
                           {ep.name || `Episode ${index + 1}`}
                         </h4>
-                        <p className="text-[10px] text-muted-foreground">
-                          🪙 {ep?.price} Kyats
-                        </p>
                       </div>
                     </div>
 

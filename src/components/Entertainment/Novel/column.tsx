@@ -71,7 +71,7 @@ export default function NovelColumn() {
                 const name = row.getValue("description") as string;
 
                 return (
-                    <div className="max-w-87.5 wrap-break-word whitespace-normal line-clamp-2">
+                    <div className="max-w-87.5 line-clamp-2 wrap-break-word whitespace-normal">
                         {name}
                     </div>
                 );

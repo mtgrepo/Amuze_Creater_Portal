@@ -212,9 +212,6 @@ export default function ComicsTitleDetails() {
                         <h4 className="font-bold text-sm">
                           {ep.name || `Episode ${index + 1}`}
                         </h4>
-                        <p className="text-[10px] text-muted-foreground">
-                          🪙 {ep?.price} Kyats
-                        </p>
                       </div>
                     </div>
 

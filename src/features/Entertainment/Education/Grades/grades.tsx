@@ -13,16 +13,9 @@ import SearchBox from "../../../../components/common/search_box";
 export default function Grades() {
   const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
   const [search, setSearch] = React.useState("");
-  const [creatorId, setCreatorId] = React.useState<number | undefined>();
 
-
-  React.useEffect(() => {
-    const storedData = localStorage.getItem("creator");
-    if (!storedData) return;
-
-    const loginCreator = decryptAuthData(storedData);
-    setCreatorId(loginCreator?.creator?.id);
-  }, []);
+  const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
+  const creatorId = loginCreator?.creator?.id;
 
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -37,7 +30,7 @@ export default function Grades() {
 
 
   const { gradeList: apiData, isLoading } = useGradesQuery({
-        authorId: creatorId ?? 0,
+    authorId: creatorId!,
     approve_status: queryParams?.approve_status,
   });
 
@@ -66,7 +59,7 @@ export default function Grades() {
                 setTab(val as "all" | "approved" | "published")
               }
               className="w-full my-5"
-            >
+            > 
               <TabsList className="w-full grid grid-cols-2" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
                   {t("all")}

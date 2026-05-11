@@ -8,6 +8,7 @@
   "publish_status": "Publish Status",
   "approve_status": "Approve Status",
   "noti_status": "Status",
+  "status": "Status",
   "sender": "Sender",
   "is_read": "Is Read",
   "active_status": "Active",

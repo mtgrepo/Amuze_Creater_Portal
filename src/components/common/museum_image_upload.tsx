@@ -6,7 +6,7 @@ import 'react-quill-new/dist/quill.snow.css';
 
 type MuseumFile = {
   id?: number;
-  localId: string;
+  localId?: string;
   image?: File | string | null;
   label?: string;
   description?: string;
@@ -44,6 +44,7 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
     const updated = [...value];
     updated[index] = {
       ...updated[index],
+      localId: updated[index]?.localId || crypto.randomUUID(),
       image: file,
       preview: URL.createObjectURL(file),
     };
@@ -73,10 +74,15 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
   //remove image
   const removeImage = (index: number) => {
     const updated = [...value];
+    const current = updated[index];
+    if(current.id && onDelete){
+      onDelete(current.id)
+    }
     updated[index] = {
-      ...updated[index],
+      ...current,
       image: null,
       preview: "",
+      id: undefined
     };
     onChange(updated);
   };
@@ -92,15 +98,15 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
   };
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-6 items-start">
       {value.map((file, i) => (
         <div
           key={file.localId}
-          className="relative border border-gray-400 p-4 w-[50vh]"
+          className="relative w-full max-w-sm border shadow-sm p-4"
         >
           <button
             type="button"
-            onClick={() => removeBox(file.localId)}
+            onClick={() => removeBox(file?.localId ?? "")}
             className="absolute top-1 right-1 bg-red-500 text-white px-1 font-bold "
           >
             <X width={20} />
@@ -108,19 +114,19 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
           <label className="block text-sm font-bold mb-1">Image</label>
 
           {file.preview || file.image ? (
-            <div className="relative w-24 h-24 mb-2">
+            <div className="relative w-full h-40 mb-2">
               <img
                 src={
                   file.preview ||
                   (typeof file.image === "string" ? file.image : "")
                 }
                 alt="preview"
-                className="w-24 h-24 object-cover rounded-lg"
+                className="w-full h-full object-cover rounded-lg border"
               />
               <button
                 type="button"
                 onClick={() => removeImage(i)}
-                className="absolute top-1 right-1 bg-red-500 text-white p-0.5 px-1 text-xs rounded-full"
+                className="absolute top-2 right-2 bg-black/60 hover:bg-black text-white text-xs px-2 py-1 rounded-full"
               >
                 ✕
               </button>
@@ -129,7 +135,7 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
             <>
             <div
               {...getRootProps()}
-              className="w-24 h-24 border-2 border-gray-500 border-dashed cursor-pointer flex flex-col items-center justify-center mb-2"
+              className="w-full h-40 border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-lg flex flex-col items-center justify-center cursor-pointer transition mb-2"
               onClick={() =>
                 document.getElementById(`museum_file_${i}`)?.click()
               }
@@ -144,7 +150,7 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
               />
 
               <Plus className="text-gray-500" size={40} />
-              <span className="text-xs text-gray-500 mt-1">Add Image</span>
+              <span className="text-xs text-gray-500 mt-1">Click to upload image</span>
             </div>
             {errors?.[i]?.image && (
             <p className="text-red-500 text-xs">
@@ -217,7 +223,7 @@ export const MuseumImageUploader: React.FC<MuseumImageUploaderProps> = ({
       <button
         type="button"
         onClick={addNewImageBox}
-        className="flex items-center gap-2 text-blue-600 border border-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 w-50 h-16"
+        className="w-full max-w-sm h-40 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-blue-400 text-blue-600 rounded-xl hover:bg-blue-50 transition"
       >
         <Plus size={20} /> Add New Image
       </button>

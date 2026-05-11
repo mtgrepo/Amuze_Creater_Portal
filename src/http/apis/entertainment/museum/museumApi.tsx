@@ -33,11 +33,7 @@ export const getMuseumById = async (id: number) => {
 
 export const createMuseum = async (museumData: FormData) => {
   try {
-    const result = await axiosInstance.post(`museum/store-museum`, museumData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const result = await axiosInstance.post(`museum/store-museum`, museumData);
     return result.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -72,12 +68,7 @@ export const updateMuseumThumbnail = async (
   try {
     const result = await axiosInstance.put(
       `museum/update-museum-thumbnail/${id}?type=${type}`,
-      thumbnail,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      thumbnail
     );
     return result.data;
   } catch (error) {
@@ -100,10 +91,24 @@ export const deleteMuseum = async (id: number) => {
   }
 };
 
-export const updateMuseumEpisodeFile = async (id: number) => {
+export const updateMuseumEpisodeFile = async (id: number, data: FormData) => {
   try {
     const result = await axiosInstance.put(
-      `museum/upate-file-museum-episode/${id}`,
+      `museum/upate-file-museum-episode/${id}`, data
+    );
+    return result.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "API failed");
+    }
+    throw new Error((error as string) || "Something went wrong");
+  }
+};
+
+export const deleteMuseumEpisodeFile = async (id: number, fileId: number) => {
+  try {
+    const result = await axiosInstance.delete(
+      `museum/delete-museum-episode-file/${id}?fileId=${fileId}`,
     );
     return result.data;
   } catch (error) {

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { SidebarInset } from "@/components/ui/sidebar";
 import { decryptAuthData } from "@/lib/helper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -58,7 +57,6 @@ export default function Novel() {
   const navigate = useNavigate();
 
   return (
-    <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-row justify-end gap-3">
@@ -111,6 +109,5 @@ export default function Novel() {
           </div>
         </div>
       </div>
-    </SidebarInset>
   );
 }

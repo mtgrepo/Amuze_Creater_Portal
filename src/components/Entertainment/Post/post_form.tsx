@@ -166,8 +166,6 @@ export default function PostForm({
     return media.some((m) => m.type === "video");
   };
 
-  // const isVideo = form.watch("media")?.some(m => m.type === "video");
-
   const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmittingAll(true);
@@ -194,9 +192,6 @@ export default function PostForm({
       } else {
         if (!defaultValues?.id) throw new Error("Missing post id");
         const fd = new FormData();
-
-        console.log("current media", currentMedia)
-
         fd.append("description", values.description);
         fd.append("visibility", values.visibility);
 

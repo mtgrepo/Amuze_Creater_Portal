@@ -4,12 +4,9 @@ import { AxiosError } from "axios";
 
 export const createStoryTellingEpisode = async (episodeData: FormData) => {
   try {
-    const response = await axiosInstance.post(`story/store-story-episode`, episodeData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+    const response = await axiosInstance.post(
+      `story/store-story-episode`,
+      episodeData,
     );
     return response.data;
   } catch (error) {
@@ -20,11 +17,16 @@ export const createStoryTellingEpisode = async (episodeData: FormData) => {
     }
     throw new Error((error as string) || "Something went wrong");
   }
-}
+};
 
-export const updateStoryTellingEpisode = async (episodeId: number, data: UpdateStoryEpisodePayload) => {
+export const updateStoryTellingEpisode = async (
+  episodeId: number,
+  data: UpdateStoryEpisodePayload,
+) => {
   try {
-    const response = await axiosInstance.put(`story/update-story-episode/${episodeId}`, data
+    const response = await axiosInstance.put(
+      `story/update-story-episode/${episodeId}`,
+      data,
     );
     return response.data;
   } catch (error) {
@@ -35,16 +37,16 @@ export const updateStoryTellingEpisode = async (episodeId: number, data: UpdateS
     }
     throw new Error((error as string) || "Something went wrong");
   }
-}
+};
 
-export const updateStoryTellingEpisodeThumbnail = async (episodeId: number, thumbnail: FormData) => {
+export const updateStoryTellingEpisodeThumbnail = async (
+  episodeId: number,
+  thumbnail: FormData,
+) => {
   try {
-    const response = await axiosInstance.post(`story/update-story-episode-thumbnail/${episodeId}`, thumbnail,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+    const response = await axiosInstance.post(
+      `story/update-story-episode-thumbnail/${episodeId}`,
+      thumbnail,
     );
     return response.data;
   } catch (error) {
@@ -55,16 +57,16 @@ export const updateStoryTellingEpisodeThumbnail = async (episodeId: number, thum
     }
     throw new Error((error as string) || "Something went wrong");
   }
-}
+};
 
-export const updateStoryTellingEpisodeAudio = async (episodeId: number, audio: FormData) => {
+export const updateStoryTellingEpisodeAudio = async (
+  episodeId: number,
+  audio: FormData,
+) => {
   try {
-    const response = await axiosInstance.put(`story/update-story-episode-audio/${episodeId}`, audio,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+    const response = await axiosInstance.put(
+      `story/update-story-episode-audio/${episodeId}`,
+      audio,
     );
     return response.data;
   } catch (error) {
@@ -75,16 +77,27 @@ export const updateStoryTellingEpisodeAudio = async (episodeId: number, audio: F
     }
     throw new Error((error as string) || "Something went wrong");
   }
-}
+};
 
-export const generateStoryEpisodePresignedUrl = async (titleId: number, episodeName: string, contentType: string) => {
+export const generateStoryEpisodePresignedUrl = async (
+  titleId: number,
+  episodeName: string,
+  contentType: string,
+) => {
   try {
-    const response = await axiosInstance.post("story/generate-story-episode-presigned-url", {
-      titleId,
-      episodeName,
-      contentType,
-    });
-    return response.data as { status: boolean; message: string; data: { url: string; tempFilePath: string } };
+    const response = await axiosInstance.post(
+      "story/generate-story-episode-presigned-url",
+      {
+        titleId,
+        episodeName,
+        contentType,
+      },
+    );
+    return response.data as {
+      status: boolean;
+      message: string;
+      data: { url: string; tempFilePath: string };
+    };
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(
@@ -95,10 +108,14 @@ export const generateStoryEpisodePresignedUrl = async (titleId: number, episodeN
   }
 };
 
-export const getStoryTellingEpisodeById = async (titleId: number,
-  episodeId: number) => {
+export const getStoryTellingEpisodeById = async (
+  titleId: number,
+  episodeId: number,
+) => {
   try {
-    const response = await axiosInstance.get(`story/get-story-episode`, {params: {titleId, episodeId}});
+    const response = await axiosInstance.get(`story/get-story-episode`, {
+      params: { titleId, episodeId },
+    });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -108,4 +125,4 @@ export const getStoryTellingEpisodeById = async (titleId: number,
     }
     throw new Error((error as string) || "Something went wrong");
   }
-}
+};

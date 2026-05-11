@@ -39,8 +39,6 @@ export function MediaUpload({
   mode = "add",
   onDelete,
 }: MediaUploadProps) {
-  // const hasVideo = value.some((v) => v.type === "video");
-  // const hasMaxImages = value.filter((v) => v.type === "image").length >= 10;
   const hasVideo = value.some((v) => getItemType(v) === "video");
 
 const hasMaxImages =
@@ -49,9 +47,6 @@ const hasMaxImages =
 
   const onDrop = (acceptedFiles: File[]) => {
     const currentItems = [...(value || [])];
-
-    console.log("current item", currentItems);
-
     const incomingItems = acceptedFiles.map((file) => ({
       type: getFileType(file),
     }));
@@ -66,8 +61,6 @@ const hasMaxImages =
     const imageCount = allItems.filter((i) => i.type === "image").length;
     const videoCount = allItems.filter((i) => i.type === "video").length;
 
-    console.log("current images", imageCount);
-    console.log("current video", videoCount);
 
     const newItems: MediaItem[] = [];
 

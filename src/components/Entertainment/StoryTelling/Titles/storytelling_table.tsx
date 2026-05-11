@@ -72,7 +72,7 @@ export function StoryTellingTable({
     return (
         <div className="w-full">
 
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-md border grid">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

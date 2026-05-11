@@ -14,7 +14,6 @@ import LongText from "@/components/common/longtext";
 import CommentsSection from "@/components/common/comment_component";
 import { useCommentQuery } from "@/composable/Query/Comment/useCommentQuery";
 import { useTranslation } from "react-i18next";
-// import { ImageCardSkeleton } from "@/components/ImageCardSkeleton";
 
 const PostsDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,9 +43,9 @@ const PostsDetailPage: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
 
         <Button
-          variant="outline"
-          onClick={() => navigate(-1)}
-          className="gap-2"
+          variant="ghost"
+          onClick={() => navigate("/entertainment/posts")}
+          className="cursor-pointer"
         >
           <ChevronLeft size={18} />
           {t('back')}
@@ -123,15 +122,12 @@ const PostsDetailPage: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="p-3 space-y-1">
-                          <>
-                            {item.alt ? (
+                      
+                        {item.alt && (
+                          <div className="p-2">
                               <LongText text={item.alt} />
-                            ) : (
-                              <span className="italic">No description</span>
+                              </div>
                             )}
-                          </>
-                        </div>
                       </div>
                     ))}
                   </div>

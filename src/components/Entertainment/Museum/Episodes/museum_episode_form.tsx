@@ -35,6 +35,8 @@ import { useTranslation } from "react-i18next";
 import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import RequiredLabel from "@/components/common/required_label";
 import NavigateConfirmDialog from "@/components/common/navigate_confirm_dialog";
+import { useMuseumEpisodeFileUpdate } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeFileUpdate";
+import { useMuseumEpisodeFileDelete } from "@/composable/Command/Entertainment/museum/useMuseumEpisodeFileDelete";
 
 const FileItemSchema = (mode: "add" | "edit") =>
   z
@@ -89,10 +91,12 @@ export default function MuseumEpisodeForm({
   const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
   const creatorId = loginCreator?.creator?.id;
-  //   const [imagesToRemove, setImagesToRemove] = useState<number[]>([]);
-  //     const [editedImages, setEditedImages] = useState<
-  //   { id: number; image: File; label?: string; description?: string }[]
-  // >([]);
+    const [imagesToRemove, setImagesToRemove] = useState<number[]>([]);
+      const [editedImages, setEditedImages] = useState<
+    { id: number; image: File; label?: string; description?: string }[]
+  >([]);
+    const [isSubmittingAll, setIsSubmittingAll] = useState(false);
+
 
 
   const { museumId } = useParams();
@@ -121,9 +125,12 @@ export default function MuseumEpisodeForm({
   const { updateEpisodeMutation, isUpdatePending } = useMuseumEpisodeUpdate();
   const { updateThumbnailMutation, isThumbnailUpdatePending } =
     useMuseumEpisodeThumbnailUpdate();
+  const {updateEpisodeFileMutation} = useMuseumEpisodeFileUpdate();
+  const {deleteEpisodeFileMutation} = useMuseumEpisodeFileDelete();
+  
 
   const isLoading =
-    isCreatePending || isUpdatePending || isThumbnailUpdatePending;
+    isSubmittingAll || isCreatePending || isUpdatePending || isThumbnailUpdatePending;
 
   useEffect(() => {
     if (
@@ -169,6 +176,7 @@ export default function MuseumEpisodeForm({
 
   const onSubmit = async (values: TitleFormValues) => {
     try {
+      setIsSubmittingAll(true);
       if (mode === "add") {
         const formData = new FormData();
         formData.append("museum_title_id", String(values.titleId));
@@ -216,17 +224,41 @@ export default function MuseumEpisodeForm({
 
         if (values.thumbnail instanceof File) {
           const thumbnailData = new FormData();
-          formData.append("thumbnail", values.thumbnail);
+          thumbnailData.append("thumbnail", values.thumbnail);
 
           await updateThumbnailMutation({
             id: Number(defaultValues.id),
             thumbnail: thumbnailData,
           });
         }
+
+        for(const fileId of imagesToRemove){
+          await deleteEpisodeFileMutation({
+            episodeId: Number(defaultValues?.id),
+            fileId
+          });
+        }
+
+        for(const { id, image, label, description} of editedImages){
+          const fileData = new FormData();
+          fileData.append("fileId", String(id));
+          if(image instanceof File){
+          fileData.append("image", image);
+          }
+          fileData.append("label", label ?? "");
+          fileData.append("description", description ?? "");
+
+          await updateEpisodeFileMutation({
+            episodeId: Number(defaultValues?.id),
+            data: fileData
+          })
+        }
       }
       if (onSuccess) onSuccess();
     } catch (error: any) {
       toast.error(error.message || "An error occured.");
+    } finally{
+      setIsSubmittingAll(false);
     }
   };
 
@@ -334,15 +366,15 @@ export default function MuseumEpisodeForm({
                         onChange={field.onChange}
                         control={form.control}
                         name="museum_file"
-                        // onDelete={(id) => {
-                        //   if (id) setImagesToRemove((prev) => [...prev, id]);
-                        // }}
-                        // onEdit={(id, image, label, description) => {
-                        //   setEditedImages((prev) => [
-                        //     ...prev.filter((img) => img.id !== id),
-                        //     { id, image, label, description },
-                        //   ]);
-                        // }}
+                        onDelete={(id) => {
+                          if (id) setImagesToRemove((prev) => [...prev, id]);
+                        }}
+                        onEdit={(id, image, label, description) => {
+                          setEditedImages((prev) => [
+                            ...prev.filter((img) => img.id !== id),
+                            { id, image, label, description },
+                          ]);
+                        }}
                         errors={form.formState.errors.museum_file as any}
                       />
                     </FormControl>

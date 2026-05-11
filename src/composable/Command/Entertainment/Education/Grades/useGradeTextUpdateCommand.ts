@@ -7,8 +7,8 @@ export const useGradeTextUpdateCommand = () => {
 
     const updateGradeTextMutation = useMutation({
         mutationKey: ['updateGradeText'],
-        mutationFn: async ({gradeId, name} : { gradeId: number, name: string}) => {
-            const res = await updateGradeText(gradeId, name);
+        mutationFn: async ({gradeId, name, is_old_question } : { gradeId: number, name: string, is_old_question: boolean }) => {
+            const res = await updateGradeText(gradeId, name, is_old_question);
             return res?.data;
         },
         onSuccess: () => {

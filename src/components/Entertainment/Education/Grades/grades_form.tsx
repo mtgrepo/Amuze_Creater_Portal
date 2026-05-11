@@ -186,7 +186,7 @@ export default function GradesForm({
                     });
                 }
 
-                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name });
+                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name, is_old_question: values?.is_old_question!});
             }
             form.reset();
             setCreateDialog(false);
@@ -268,7 +268,6 @@ export default function GradesForm({
                                             <Select
                                                 value={field.value ? "true" : "false"}
                                                 onValueChange={(val) => field.onChange(val === "true")}
-                                                disabled={mode === 'edit'}
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select Question Type" />

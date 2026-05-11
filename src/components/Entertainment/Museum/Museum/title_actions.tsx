@@ -1,5 +1,3 @@
-"use client";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +15,10 @@ import { useTranslation } from "react-i18next";
 interface TitleActionsProps {
   title: MuseumTitleDetailResponse;
   museumId: number; 
+  museumName: string;
 }
 
-export default function TitleActions({title, museumId }: TitleActionsProps) {
+export default function TitleActions({title, museumId, museumName }: TitleActionsProps) {
   const navigate = useNavigate();
   const {t} = useTranslation();
 
@@ -27,7 +26,8 @@ export default function TitleActions({title, museumId }: TitleActionsProps) {
     navigate(`/entertainment/museum/${museumId}/title/edit/${title?.id}`, {
       state: { 
         title, 
-        museumId 
+        museumId,
+        museumName
       },
     });
   };
@@ -36,7 +36,8 @@ export default function TitleActions({title, museumId }: TitleActionsProps) {
         navigate(`/entertainment/museum/${museumId}/title/details/${title?.id}`, {
       state: { 
         title, 
-        museumId
+        museumId,
+        museumName
       },
     });
   }

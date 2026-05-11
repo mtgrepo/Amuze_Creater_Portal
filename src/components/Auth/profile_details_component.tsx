@@ -327,7 +327,6 @@ export default function ProfileDetailsComponent({
 
                 if (type === "otp_error") {
                   setIsResetPasswordModalOpen(false);
-                  setIsResetPasswordModalOpen(true);
                 }
 
               }

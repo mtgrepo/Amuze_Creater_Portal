@@ -256,7 +256,7 @@ export default function GradesForm({
                                     </FormItem>
                                 )}
                             />
-
+                    
                             <FormField
                                 control={form.control}
                                 name="is_old_question"
@@ -268,6 +268,7 @@ export default function GradesForm({
                                             <Select
                                                 value={field.value ? "true" : "false"}
                                                 onValueChange={(val) => field.onChange(val === "true")}
+                                                disabled={mode === 'edit'}
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select Question Type" />

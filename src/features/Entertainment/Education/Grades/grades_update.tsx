@@ -27,7 +27,7 @@ export default function GradeUpdate() {
         defaultValues={{
           id: id,
           name: grades.name,
-          is_old_question: grades.description,
+          is_old_question: grades.is_old_question,
           thumbnail: grades.thumbnail,
         }}
       />

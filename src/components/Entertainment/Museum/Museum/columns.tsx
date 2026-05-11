@@ -9,9 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   CircleCheckBig,
-  Eye,
+  ClipboardPenLine,
+  Info,
   MoreHorizontal,
-  Pencil,
   XCircle,
 } from "lucide-react";
 import type { Museum } from "@/types/response/entertainment/museum/museumResponse";
@@ -49,7 +49,7 @@ export default function MuseumColumns() {
         const name = row.getValue("description") as string;
 
         return (
-          <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
+          <div className="line-clamp-2 max-w-87.5 wrap-break-word whitespace-normal">
             {name}
           </div>
         );
@@ -129,10 +129,10 @@ export default function MuseumColumns() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleViewDetails}>
-                <Eye /> {t('actions.view_details')}
+                <Info /> {t('actions.view_details')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleEditTitle}>
-                <Pencil />  {t('actions.edit')}
+                <ClipboardPenLine />  {t('actions.edit')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

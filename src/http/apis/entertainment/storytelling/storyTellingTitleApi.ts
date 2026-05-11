@@ -27,12 +27,7 @@ export const createStoryTellingTitle = async (titleData: FormData) => {
   try {
     const response = await axiosInstance.post(
       `/story/store-story-title`,
-      titleData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      titleData
     );
     return response.data;
   } catch (error) {
@@ -71,11 +66,7 @@ export const updateStoryTellingTitle = async (titleId: number, data: UpdateStory
 
 export const updateStoryTellingTitleThumbnail = async(titleId: number, type: 'vertical' | 'horizontal', formData : FormData) => {
   try{
-    const response = await axiosInstance.put(`/story/update-story-title-thumbnail/${type}/${titleId}`, formData, {
-      headers: {
-         "Content-Type": "multipart/form-data",
-      }
-    });
+    const response = await axiosInstance.put(`/story/update-story-title-thumbnail/${type}/${titleId}`, formData);
     return response.data;
   }catch(error){
     if (error instanceof AxiosError) {

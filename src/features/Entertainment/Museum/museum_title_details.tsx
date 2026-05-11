@@ -48,8 +48,8 @@ export default function MuseumTitleDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 space-y-6">
         <div className="flex items-center">
           <Button
             variant="ghost"
@@ -60,7 +60,7 @@ export default function MuseumTitleDetails() {
             Back to Museum
           </Button>
         </div>
-        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
+        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center">
           <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
             <img
               src={titleDetails.thumbnail}

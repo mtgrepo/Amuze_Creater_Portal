@@ -18,8 +18,8 @@ export const useMuseumEpisodeUpdate = () => {
       return await updateMuseumEpisode(episodeId, data);
     },
     onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ["museumTitleDetail"] });
-      queryClient.invalidateQueries({queryKey: ["museumEpisodeDetail", episodeId]});
+      queryClient.invalidateQueries({ queryKey: ["museumTitleDetail", Number(titleId)] });
+      queryClient.invalidateQueries({queryKey: ["museumEpisodeDetail", Number(episodeId)]});
       toast.success(`Museum episode updated successfully`);
       navigate(`/entertainment/museum/${museumId}/title/details/${titleId}`, {
         replace: true,

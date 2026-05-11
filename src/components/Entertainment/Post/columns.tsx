@@ -1,7 +1,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PostResponse } from "@/types/response/entertainment/post/postResponse";
 import { Button } from "@/components/ui/button";
-import { Play, MoreHorizontal, Eye, Pencil } from "lucide-react";
+import {
+  Play,
+  MoreHorizontal,
+  Info,
+  ClipboardPenLine,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +20,7 @@ import { useTranslation } from "react-i18next";
 
 export default function PostColumns({ is_banned }: { is_banned: boolean }) {
   const navigate = useNavigate();
-    const { t } = useTranslation();
-  
+  const { t } = useTranslation();
 
   const columns: ColumnDef<PostResponse>[] = [
     {
@@ -34,7 +38,7 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
       cell: ({ row }) => {
         const name = row.getValue("description") as string;
         return (
-          <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
+          <div className="line-clamp-2 max-w-87.5 wrap-break-word whitespace-normal">
             {name}
           </div>
         );
@@ -94,7 +98,7 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
 
     {
       accessorKey: "view_count",
-      header:  t('views'),
+      header: t("views"),
       cell: ({ row }) => {
         const views = row.getValue("view_count") as number;
         return <div>{views || 0}</div>;
@@ -103,24 +107,24 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
 
     ...(is_banned
       ? [
-        {
-          accessorKey: "ban_reason",
-          header: "Ban Reason",
-          cell: ({ row }: any) => (
-            <span>
-              <LongText text={row.getValue("ban_reason") || "-"} />
-            </span>
-          ),
-        },
-        {
-          accessorFn: (row: any) => row.bannedByUser?.name,
-          id: "bannedBy",
-          header: "Banned By",
-          cell: ({ row }: any) => (
-            <span>{row.original.bannedByUser?.name || "-"}</span>
-          ),
-        },
-      ]
+          {
+            accessorKey: "ban_reason",
+            header: "Ban Reason",
+            cell: ({ row }: any) => (
+              <span>
+                <LongText text={row.getValue("ban_reason") || "-"} />
+              </span>
+            ),
+          },
+          {
+            accessorFn: (row: any) => row.bannedByUser?.name,
+            id: "bannedBy",
+            header: "Banned By",
+            cell: ({ row }: any) => (
+              <span>{row.original.bannedByUser?.name || "-"}</span>
+            ),
+          },
+        ]
       : []),
 
     {
@@ -144,15 +148,14 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
                   navigate(`/entertainment/posts/details/${post.id}`)
                 }
               >
-                <Eye className="mr-2 h-4 w-4" />
+                <Info />
                 {t("actions.view_details")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
                 onClick={() => navigate(`/entertainment/posts/edit/${post.id}`)}
               >
-                <Pencil className="mr-2 h-4 w-4" />
-                {t("actions.edit")}
+                <ClipboardPenLine /> {t("actions.edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

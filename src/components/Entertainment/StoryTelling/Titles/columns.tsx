@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   CircleCheckBig,
-  Eye,
+  ClipboardPenLine,
+  Info,
   MoreHorizontal,
-  Pencil,
   XCircle,
 } from "lucide-react";
 import {
@@ -59,18 +59,10 @@ export default function StoryTellingColumns() {
         const name = row.getValue("description") as string;
 
         return (
-          <div className="line-clamp-1 max-w-60 wrap-break-word whitespace-normal">
+          <div className="line-clamp-2 max-w-87.5 wrap-break-word whitespace-normal">
             {name}
           </div>
         );
-      },
-    },
-    {
-      accessorKey: "price",
-      header: t("price"),
-      cell: ({ row }) => {
-        const price = row.getValue("price") as number;
-        return <div>{price ? price.toLocaleString() : "0"}</div>;
       },
     },
     {
@@ -218,10 +210,10 @@ export default function StoryTellingColumns() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleViewDetails}>
-                <Eye /> {t("actions.view_details")}
+                <Info /> {t("actions.view_details")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleEditTitle}>
-                <Pencil /> {t("actions.edit")}
+                <ClipboardPenLine /> {t("actions.edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

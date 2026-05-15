@@ -176,7 +176,7 @@ export default function PostForm({
 
       formData.append("description", values.description);
       formData.append("visibility", values.visibility);
-       if (mode === "add") {
+      if (mode === "add") {
         formData.append("isVideo", String(isVideo));
       }
       formData.append("created_by", String(values.created_by));
@@ -200,30 +200,15 @@ export default function PostForm({
           data: fd,
         });
 
-        for (const item of currentMedia) {
-          if (item.mediaId) {
-            const original = originalMediaRef.current.find(
-              (m) => m.mediaId === item.mediaId,
-            );
-
-            const altChanged = original && original.alt !== item.alt;
-            const fileReplaced = !!item.file;
-
-            if (altChanged || fileReplaced) {
-              const replaceFd = new FormData();
-              replaceFd.append("fileId", item.mediaId);
-              replaceFd.append("alt", item.alt || "");
-
-              if (item.file) {
-                replaceFd.append("image", item.file);
-              }
-
-              await updateMediaMutation({
-                id: Number(defaultValues.id),
-                data: replaceFd,
-              });
-            }
+        if (deletedMediaRef.current.length > 0) {
+          for (const indexId of deletedMediaRef.current) {
+            await deleteMediaMutation({
+              id: Number(defaultValues.id),
+              indexId,
+            });
           }
+
+          deletedMediaRef.current = [];
         }
 
         const newUploads = currentMedia.filter(
@@ -243,15 +228,22 @@ export default function PostForm({
           });
         }
 
-        if (deletedMediaRef.current.length > 0) {
-          for (const indexId of deletedMediaRef.current) {
-            await deleteMediaMutation({
+        for (const item of currentMedia) {
+          if (item.mediaId) {
+            const replaceFd = new FormData();
+            replaceFd.append("fileId", item.mediaId);
+
+            if (item.file) {
+              replaceFd.append("image", item.file);
+            }
+
+            replaceFd.append("alt", item.alt ?? "");
+
+            await updateMediaMutation({
               id: Number(defaultValues.id),
-              indexId,
+              data: replaceFd,
             });
           }
-
-          deletedMediaRef.current = [];
         }
       }
       navigate("/entertainment/posts");
@@ -332,7 +324,6 @@ export default function PostForm({
                   </FormItem>
                 )}
               />
-
             </div>
           </div>
 

@@ -5,6 +5,8 @@ import { ArrowLeft, Eye, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import DOMPurify from "dompurify";
+
 
 export default function MuseumEpisodeDetails() {
   const { id } = useParams();
@@ -12,6 +14,7 @@ export default function MuseumEpisodeDetails() {
   const { t } = useTranslation();
   const { museumId, titleId } = useParams();
   const [activeImage, setActiveImage] = useState<string | null>(null);
+
 
   const { episodeDetails, isEpisodeLoading } = useMuseumEpisodeDetailsQuery(
     Number(id),
@@ -101,7 +104,7 @@ export default function MuseumEpisodeDetails() {
                     <div className="text-sm font-medium line-clamp-1">
                       {file.label ? (
                         <span
-                          dangerouslySetInnerHTML={{ __html: file.label }}
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(file.label) }}
                         />
                       ) : (
                         <span className="text-muted-foreground italic">
@@ -114,7 +117,7 @@ export default function MuseumEpisodeDetails() {
                       {file.description ? (
                         <span
                           dangerouslySetInnerHTML={{
-                            __html: file.description,
+                            __html: DOMPurify.sanitize(file.description),
                           }}
                         />
                       ) : (

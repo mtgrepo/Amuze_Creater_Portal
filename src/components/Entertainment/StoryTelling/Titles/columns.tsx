@@ -24,6 +24,7 @@ import {
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../i18n";
 import { useNavigate } from "react-router-dom";
+import IconWithTooltip from "@/components/common/IconWithTooltip";
 
 export default function StoryTellingColumns() {
   const { t } = useTranslation();
@@ -140,33 +141,28 @@ export default function StoryTellingColumns() {
         const approved = row.original.approve_status as number;
         const published = row.original.is_publish as boolean;
 
-        let tooltip = "";
-        let icon = null;
-
         if (approved === 1 && published) {
-          tooltip = "Approved & Published";
-          icon = <CircleCheckBig className="text-green-500 w-4 h-4" />;
+          return(
+            <IconWithTooltip
+            tooltip="Approved & Published"
+            icon={<CircleCheckBig className="text-green-500 w-4 h-4" />}
+            />
+          )
         } else if (approved === 1 && !published) {
-          tooltip = "Approved but Not Published";
-          icon = <CircleCheckBig className="text-yellow-500 w-4 h-4" />;
+          return(
+             <IconWithTooltip
+            tooltip="Approved but Not Published"
+            icon={<CircleCheckBig className="text-yellow-500 w-4 h-4" />}
+            />
+          )
         } else if (approved === 0) {
-          tooltip = "Not Approved";
-          icon = <XCircle className="text-red-500 w-4 h-4" />;
+          return(
+              <IconWithTooltip
+            tooltip="Not Approved"
+            icon={<XCircle className="text-red-500 w-4 h-4"  />}
+            />
+          )
         }
-
-        return (
-          <div className="relative group inline-block">
-            {icon}
-
-            <div
-              className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden group-hover:flex
-                  max-w-xs wrap-break-word whitespace-normal rounded bg-gray-800 text-white text-xs 
-                  px-2 py-1 shadow-lg pointer-events-none"
-            >
-              {tooltip}
-            </div>
-          </div>
-        );
       },
     },
     {

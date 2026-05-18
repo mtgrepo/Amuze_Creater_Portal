@@ -186,7 +186,7 @@ export default function GradesForm({
                     });
                 }
 
-                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name, is_old_question: values?.is_old_question!});
+                await updateGradeTextMutation({ gradeId: Number(defaultValues?.id), name: values?.name, isOldQuestion: values?.is_old_question || false});
             }
             form.reset();
             setCreateDialog(false);
@@ -343,6 +343,7 @@ export default function GradesForm({
                                     onClick={form.handleSubmit(onSubmit)}
                                     disabled={isPending || isThumbnailPending || isUpdatePending}
                                 >
+                                { (isPending || isThumbnailPending || isUpdatePending) && <Spinner className="mr-2 w-4 h-4"/>}
                                     Confirm
                                 </AlertDialogAction>
                             </AlertDialogFooter>

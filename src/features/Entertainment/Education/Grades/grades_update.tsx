@@ -6,7 +6,6 @@ export default function GradeUpdate() {
   const { state } = useLocation();
   const { id } = useParams();
 
-
   const { gradeDetails, isLoading} = useGradeDetailsQuery(Number(id)!);
 
   const grades = gradeDetails?.grade || state;

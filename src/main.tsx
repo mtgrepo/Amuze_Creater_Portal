@@ -7,7 +7,6 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import { Provider } from 'react-redux';
 import store from './redux/store/store.ts'
 import { ThemeProvider } from './components/common/Themes/theme-provider.tsx'
-import { toast } from 'sonner'
 import { TooltipProvider } from './components/ui/tooltip.tsx'
 import './i18n.ts'
 import { Toaster } from './components/ui/sonner.tsx'
@@ -16,7 +15,7 @@ import { registerServiceWorker } from './registerSW.ts'
 const queryClient = new QueryClient(({
   queryCache: new QueryCache({
     onError: (error) => {
-      toast.error(error?.message || "An error occured")
+      console.error(error?.message || "An error occured")
     }
   })
 }));

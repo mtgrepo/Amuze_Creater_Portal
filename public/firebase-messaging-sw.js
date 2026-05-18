@@ -52,7 +52,6 @@ const getTargetUrl = (type, titleId) => {
 
 messaging.onBackgroundMessage((payload) => {
   const fcmData = payload.data || {};
-  console.log("fcm payload", payload)
   const type = fcmData.type;
   const titleId = fcmData.titleId;
 

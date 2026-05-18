@@ -2,7 +2,6 @@ import { useDropzone } from "react-dropzone";
 import { X, Play, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
-import LongText from "./longtext";
 
 export type MediaItem = {
   id?: string;
@@ -41,8 +40,8 @@ export function MediaUpload({
 }: MediaUploadProps) {
   const hasVideo = value.some((v) => getItemType(v) === "video");
 
-const hasMaxImages =
-  value.filter((v) => getItemType(v) === "image").length >= 10;
+  const hasMaxImages =
+    value.filter((v) => getItemType(v) === "image").length >= 10;
   const isDisabled = hasVideo || hasMaxImages;
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -60,7 +59,6 @@ const hasMaxImages =
 
     const imageCount = allItems.filter((i) => i.type === "image").length;
     const videoCount = allItems.filter((i) => i.type === "video").length;
-
 
     const newItems: MediaItem[] = [];
 
@@ -130,9 +128,23 @@ const hasMaxImages =
     onChange([...updated]);
   };
 
-  const updateAlt = (index: number, alt: string) => {
+  const replaceFile = (index: number, file: File) => {
     const updated = [...value];
-    updated[index].alt = alt;
+
+    updated[index] = {
+      ...updated[index],
+      file,
+      type: getFileType(file),
+    };
+
+    onChange(updated);
+  };
+
+  const updateAlt = (index: number, alt: string) => {
+    const updated = value.map((item, i) =>
+      i === index ? { ...item, alt } : item,
+    );
+
     onChange(updated);
   };
 
@@ -176,7 +188,6 @@ const hasMaxImages =
       {value.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {value?.map((item: MediaItem, index: number) => {
-            const isReadOnly = mode === "edit" && !!item.mediaId;
             const src = getPreviewSrc(item);
             const type = item.file ? getFileType(item.file) : item.type;
 
@@ -195,7 +206,20 @@ const hasMaxImages =
                   <X size={16} />
                 </button>
 
-                <div className="aspect-video w-full bg-muted flex items-center justify-center relative overflow-hidden">
+                <label className="aspect-video w-full bg-muted flex items-center justify-center relative overflow-hidden cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+
+                      if (file) {
+                        replaceFile(index, file);
+                      }
+                    }}
+                  />
+
                   {src ? (
                     type === "video" ? (
                       <div className="relative w-full h-full">
@@ -228,33 +252,21 @@ const hasMaxImages =
                       </span>
                     </div>
                   )}
-                </div>
+                </label>
 
                 <div className="flex-1 bg-card">
-                  {isReadOnly ? (
-                    item.alt && (
-                      <div className="space-y-1.5 p-4">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
-                          Caption
-                        </span>
-                        <div className="p-3 rounded-xl bg-muted/40 border border-transparent text-sm text-foreground/80 leading-relaxed min-h-15">
-                          <LongText text={item.alt} />
-                        </div>
-                      </div>
-                    )
-                  ) : (
-                    <div className="space-y-1.5 p-4">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                        Caption
-                      </span>
-                      <Textarea
-                        className="w-full min-h-25 text-sm bg-muted/20 border-muted-foreground/10 focus:bg-background focus:ring-1 focus:ring-primary/20 resize-none rounded-xl transition-all"
-                        placeholder="Add a caption..."
-                        value={item.alt}
-                        onChange={(e) => updateAlt(index, e.target.value)}
-                      />
-                    </div>
-                  )}
+                  <div className="space-y-1.5 p-4">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      Caption
+                    </span>
+
+                    <Textarea
+                      className="w-full min-h-25 text-sm bg-muted/20 border-muted-foreground/10 focus:bg-background focus:ring-1 focus:ring-primary/20 resize-none rounded-xl transition-all"
+                      placeholder="Add a caption..."
+                      value={item.alt || ""}
+                      onChange={(e) => updateAlt(index, e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
             );

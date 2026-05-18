@@ -17,6 +17,7 @@ import {
 import type { Museum } from "@/types/response/entertainment/museum/museumResponse";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import IconWithTooltip from "@/components/common/IconWithTooltip";
 
 export default function MuseumColumns() {
   const navigate = useNavigate();
@@ -64,30 +65,21 @@ export default function MuseumColumns() {
       cell: ({ row }) => {
         const approved = row.original.approve_status as number;
 
-        let tooltip = "";
-        let icon = null;
-
         if (approved === 1) {
-          tooltip = "Approved";
-          icon = <CircleCheckBig className="text-green-500 w-4 h-4" />;
+          return (
+            <IconWithTooltip
+              tooltip="Approved"
+              icon={<CircleCheckBig className="text-green-500 w-4 h-4" />}
+            />
+          );
         } else if (approved === 0) {
-          tooltip = "Not Approved";
-          icon = <XCircle className="text-red-500 w-4 h-4" />;
+          return (
+            <IconWithTooltip
+              tooltip="Not Approved"
+              icon={<XCircle className="text-red-500 w-4 h-4" />}
+            />
+          );
         }
-
-        return (
-          <div className="relative group inline-block">
-            {icon}
-
-            <div
-              className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden group-hover:flex
-                  max-w-xs wrap-break-word whitespace-normal rounded bg-gray-800 text-white text-xs 
-                  px-2 py-1 shadow-lg pointer-events-none"
-            >
-              {tooltip}
-            </div>
-          </div>
-        );
       },
     },
     {
@@ -107,15 +99,15 @@ export default function MuseumColumns() {
         const handleViewDetails = () => {
           navigate(`/entertainment/museum/details/${museum.id}`, {
             state: {
-              museumName: museum?.name
-            }
+              museumName: museum?.name,
+            },
           });
         };
         const handleEditTitle = () => {
           navigate(`/entertainment/museum/edit/${museum.id}`, {
-             state: {
-              museumName: museum?.name
-            }
+            state: {
+              museumName: museum?.name,
+            },
           });
         };
         return (
@@ -129,10 +121,10 @@ export default function MuseumColumns() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleViewDetails}>
-                <Info /> {t('actions.view_details')}
+                <Info /> {t("actions.view_details")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleEditTitle}>
-                <ClipboardPenLine />  {t('actions.edit')}
+                <ClipboardPenLine /> {t("actions.edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

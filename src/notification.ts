@@ -7,7 +7,6 @@ export async function requestPermissionAndGetToken(): Promise<string | null> {
   const registration = await registerServiceWorker();
 
   if (Notification.permission === "denied") {
-    console.log("noti is denied")
     return null;
   }
 
@@ -20,12 +19,10 @@ export async function requestPermissionAndGetToken(): Promise<string | null> {
   }
 
   try {
-    console.log(import.meta.env.VITE_FIREBASE_VAPID_KEY)
     const token = await getToken(messaging as Messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration
     });
-    console.log("fcm token", token)
     return token;
   } catch (err) {
     console.error("Error getting token:", err);

@@ -40,12 +40,18 @@ export function LoginForm({
   });
 
   const [isVisible, setIsVisible] = useState(false);
+  const [isGettingFcmToken, setIsGettingFcmToken] = useState(false);
+
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   const { loginMutation, isPending } = useLoginCommand();
+
+  const isLoading = isPending || isGettingFcmToken;
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsGettingFcmToken(true);
       const fcmToken = await requestPermissionAndGetToken();
       const logInPayload = {
         ...values,
@@ -68,6 +74,8 @@ export function LoginForm({
       } else {
         toast.error(message);
       }
+    }finally{
+      setIsGettingFcmToken(false);
     }
   }
   return (
@@ -94,6 +102,7 @@ export function LoginForm({
                           id="emailOrPhone"
                           type="email"
                           placeholder="Enter your email or phone number"
+                          autoComplete="username"
                           {...field}
                         />
                       </FormControl>
@@ -115,6 +124,7 @@ export function LoginForm({
                               id="password"
                               placeholder="Enter your password"
                               type={isVisible ? "text" : "password"}
+                              autoComplete="current-password"
                               className="pr-9"
                               {...field}
                             />
@@ -148,8 +158,8 @@ export function LoginForm({
                   }}
                 />
                 <Field>
-                  <Button type="submit" disabled={isPending}>
-                    {isPending && <Spinner />} Login
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading && <Spinner />} Login
                   </Button>
                 </Field>
                 <FieldDescription className="text-center">

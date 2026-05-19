@@ -101,8 +101,8 @@ export default function StoryTellingTitleDetails() {
             </div>
 
             {/* Info */}
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-black">{story.name}</h1>
+            <div className="flex-1 space-y-4 text-center  lg:text-left min-w-0 w-full">
+              <h1 className="text-2xl md:text-3xl max-w-xl mx-auto lg:mx-0 font-black text-wrap max-w-lg break-words">{story.name}</h1>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-2">
                 {story.generes?.map((g: any) => (

@@ -69,16 +69,16 @@ export default function MuseumDetails() {
           <div className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent" />
 
           <div className="relative flex flex-col md:flex-row gap-6 p-6 md:p-10 items-center">
-            <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border">
+            <div className="w-36 h-52 md:w-48 md:h-72 rounded-2xl overflow-hidden shadow-xl border shrink-0">
               <img
                 src={museumDetail.thumbnail}
                 alt={museumDetail.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover "
               />
             </div>
 
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-black">
+            <div className="flex-1 space-y-4 text-center md:text-left min-w-0 ">
+              <h1 className="text-2xl md:text-3xl font-black text-wrap max-w-lg break-words">
                 {museumDetail.name}
               </h1>
 

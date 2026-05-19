@@ -37,23 +37,28 @@ axiosInstance.interceptors.request.use(
 );
 
 let isLoggingOut = false;
-
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error?.response?.status === 401 && !isLoggingOut) {
       isLoggingOut = true;
-      store.dispatch(logoutAction());
-      toast.error(
-        error?.response?.data?.message || "Session expired. Please log in again."
-      );
-      setTimeout(() => {
-        isLoggingOut = false;
-        window.location.href = "/creator-portal/login";
-      }, 2000);
+
+      try {
+        toast.error(
+          error?.response?.data?.message ||
+            "Session expired. Please log in again.",
+        );
+
+        await store.dispatch(logoutAction());
+      } finally {
+        setTimeout(() => {
+          isLoggingOut = false;
+        }, 2000);
+      }
     }
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

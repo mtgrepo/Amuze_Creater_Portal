@@ -69,10 +69,10 @@ export default function GradeDetails() {
               />
             </div>
 
-            <div className="flex-1 space-y-4 text-center md:text-left">
+            <div className="flex-1 space-y-4 text-center md:text-left min-w-0 w-full">
               <div className="space-y-1">
                 {/* Title with improved weight and color */}
-                <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight uppercase text-white">
+                <h1 className="text-2xl lg:text-3xl max-w-xl mx-auto lg:mx-0 font-extrabold tracking-tight uppercase text-white">
                   {grade.name || `Grade ${id}`}
                 </h1>
 

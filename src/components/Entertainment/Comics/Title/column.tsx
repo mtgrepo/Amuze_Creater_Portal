@@ -41,7 +41,7 @@ export default function Comicscolumn() {
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
 
-        return <div className="">{name}</div>;
+        return <div className="line-clamp-1 max-w-40 wrap-break-word whitespace-normal">{name}</div>;
       },
     },
     {

@@ -91,7 +91,7 @@ export default function NovelDetails() {
           />
 
           {/* Content Wrapper - items-center fixes the vertical alignment */}
-          <div className="relative flex flex-col lg:flex-row gap-8 p-8 md:p-10 h-full items-center md:items-center">
+          <div className="relative flex flex-col lg:flex-row gap-8 p-8 md:p-10 h-full items-center lg:items-start min-w-0">
             {/* Thumbnail Image */}
             <div className="w-40 h-56 md:w-48 md:h-72 rounded-2xl border border-white/20 overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
               <img
@@ -102,9 +102,9 @@ export default function NovelDetails() {
             </div>
 
             {/* Info Section */}
-            <div className="flex-1 space-y-6 text-center lg:text-left">
+            <div className="flex-1 space-y-6 text-center lg:text-left min-w-0 w-full">
               <div className="space-y-4">
-                <h1 className="text-2xl lg:text-3xl font-black tracking-tighter uppercase  drop-shadow-md">
+                <h1 className="text-2xl lg:text-3xl max-w-xl mx-auto lg:mx-0 font-black tracking-tight uppercase text-wrap break-words leading-tight drop-shadow-md">
                   {novelDetails.name || `Novel ${id}`}
                 </h1>
 

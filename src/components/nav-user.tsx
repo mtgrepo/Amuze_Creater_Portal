@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { logoutAction } from "../redux/auth/authSlice";
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function NavUser({
   creator,
@@ -33,9 +34,11 @@ export function NavUser({
   const { isMobile } = useSidebar();
 
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     dispatch(logoutAction());
+    queryClient.clear();
     toast.success("Logged out successfully");
   };
 

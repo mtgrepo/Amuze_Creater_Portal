@@ -100,9 +100,9 @@ export default function MuzeBoxTitleDetails() {
             </div>
 
             {/* Info Section */}
-            <div className="flex-1 space-y-6 text-center lg:text-left">
+            <div className="flex-1 space-y-6 text-center lg:text-left min-w-0 w-full">
               <div className="space-y-4">
-                <h1 className="text-2xl lg:text-3xl font-black tracking-tighter uppercase drop-shadow-md">
+                <h1 className="text-2xl lg:text-3xl font-black max-w-xl mx-auto lg:mx-0 tracking-tighter uppercase drop-shadow-md max-w-lg text-wrap break-words">
                   {titleDetails.name || `MuzeBox ${id}`}
                 </h1>
 

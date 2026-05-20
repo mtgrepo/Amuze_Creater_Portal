@@ -87,27 +87,32 @@ export default function Comics() {
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
-          <div className="flex flex-row justify-end gap-3">
-            <SearchBox search={search} setSearch={setSearch} />
+          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 w-full">
+            <div className="w-full sm:w-auto flex-1 sm:flex-initial">
+              <SearchBox search={search} setSearch={setSearch} />
+            </div>
 
-            <Button
-              size={"sm"}
-              className="cursor-pointer"
-              onClick={() => navigate("/entertainment/comics/title")}
-            >
-              <CirclePlus className="w-4 h-4" />
-              {t("create_new_comic")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="cursor-pointer"
-              onClick={handleExcelExport}
-              disabled={isLoadingExcel}
-            >
-              <FileUp className="h-4 w-4" />
-              {t('export_data')}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button
+                size="sm"
+                className="cursor-pointer w-full sm:w-auto justify-center"
+                onClick={() => navigate("/entertainment/comics/title")}
+              >
+                <CirclePlus className="w-4 h-4 mr-2 shrink-0" />
+                <span>{t("create_new_comic")}</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer w-full sm:w-auto justify-center"
+                onClick={handleExcelExport}
+                disabled={isLoadingExcel}
+              >
+                <FileUp className="h-4 w-4 mr-2 shrink-0" />
+                <span>{t('export_data')}</span>
+              </Button>
+            </div>
           </div>
           <div className="border border-border p-3 rounded-lg my-3">
             <Tabs

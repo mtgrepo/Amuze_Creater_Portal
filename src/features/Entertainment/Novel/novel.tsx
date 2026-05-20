@@ -59,7 +59,7 @@ export default function Novel() {
   return (
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
-          <div className="flex flex-row justify-end gap-3">
+          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 w-full">
             <SearchBox search={search} setSearch={setSearch} />
             <Button
               size={"sm"}

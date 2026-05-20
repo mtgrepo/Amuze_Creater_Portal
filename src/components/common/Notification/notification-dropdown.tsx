@@ -43,7 +43,10 @@ const CreatorNotiDropdown = () => {
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-12 z-50 w-80 rounded-xl border bg-background shadow-lg "
+      className="
+fixed top-32 left-4 right-4 z-50 max-w-sm mx-auto
+      lg:absolute lg:top-12 lg:left-auto lg:right-0 lg:w-80 lg:mx-0
+      rounded-xl border bg-background shadow-lg "
     >
       <div className="flex items-center justify-between border-b px-4 py-3">
         <span className="font-semibold text-sm">
@@ -74,10 +77,10 @@ const CreatorNotiDropdown = () => {
           ) : (
             notifications.map((noti) => (
               <CreatorNotiItem
-              key={noti.id}
-              notifications={noti}
-              onClick={() => handleNotificationItem(noti)}
-            />
+                key={noti.id}
+                notifications={noti}
+                onClick={() => handleNotificationItem(noti)}
+              />
             ))
           )}
 

@@ -88,9 +88,7 @@ export default function Comics() {
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5 ">
           <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 w-full">
-            <div className="w-full sm:w-auto flex-1 sm:flex-initial">
               <SearchBox search={search} setSearch={setSearch} />
-            </div>
 
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button

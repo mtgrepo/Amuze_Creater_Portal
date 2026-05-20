@@ -32,18 +32,20 @@ export default function GalleryColumn() {
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
 
-        return <div className="line-clamp-1 max-w-40 wrap-break-word whitespace-normal">{name}</div>;
+        return <div className="min-w-30 max-w-500 md:max-w-[320px] wrap-break-word whitespace-normal font-medium">
+            {name}
+          </div>;
       },
     },
     {
       accessorKey: "description",
       header: t("description"),
       cell: ({ row }) => {
-        const name = row.getValue("description") as string;
+        const description = row.getValue("description") as string;
 
         return (
-          <div className="max-w-87.5 line-clamp-2 wrap-break-word whitespace-normal">
-            {name}
+          <div className="max-w-87.5 line-clamp-2 md:line-clamp-4 wrap-break-word whitespace-normal text-muted-foreground">
+            {description}
           </div>
         );
       },

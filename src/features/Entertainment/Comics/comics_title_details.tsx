@@ -82,7 +82,7 @@ export default function ComicsTitleDetails() {
   }
 
   const handleSorting = async (episodeId: number, nextSorting: number) => {
-    await updateSortingMutation({ type: "comic" ,episodeId, nextSorting });
+    await updateSortingMutation({ type: "comic", episodeId, nextSorting });
   };
 
   return (
@@ -136,24 +136,24 @@ export default function ComicsTitleDetails() {
                 <Stat
                   icon={<Banknote className="text-emerald-400" size={20} />}
                   value={`${comic?.price ?? 0} Ks`}
-                  label={t('price')}
+                  label={t("price")}
                 />
                 <Stat
                   icon={
                     <Star className="text-amber-400 fill-amber-400" size={20} />
                   }
                   value={comic?.rating ?? "0"}
-                  label={t('rating')}
+                  label={t("rating")}
                 />
                 <Stat
                   icon={<Eye className="text-sky-400" size={20} />}
                   value={(comic?.views ?? 0).toLocaleString()}
-                  label={t('views')}
+                  label={t("views")}
                 />
                 <Stat
                   icon={<ThumbsUp className="text-rose-400" size={20} />}
                   value={comic?.likes ?? "0"}
-                  label={t('likes')}
+                  label={t("likes")}
                 />
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function ComicsTitleDetails() {
           <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
             <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
               <span className="w-1 h-6 bg-primary rounded-full" />
-              {t('description')}
+              {t("description")}
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               {comic?.description || "No description available for this title."}
@@ -175,7 +175,7 @@ export default function ComicsTitleDetails() {
         {/* --- EPISODE LIST SECTION --- */}
         <div className="bg-card border border-border p-5 md:p-8 rounded-3xl shadow-sm">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">{t('episode_list')}</h2>
+            <h2 className="text-2xl font-bold">{t("episode_list")}</h2>
             <Button
               onClick={() =>
                 navigate(`/entertainment/comics/episode/create/${id}`, {
@@ -191,40 +191,38 @@ export default function ComicsTitleDetails() {
           </div>
 
           <div className="grid gap-3">
-            {comic?.comic_episodes?.length > 0 ? (
-              comic.comic_episodes
-                .sort((a: any, b: any) => a.sorting - b.sorting) // Sort episodes by sorting number
-                .map((ep: any, index: number) => (
-                  <div
-                    key={ep.id}
-                    className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
-                  >
-                    <div className="flex items-center w-full sm:w-auto">
-                      <span className="w-6 text-muted-foreground font-mono font-medium">
-                        {(index + 1).toString().padStart(2, "0")}
-                      </span>
-                      <img
-                        src={ep.thumbnail}
-                        alt=""
-                        className="w-20 h-14  object-cover mx-4 shadow-md"
-                      />
-                      <div className="flex-1 sm:hidden">
-                        <h4 className="font-bold text-sm">
-                          {ep.name || `Episode ${index + 1}`}
-                        </h4>
-                      </div>
-                    </div>
+            {comic.comic_episodes
+              .sort((a: any, b: any) => a.sorting - b.sorting)
+              .map((ep: any, index: number) => (
+                <div
+                  key={ep.id}
+                  className="group flex flex-col md:flex-row items-start md:items-center justify-between bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
+                >
+                  {/* Left side: Index, Thumbnail, and Episode Info Bundle */}
+                  <div className="flex items-center gap-4 w-full md:w-auto min-w-0 flex-1">
+                    <span className="w-6 text-muted-foreground font-mono font-medium shrink-0">
+                      {(index + 1).toString().padStart(2, "0")}
+                    </span>
 
-                    <div className="hidden sm:block flex-1 min-w-0">
-                      <h4 className="font-bold truncate group-hover:text-primary transition-colors">
+                    <img
+                      src={ep.thumbnail}
+                      alt=""
+                      className="w-20 h-14 object-cover rounded-lg shadow-md shrink-0"
+                    />
+
+                    {/* Text Container: Fully visible everywhere with clean truncation */}
+                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                      <h4 className="text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">
                         {ep.name || `Episode ${index + 1}`}
                       </h4>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {new Date(comic.created_at).toLocaleDateString()}
                       </p>
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
+                  {/* Right side: Price, Approval Status, Dropdown & Actions */}
+                  <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-6 border-t md:border-t-0 pt-3 md:pt-0 shrink-0">
                     <span className="flex flex-row gap-1 items-center justify-center text-sm font-bold text-yellow-600">
                       <svg
                         width="24"
@@ -232,77 +230,71 @@ export default function ComicsTitleDetails() {
                         viewBox="0 0 24 24"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4 text-amber-500"
                       >
                         <path
                           d="M13 5C13 6.10457 10.5376 7 7.5 7C4.46243 7 2 6.10457 2 5M13 5C13 3.89543 10.5376 3 7.5 3C4.46243 3 2 3.89543 2 5M13 5V6.5M2 5V17C2 18.1046 4.46243 19 7.5 19M7.5 11C7.33145 11 7.16468 10.9972 7 10.9918C4.19675 10.9 2 10.0433 2 9M7.5 15C4.46243 15 2 14.1046 2 13M22 11.5C22 12.6046 19.5376 13.5 16.5 13.5C13.4624 13.5 11 12.6046 11 11.5M22 11.5C22 10.3954 19.5376 9.5 16.5 9.5C13.4624 9.5 11 10.3954 11 11.5M22 11.5V19C22 20.1046 19.5376 21 16.5 21C13.4624 21 11 20.1046 11 19V11.5M22 15.25C22 16.3546 19.5376 17.25 16.5 17.25C13.4624 17.25 11 16.3546 11 15.25"
                           stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       {ep?.price}
                     </span>
-                      <div className="flex items-center gap-4">
-                        {ep?.approve_status === 0 ? (
-                          <IconWithTooltip
-                            tooltip="Pending"
-                            icon={
-                              <XCircle className="w-5 h-5 text-destructive" />
-                            }
-                          />
-                        ) : (
-                          <IconWithTooltip
-                            tooltip="Approved"
-                            icon={
-                              <CircleCheckBig className="w-5 h-5 text-emerald-500" />
-                            }
-                          />
-                        )}
-                        <Select
-                        disabled={isPending}
-                          value={ep?.sorting.toString()}
-                          onValueChange={(value) =>
-                            handleSorting(ep?.id, parseInt(value))
+
+                    <div className="flex items-center gap-4">
+                      {ep?.approve_status === 0 ? (
+                        <IconWithTooltip
+                          tooltip="Pending"
+                          icon={
+                            <XCircle className="w-5 h-5 text-destructive" />
                           }
-                        >
-                          <SelectTrigger className="w-15">
-                            <SelectValue>{index + 1}</SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              {comic?.comic_episodes?.map(
-                                (epi: any, index: number) => (
-                                  <SelectItem
-                                    value={(index + 1).toString()}
-                                    key={epi.id}
-                                  >
-                                    {index + 1}
-                                  </SelectItem>
-                                ),
-                              )}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        {/* {isPending && (
-                          <div className="animate-spin text-primary">
-                            <Loader2 className="w-5 h-5" />
-                          </div>
-                        )} */}
-                        <EpisodeActions
-                          episode={ep}
-                          titleId={comic?.id}
-                          titleName={comic?.name}
                         />
-                      </div>
+                      ) : (
+                        <IconWithTooltip
+                          tooltip="Approved"
+                          icon={
+                            <CircleCheckBig className="w-5 h-5 text-emerald-500" />
+                          }
+                        />
+                      )}
+
+                      <Select
+                        disabled={isPending}
+                        value={ep?.sorting.toString()}
+                        onValueChange={(value) =>
+                          handleSorting(ep?.id, parseInt(value))
+                        }
+                      >
+                        <SelectTrigger className="w-15">
+                          <SelectValue>{index + 1}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {comic?.comic_episodes?.map(
+                              (epi: any, index: number) => (
+                                <SelectItem
+                                  value={(index + 1).toString()}
+                                  key={epi.id}
+                                >
+                                  {index + 1}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+
+                      <EpisodeActions
+                        episode={ep}
+                        titleId={comic?.id}
+                        titleName={comic?.name}
+                      />
                     </div>
                   </div>
-                ))
-            ) : (
-              <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl opacity-50">
-                <p className="italic">No episodes available yet.</p>
-              </div>
-            )}
+                </div>
+              ))}
           </div>
         </div>
 

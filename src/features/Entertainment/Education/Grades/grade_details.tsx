@@ -125,34 +125,33 @@ export default function GradeDetails() {
               grade?.courses.map((ep: any, index: number) => (
                 <div
                   key={ep.id}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
+                  className="group flex flex-col md:flex-row items-start md:items-center justify-between bg-background/40 border border-border p-4 rounded-2xl hover:bg-accent/50 transition-all gap-4"
                 >
-                  <div className="flex items-center w-full sm:w-auto">
-                    <span className="w-6 text-muted-foreground font-mono font-medium">
+                  {/* Left side: Index, Thumbnail, and Episode Info Bundle */}
+                  <div className="flex items-center gap-4 w-full md:w-auto min-w-0 flex-1">
+                    <span className="w-6 text-muted-foreground font-mono font-medium shrink-0">
                       {(index + 1).toString().padStart(2, "0")}
                     </span>
+
                     <img
                       src={ep.thumbnail}
                       alt=""
-                      className="w-20 h-14  object-cover mx-4 shadow-md"
+                      className="w-20 h-14 object-cover rounded-lg shadow-md shrink-0"
                     />
-                    <div className="flex-1 sm:hidden">
-                      <h4 className="font-bold text-sm">
+
+                    {/* Text Container: Fully visible everywhere with clean truncation */}
+                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                      <h4 className="text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">
                         {ep.name || `Episode ${index + 1}`}
                       </h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {new Date(ep.created_at).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="hidden sm:block flex-1 min-w-0">
-                    <h4 className="font-bold truncate group-hover:text-primary transition-colors">
-                      {ep.name || `Episode ${index + 1}`}
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(ep.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
+                  {/* Right side: Price, Approval Status, Dropdown & Actions */}
+                  <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-6 border-t md:border-t-0 pt-3 md:pt-0 shrink-0">
                     <span className="flex flex-row gap-1 items-center justify-center text-sm font-bold text-yellow-600">
                       <svg
                         width="24"
@@ -160,17 +159,19 @@ export default function GradeDetails() {
                         viewBox="0 0 24 24"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4 text-amber-500"
                       >
                         <path
                           d="M13 5C13 6.10457 10.5376 7 7.5 7C4.46243 7 2 6.10457 2 5M13 5C13 3.89543 10.5376 3 7.5 3C4.46243 3 2 3.89543 2 5M13 5V6.5M2 5V17C2 18.1046 4.46243 19 7.5 19M7.5 11C7.33145 11 7.16468 10.9972 7 10.9918C4.19675 10.9 2 10.0433 2 9M7.5 15C4.46243 15 2 14.1046 2 13M22 11.5C22 12.6046 19.5376 13.5 16.5 13.5C13.4624 13.5 11 12.6046 11 11.5M22 11.5C22 10.3954 19.5376 9.5 16.5 9.5C13.4624 9.5 11 10.3954 11 11.5M22 11.5V19C22 20.1046 19.5376 21 16.5 21C13.4624 21 11 20.1046 11 19V11.5M22 15.25C22 16.3546 19.5376 17.25 16.5 17.25C13.4624 17.25 11 16.3546 11 15.25"
                           stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       {ep?.price}
                     </span>
+
                     <div className="flex items-center gap-4">
                       {ep?.approve_status === 0 ? (
                         <IconWithTooltip
@@ -187,6 +188,7 @@ export default function GradeDetails() {
                           }
                         />
                       )}
+
                       <CourseActions
                         course={ep}
                         titleId={grade?.id}

@@ -57,10 +57,10 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
   }, [matches, location]);
 
   return (
-    <Breadcrumb className="min-w-0 flex-1">
-      <BreadcrumbList className="flex-nowrap">
+    <Breadcrumb>
+      <BreadcrumbList>
         {/* Static Home Link */}
-        <BreadcrumbItem className="shrink-0">
+        <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link to="/">Amuze</Link>
           </BreadcrumbLink>
@@ -68,11 +68,11 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
 
         {crumbs.map((item) => (
           <React.Fragment key={item.key}>
-            <BreadcrumbSeparator className="shrink-0"/>
-            <BreadcrumbItem className="min-w-0">
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
               {item.isLast ? (
                 <BreadcrumbPage>
-                  <span className="block truncate max-w-[120px] sm:max-w-[180px] md:max-w-[240px]">
+                  <span className="max-w-50 truncate block py-1">
                     {typeof item.label === "string" ? item.label : "Details"}
                   </span>
                 </BreadcrumbPage>
@@ -80,7 +80,7 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
 
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link to={item.href} state={location?.state} className="block truncate max-w-[80px] sm:max-w-[120px]">
+                  <Link to={item.href} state={location?.state}>
                     <span>{typeof item.label === "string" ? item.label : "Back"}</span>
                   </Link>
                 </BreadcrumbLink>

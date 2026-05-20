@@ -29,7 +29,11 @@ export default function GradeColumn() {
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
 
-        return <div className="line-clamp-1 max-w-40 wrap-break-word whitespace-normal">{name}</div>;
+        return (
+          <div className="min-w-30 max-w-500 md:max-w-[320px] wrap-break-word whitespace-normal font-medium">
+            {name}
+          </div>
+        );
       },
     },
     {

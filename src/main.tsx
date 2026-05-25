@@ -13,6 +13,13 @@ import { Toaster } from './components/ui/sonner.tsx'
 import { registerServiceWorker } from './registerSW.ts'
 
 const queryClient = new QueryClient(({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, 
+      gcTime: 1000 * 50 * 60,
+      retry: 1, 
+    },
+  },
   queryCache: new QueryCache({
     onError: (error) => {
       console.error(error?.message || "An error occured")

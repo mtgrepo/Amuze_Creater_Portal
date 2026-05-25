@@ -44,8 +44,7 @@ const CreatorNotiDropdown = () => {
     <div
       ref={ref}
       className="
-fixed top-32 left-4 right-4 z-50 max-w-sm mx-auto
-      lg:absolute lg:top-12 lg:left-auto lg:right-0 lg:w-80 lg:mx-0
+      absolute top-12 left-auto right-0 w-80 lg:mx-0
       rounded-xl border bg-background shadow-lg "
     >
       <div className="flex items-center justify-between border-b px-4 py-3">

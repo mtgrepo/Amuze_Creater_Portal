@@ -7,6 +7,8 @@ export interface GalleryParams {
   approve_status?: number;
   is_published?: boolean;
   name?: string;
+  startDate?: string,
+  endDate?: string
 }
 
 export const useGalleryQuery = (creatorId: number, params: GalleryParams) => {

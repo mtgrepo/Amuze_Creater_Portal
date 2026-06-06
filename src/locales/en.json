@@ -3,6 +3,7 @@
   "settings": "Settings",
 
   "all": "All",
+  "pending": "Pending",
   "approved": "Approved",
   "published": "Published",
   "publish_status": "Publish Status",

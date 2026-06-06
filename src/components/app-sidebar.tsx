@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {  Layers, BellRing,  FileChartColumnIncreasing, CreditCard, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, GraduationCap, Landmark, SquareParking } from "lucide-react"
+import {  Layers, BellRing,  FileChartColumnIncreasing, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, SquareParking } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "../redux/store/store"
 import { useLoginCreatorQuery } from "../composable/Query/Auth/useLoginCreatorQuery"
@@ -43,11 +43,11 @@ const data = {
           url: "/report/author",
           icon: FileChartColumnIncreasing,
         },
-        {
-          title: "Purchase",
-          url: "/report/purchase",
-          icon: CreditCard,
-        },
+        // {
+        //   title: "Purchase",
+        //   url: "/report/purchase",
+        //   icon: CreditCard,
+        // },
       ],
     },
     {
@@ -80,16 +80,16 @@ const data = {
               url: "/entertainment/muze-box",
               icon: TvMinimalPlay
             }, 
-            {
-              title: "Education",
-              url: "/entertainment/education",
-              icon: GraduationCap
-            },
-            {
-              title: "Museum",
-              url: "/entertainment/museum",
-              icon: Landmark
-            },
+            // {
+            //   title: "Education",
+            //   url: "/entertainment/education",
+            //   icon: GraduationCap
+            // },
+            // {
+            //   title: "Museum",
+            //   url: "/entertainment/museum",
+            //   icon: Landmark
+            // },
             {
               title: "Posts",
               url: "/entertainment/posts",

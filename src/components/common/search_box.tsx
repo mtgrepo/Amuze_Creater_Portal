@@ -15,7 +15,7 @@ export default function SearchBox({
         Name
       </label>
 
-      {/* Input container styled precisely like your date buttons */}
+      {/* Input container styled like  date buttons */}
       <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
         

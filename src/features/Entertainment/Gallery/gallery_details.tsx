@@ -53,7 +53,7 @@ export default function GalleryDetails() {
         {/* BACK BUTTON */}
         <Button
           variant="ghost"
-          onClick={() => navigate("/entertainment/gallery")}
+          onClick={() => navigate(-1)}
           className="cursor-pointer"
         >
           <ArrowLeft size={18} />

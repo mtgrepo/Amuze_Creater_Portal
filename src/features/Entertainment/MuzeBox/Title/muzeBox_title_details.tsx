@@ -72,7 +72,7 @@ export default function MuzeBoxTitleDetails() {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 space-y-6">
-        <Button variant="ghost" onClick={() => navigate('/entertainment/muze-box')} className="cursor-pointer">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="cursor-pointer">
           <ArrowLeft size={18} />
           Back to MuzeBox 
         </Button>

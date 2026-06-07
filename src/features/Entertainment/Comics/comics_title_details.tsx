@@ -90,7 +90,7 @@ export default function ComicsTitleDetails() {
       <div className="max-w-7xl mx-auto px-6 space-y-6">
         <Button
           className="cursor-pointer"
-          onClick={() => navigate("/entertainment/comics")}
+          onClick={() => navigate(-1)}
           variant="ghost"
         >
           <ArrowLeft />

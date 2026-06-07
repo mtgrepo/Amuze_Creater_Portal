@@ -69,7 +69,7 @@ export default function NovelDetails() {
         {/* BACK BUTTON */}
         <Button
           variant="ghost"
-          onClick={() => navigate("/entertainment/novel")}
+          onClick={() => navigate(-1)}
           className="cursor-pointer"
         >
           <ArrowLeft size={18} /> Back to Novel

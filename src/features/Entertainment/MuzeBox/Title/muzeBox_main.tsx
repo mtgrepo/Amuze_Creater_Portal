@@ -12,19 +12,25 @@ import { useTranslation } from "react-i18next";
 import SearchBox from "../../../../components/common/search_box";
 import type { ReportFilters } from "@/types/response/report/authorReportResponse";
 import DateFilter from "@/components/common/date_filter";
+import { useTableParams } from "@/hooks/use-table-params";
 
 export default function MuzeBox() {
-  const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(10);
-  const [tab, setTab] = React.useState<
-    "all" | "pending" | "approved" | "published"
-  >("all");
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
   const navigate = useNavigate();
+  // Call  reusable hook! Pass custom defaults if needed.
+  const {
+    page,
+    limit,
+    tab,
+    search,
+    updateParams,
+    handlePaginationChange,
+    handleTabChange,
+    handleSearchChange,
+  } = useTableParams({ page: 1, limit: 10, tab: "all" });
 
-  const [text, setText] = React.useState("");
-  const [debounceText] = useDebounce(text, 700);
+  const [debounceText] = useDebounce(search, 700);
   const [filters, setFilters] = React.useState<ReportFilters>({
     startDate: "",
     endDate: "",
@@ -43,13 +49,11 @@ export default function MuzeBox() {
     }
   }, [tab]);
 
-  // Reset page when tab changes
-  React.useEffect(() => {
-    setPage(1);
-  }, [tab]);
-
   const { t } = useTranslation();
-
+  const handleFiltersChange = (updates: Partial<ReportFilters>) => {
+    setFilters((prev) => ({ ...prev, ...updates }));
+    updateParams({ page: 1 }); // Directly use updateParams to handle page resets safely
+  };
   const { muzeBoxList: apiData, isLoading } = useMuzeBoxQuery({
     authorId: creatorId!,
     page,
@@ -59,19 +63,6 @@ export default function MuzeBox() {
     startDate: filters.startDate,
     endDate: filters.endDate,
   });
-  React.useEffect(() => {
-    setPage(1);
-  }, [debounceText, tab]);
-
-  const handlePaginationChange = (newPage: number, newLimit: number) => {
-    setPage(newPage);
-    setLimit(newLimit);
-  };
-
-  const handleFiltersChange = (updates: Partial<ReportFilters>) => {
-    setFilters((prev) => ({ ...prev, ...updates }));
-    setPage(1);
-  };
 
   return (
     <SidebarInset>
@@ -107,7 +98,7 @@ export default function MuzeBox() {
 
                 {/* Search Input */}
                 <div className="relative w-full sm:col-span-2 md:col-span-1">
-                  <SearchBox search={text} setSearch={setText} />
+                  <SearchBox search={search} setSearch={handleSearchChange} />
                 </div>
               </div>
             </div>
@@ -128,9 +119,7 @@ export default function MuzeBox() {
           <div className="border border-border p-3 rounded-lg my-3">
             <Tabs
               value={tab}
-              onValueChange={(val) =>
-                setTab(val as "all" | "pending" | "approved" | "published")
-              }
+              onValueChange={handleTabChange}
               className="w-full my-5"
             >
               <TabsList className="w-full grid grid-cols-4" variant={"line"}>
@@ -138,7 +127,7 @@ export default function MuzeBox() {
                   {t("all")}
                 </TabsTrigger>
                 <TabsTrigger value="pending" className="w-full text-center">
-                  {t('pending')}
+                  {t("pending")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
                   {t("approved")}
@@ -157,8 +146,8 @@ export default function MuzeBox() {
               limit={limit}
               onPaginationChange={handlePaginationChange}
               isFetching={isLoading}
-              search={text}
-              onSearchChange={setText}
+              search={search}
+              onSearchChange={handleSearchChange}
             />
           </div>
         </div>

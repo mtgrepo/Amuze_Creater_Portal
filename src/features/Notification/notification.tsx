@@ -7,7 +7,6 @@ import { NotificationComponent } from "@/components/Notification/notification_co
 import { Button } from "@/components/ui/button";
 import { useMarkAllReadCommand } from "@/composable/Command/Notification/useMarkAllReadCommand";
 import { CheckCheck } from "lucide-react";
-import SearchBox from "../../components/common/search_box";
 
 export default function NotificationPage() {
   const [page, setPage] = React.useState(1);
@@ -71,8 +70,8 @@ export default function NotificationPage() {
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
         <div className="w-full mt-5">
-          <div className="flex flex-row justify-end gap-3">
-            <SearchBox search={search} setSearch={setSearch} />
+          <div className="flex flex-row justify-between gap-3 ">
+            {/* <SearchBox search={search} setSearch={setSearch} /> */}
 
             {isAllSelected && (
               <Button onClick={handleMarkAllRead} variant={'outline'}>

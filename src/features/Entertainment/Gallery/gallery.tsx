@@ -12,13 +12,21 @@ import { useTranslation } from "react-i18next";
 import SearchBox from "../../../components/common/search_box";
 import type { ReportFilters } from "@/types/response/report/authorReportResponse";
 import DateFilter from "@/components/common/date_filter";
+import { useTableParams } from "@/hooks/use-table-params";
 export default function GalleryMain() {
-  const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(10);
-  const [tab, setTab] = React.useState<
-    "all" | "pending" | "approved" | "published"
-  >("all");
-  const [search, setSearch] = React.useState("");
+
+  // Call  reusable hook! Pass custom defaults if needed.
+    const {
+      page,
+      limit,
+      tab,
+      search,
+      updateParams,
+      handlePaginationChange,
+      handleTabChange,
+      handleSearchChange,
+    } = useTableParams({ page: 1, limit: 10, tab: "all" });
+
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
   const [debouncedSearch] = useDebounce(search, 700);
@@ -27,6 +35,9 @@ export default function GalleryMain() {
     startDate: "",
     endDate: "",
   });
+
+
+
   // Determine filter params based on active tab
   const queryParams = React.useMemo(() => {
     switch (tab) {
@@ -41,10 +52,6 @@ export default function GalleryMain() {
     }
   }, [tab]);
 
-  // Reset page when tab changes
-  React.useEffect(() => {
-    setPage(1);
-  }, [tab]);
 
   const {
     galleryList: apiData,
@@ -60,19 +67,11 @@ export default function GalleryMain() {
     endDate: filters.endDate,
   });
 
-  const handlePaginationChange = (newPage: number, newLimit: number) => {
-    setPage(newPage);
-    setLimit(newLimit);
-  };
-  React.useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch]);
-
   const { t } = useTranslation();
 
   const handleFiltersChange = (updates: Partial<ReportFilters>) => {
     setFilters((prev) => ({ ...prev, ...updates }));
-    setPage(1);
+    updateParams({ page: 1 });
   };
 
   return (
@@ -109,7 +108,7 @@ export default function GalleryMain() {
 
                 {/* Search Input */}
                 <div className="relative w-full sm:col-span-2 md:col-span-1">
-                  <SearchBox search={search} setSearch={setSearch} />
+                  <SearchBox search={search} setSearch={handleSearchChange} />
                 </div>
               </div>
             </div>
@@ -129,9 +128,7 @@ export default function GalleryMain() {
           <div className="border border-border p-3 rounded-lg my-3">
             <Tabs
               value={tab}
-              onValueChange={(val) =>
-                setTab(val as "all" | "pending" | "approved" | "published")
-              }
+              onValueChange={handleTabChange}
               className="w-full my-5"
             >
               <TabsList className="w-full grid grid-cols-4" variant={"line"}>
@@ -159,7 +156,7 @@ export default function GalleryMain() {
               onPaginationChange={handlePaginationChange}
               isFetching={isLoading}
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={handleSearchChange}
             />
           </div>
         </div>

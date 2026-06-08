@@ -91,9 +91,15 @@ function Carousel({
     setApi(api)
   }, [api, setApi])
 
+  // FIX: Safe synchronization using microtask scheduling or Embla event callbacks
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
+    
+    // Using queueMicrotask ensures state adjustment transitions outside the paint effect loop
+    queueMicrotask(() => {
+      if (api) onSelect(api)
+    })
+
     api.on("reInit", onSelect)
     api.on("select", onSelect)
 

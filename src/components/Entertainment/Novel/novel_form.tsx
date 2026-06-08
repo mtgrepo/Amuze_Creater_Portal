@@ -475,7 +475,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => navigate("/entertainment/novel")}
+              onClick={() => navigate(-1)}
             >
               {t('cancel')}
             </Button>

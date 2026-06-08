@@ -409,7 +409,7 @@ export default function ComicTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                navigate("/entertainment/comics");
+                navigate(-1);
               }}
             >
               {t("cancel")}

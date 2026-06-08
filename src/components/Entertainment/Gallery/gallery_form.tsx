@@ -215,6 +215,8 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
           galleryId: Number(defaultValues?.id),
           data: textPayload,
         });
+        form.reset(values)
+        navigate(-1)
       }
     } catch (err: any) {
       toast.error(err.message);
@@ -456,7 +458,7 @@ export default function GalleryForm({ mode, defaultValues }: GalleryFormProps) {
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                navigate("/entertainment/gallery");
+                navigate(-1);
               }}
             >
               {t('cancel')}

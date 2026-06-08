@@ -7,6 +7,9 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineConfig({
     base: '/creator-portal/',
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: ['recharts'],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -166,6 +166,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
           }
         });
         await novelCreateMutation(formData);
+        navigate(-1)
         form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
@@ -219,7 +220,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
         });
 
         form.reset(values);
-        navigate("/entertainment/novel");
+        navigate(-1);
       }
     } catch (err: any) {
       toast.error(err.message);
@@ -474,7 +475,7 @@ export default function NovelForm({ mode, defaultValues }: NovelFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => navigate("/entertainment/novel")}
+              onClick={() => navigate(-1)}
             >
               {t('cancel')}
             </Button>

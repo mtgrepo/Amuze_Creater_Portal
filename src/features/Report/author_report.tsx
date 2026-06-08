@@ -35,7 +35,7 @@ export default function AuthorReport() {
       return Object.values(reports).flat();
     }
 
-    const selectedCategory = filters.category.toLowerCase();
+    const selectedCategory = filters?.category?.toLowerCase();
     const categoryMapping: Record<string, string[]> = {
       magazine: ["magazine", "journal"],
       journal: ["journal", "magazine"],
@@ -43,7 +43,7 @@ export default function AuthorReport() {
       gallery: ["gallery"],
     };
 
-    const keysToCheck = categoryMapping[selectedCategory] || [selectedCategory];
+    const keysToCheck = categoryMapping[selectedCategory!] || [selectedCategory];
     const apiKeys = Object.keys(reports);
 
     for (const target of keysToCheck) {

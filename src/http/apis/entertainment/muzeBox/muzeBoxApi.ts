@@ -8,6 +8,8 @@ export interface MuzeBoxParams {
     approve_status?: number,
     is_published?: boolean,
     name?: string
+    startDate?: string,
+    endDate?: string
 }
  export interface MuzeBoxTextInput {
     name: string,

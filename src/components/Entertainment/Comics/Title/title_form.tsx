@@ -203,7 +203,7 @@ export default function ComicTitleForm({
         };
 
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
-        navigate('/entertainment/comics');
+        navigate(-1);
         form.reset(values);
       }
 
@@ -254,7 +254,7 @@ export default function ComicTitleForm({
 
             {/* RIGHT COLUMN: DATA */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1  gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -274,7 +274,7 @@ export default function ComicTitleForm({
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="price"
                   render={({ field }) => (
@@ -294,7 +294,7 @@ export default function ComicTitleForm({
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
               </div>
 
               <FormField
@@ -408,7 +408,7 @@ export default function ComicTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive cursor-pointer"
               onClick={() => {
                 form.reset();
-                navigate("/entertainment/comics");
+                navigate(-1);
               }}
             >
               {t("cancel")}

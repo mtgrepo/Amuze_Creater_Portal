@@ -207,6 +207,8 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
           id: Number(defaultValues?.id),
           data: textPayload,
         });
+        form.reset(values);
+        navigate(-1)
       }
     } catch (err: any) {
       toast.error(err.message);
@@ -381,7 +383,7 @@ export default function MuzeBoxForm({ mode, defaultValues }: MuzeBoxFormProps) {
               className="w-full flex-1 cursor-pointer"
               type="button"
               variant="outline"
-              onClick={() => navigate("/entertainment/muze-box")}
+              onClick={() => navigate(-1)}
             >
               {t('cancel')}
             </Button>

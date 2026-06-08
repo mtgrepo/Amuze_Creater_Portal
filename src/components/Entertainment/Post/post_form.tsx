@@ -1,7 +1,4 @@
-import {
-  MediaUpload,
-  type MediaItem,
-} from "@/components/common/post_media_upload";
+import { MediaUpload, type MediaItem } from "@/components/common/post_media_upload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -258,7 +255,8 @@ export default function PostForm({
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-xl bg-background shadow-sm">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+        {/* FIX: Form submission execution wrapped safely inside an event callback closure */}
+        <form onSubmit={(e) => form.handleSubmit(onSubmit)(e)} className="space-y-10">
           <div className="border-b pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {mode === "add"
@@ -408,7 +406,7 @@ export default function PostForm({
                     Cancel
                   </Button>
                   <Button
-                    onClick={form.handleSubmit(onSubmit)}
+                    onClick={(e) => form.handleSubmit(onSubmit)(e)}
                     className="flex-1"
                     disabled={isLoading}
                   >

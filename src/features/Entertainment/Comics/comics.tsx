@@ -3,7 +3,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { ComicsTitleComponents } from "@/components/Entertainment/Comics/Title/comics_title";
 import { useComicsTitleQuery } from "@/composable/Query/Entertainment/Comics/useComicsTitleQuery";
 import { decryptAuthData } from "@/lib/helper";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, FileUp } from "lucide-react";
 import { useComicsTitleExportCommand } from "@/composable/Command/Entertainment/Comics/useComicExcelCommand";
@@ -11,20 +11,43 @@ import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import SearchBox from "../../../components/common/search_box";
+import type { ReportFilters } from "@/types/response/report/authorReportResponse";
+import DateFilter from "@/components/common/date_filter";
+import { useTableParams } from "@/hooks/use-table-params";
 
 export default function Comics() {
-  const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(10);
-  const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
-  const [search, setSearch] = React.useState("");
-  const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-  const creatorId = loginCreator?.creator?.id;
-  const [debounceSearch] = useDebounce(search, 700);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  // Determine filter params based on active tab
+  const {
+    page,
+    limit,
+    tab,
+    search,
+    updateParams,
+    handlePaginationChange,
+    handleSearchChange,
+    handleTabChange,
+  } = useTableParams({ page: 1, limit: 10, tab: "all" });
+
+  // Safe Creator Data
+  const creatorId = React.useMemo(() => {
+    const rawCreator = localStorage.getItem("creator");
+    if (!rawCreator) return null;
+    const loginCreator = decryptAuthData(rawCreator);
+    return loginCreator?.creator?.id ?? null;
+  }, []);
+
+  const [debounceSearch] = useDebounce(search, 700);
+
+  const [filters, setFilters] = React.useState<ReportFilters>({
+    startDate: "",
+    endDate: "",
+  });
+
   const queryParams = React.useMemo(() => {
     switch (tab) {
+      case "pending":
+        return { approve_status: 0 };
       case "approved":
         return { approve_status: 1 };
       case "published":
@@ -32,11 +55,6 @@ export default function Comics() {
       default:
         return {};
     }
-  }, [tab]);
-
-  // Reset page when tab changes
-  React.useEffect(() => {
-    setPage(1);
   }, [tab]);
 
   // Fetch data from backend with filter params
@@ -50,15 +68,9 @@ export default function Comics() {
     pageSize: limit,
     name: debounceSearch,
     ...queryParams,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
   });
-
-  const handlePaginationChange = (newPage: number, newLimit: number) => {
-    setPage(newPage);
-    setLimit(newLimit);
-  };
-  React.useEffect(() => {
-    setPage(1);
-  }, [debounceSearch]);
 
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();
@@ -66,7 +78,6 @@ export default function Comics() {
   const handleExcelExport = async () => {
     try {
       const blob = await exportExcel();
-
       if (!blob) return;
 
       const url = window.URL.createObjectURL(blob);
@@ -83,21 +94,61 @@ export default function Comics() {
     }
   };
 
+  const handleFiltersChange = (updates: Partial<ReportFilters>) => {
+    setFilters((prev) => ({ ...prev, ...updates }));
+    updateParams({ page: 1 });
+  };
+
   return (
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 px-4">
-        <div className="w-full mt-5 ">
-          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 w-full">
-              <SearchBox search={search} setSearch={setSearch} />
+        <div className="w-full">
+          <div className="flex flex-col gap-1 mb-8 pb-8">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Comics Management
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              comics_description, Manage your published comics, and create new
+              releases.
+            </p>
+          </div>
+          {/* Filters */}
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-5 w-full mb-4">
+            {/* Filters Container */}
+            <div className="w-full lg:max-w-3xl">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+                {/* Search Input */}
+                <div className="relative w-full sm:col-span-2 md:col-span-1">
+                  <SearchBox search={search} setSearch={handleSearchChange} />
+                </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                {/* Start Date */}
+                <DateFilter
+                  label={t("start_date")}
+                  placeholder="Select start date"
+                  value={filters.startDate}
+                  onChange={(val) => handleFiltersChange({ startDate: val })}
+                />
+
+                {/* End Date */}
+                <DateFilter
+                  label={t("end_date")}
+                  placeholder="Select end date"
+                  value={filters.endDate}
+                  onChange={(val) => handleFiltersChange({ endDate: val })}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons Container */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 w-full lg:w-auto lg:justify-end">
               <Button
                 size="sm"
                 className="cursor-pointer w-full sm:w-auto justify-center"
                 onClick={() => navigate("/entertainment/comics/title")}
               >
                 <CirclePlus className="w-4 h-4 mr-2 shrink-0" />
-                <span>{t("create_new_comic")}</span>
+                <span className="truncate">{t("create_new_comic")}</span>
               </Button>
 
               <Button
@@ -108,21 +159,23 @@ export default function Comics() {
                 disabled={isLoadingExcel}
               >
                 <FileUp className="h-4 w-4 mr-2 shrink-0" />
-                <span>{t('export_data')}</span>
+                <span className="truncate">{t("export_data")}</span>
               </Button>
             </div>
           </div>
+
           <div className="border border-border p-3 rounded-lg my-3">
             <Tabs
               value={tab}
-              onValueChange={(val) =>
-                setTab(val as "all" | "approved" | "published")
-              }
+              onValueChange={handleTabChange}
               className="w-full my-5"
             >
-              <TabsList className="w-full grid grid-cols-3" variant={"line"}>
+              <TabsList className="w-full grid grid-cols-4" variant={"line"}>
                 <TabsTrigger value="all" className="w-full text-center">
                   {t("all")}
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="w-full text-center">
+                  {t("pending")}
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="w-full text-center">
                   {t("approved")}
@@ -131,10 +184,6 @@ export default function Comics() {
                   {t("published")}
                 </TabsTrigger>
               </TabsList>
-
-              <TabsContent value="all"></TabsContent>
-              <TabsContent value="approved" />
-              <TabsContent value="published" />
             </Tabs>
 
             <ComicsTitleComponents
@@ -146,7 +195,7 @@ export default function Comics() {
               onPaginationChange={handlePaginationChange}
               isFetching={isLoading}
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={handleSearchChange}
             />
           </div>
         </div>

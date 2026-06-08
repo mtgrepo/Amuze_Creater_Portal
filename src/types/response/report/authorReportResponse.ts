@@ -37,5 +37,5 @@ export interface AuthorReportResponse {
 export type ReportFilters = {
     startDate: string;
     endDate: string;
-    category: string;
+    category?: string;
 };

@@ -168,7 +168,6 @@ export default function ComicTitleForm({
           }
         });
         await titleMutation(formData);
-        navigate(-1)
         form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
@@ -255,7 +254,7 @@ export default function ComicTitleForm({
 
             {/* RIGHT COLUMN: DATA */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1  gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -275,7 +274,7 @@ export default function ComicTitleForm({
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="price"
                   render={({ field }) => (
@@ -295,7 +294,7 @@ export default function ComicTitleForm({
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
               </div>
 
               <FormField

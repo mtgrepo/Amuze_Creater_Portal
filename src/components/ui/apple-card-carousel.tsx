@@ -29,8 +29,9 @@ type CardType = {
   likes?: number;
   views?: number;
   content: React.ReactNode;
-  id?: string | number; // Added to support unique keys cleanly
+  id?: string | number; 
   name?: string;
+  createdBy?: string
 };
 
 const CarouselContext = createContext<{
@@ -238,6 +239,7 @@ export const Card = ({
               >
                 {card.title}
               </motion.p>
+              
               <div className="flex gap-4 mt-2 text-neutral-500 dark:text-neutral-400">
                 <motion.p className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
@@ -256,7 +258,7 @@ export const Card = ({
 
       <motion.button
         layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
-        onClick={() => setOpen(true)}
+        // onClick={() => setOpen(true)}
         className="relative z-10 flex h-80 w-80 flex-col items-start justify-end overflow-hidden rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
       >
         <div className="absolute top-6 left-6 z-40 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-sans text-xs md:text-sm font-semibold selection:bg-transparent">

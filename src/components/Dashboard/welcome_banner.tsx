@@ -20,54 +20,54 @@ export default function WelcomeBanner({
   };
 }) {
   const navigate = useNavigate();
+  
   return (
     <div className="w-full mx-auto">
-      {/* FIXED: for mobile spacing */}
-      <div className="min-h-60 md:h-60 w-full rounded-2xl relative overflow-hidden border border-border bg-linear-to-t py-6 md:py-0">
-        {/* Spotlight background */}
+      <div className="min-h-[180px] md:h-48 w-full rounded-2xl relative overflow-hidden border border-border bg-gradient-to-t from-background to-muted/30 py-6 md:py-0">
+        {/* Spotlight background animation component */}
         <Spotlight />
 
-        {/* CONTENT */}
-        <div className="relative h-full flex flex-col md:flex-row items-center justify-between px-6 gap-6 md:gap-0">
-          {/* LEFT: TEXT */}
-          <div className="text-center md:text-left space-y-2">
-            <p className="text-xl md:text-2xl lg:text-3xl font-semibold">
+        {/* CONTENT ROW */}
+        <div className="relative h-full flex flex-col md:flex-row items-center justify-between px-6 md:px-8 gap-6 md:gap-0">
+          
+          {/* LEFT: TEXT SUMMARY */}
+          <div className="text-center md:text-left space-y-1.5">
+            <p className="text-2xl md:text-3xl font-bold tracking-tight">
               {getGreeting()},{" "}
               <span className="text-primary">{creator?.name || "Creator"}</span>
             </p>
-            <h2 className="text-sm font-medium">Current Ranking: 5</h2>
-
-            <h2 className="text-sm opacity-80 italic">Ready to work?</h2>
-
-            {/* <p className="text-sm opacity-80">
-              View your stats and manage your content.
-            </p> */}
-          </div>
-
-          {/* RIGHT: LOGO / PROFILE */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-0">
-            <div className="flex items-center justify-center">
-              <Avatar className="h-20 w-20 md:h-25 md:w-25 rounded-lg shrink-0">
-                <AvatarImage src={creator?.profile} alt={creator?.name} />
-                <AvatarFallback className="rounded-lg bg-primary-foreground text-primary">
-                  {creator?.email?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight px-3 space-y-2">
-                <p className="truncate font-medium max-w-[150px] sm:max-w-[200px]">
-                  {creator?.name}
-                </p>
-                <p>Ranking: {5}</p>
-                <Button
-                  variant="link"
-                  className="cursor-pointer p-0 h-auto justify-start text-xs md:text-sm"
-                  onClick={() => navigate("account/user-details")}
-                >
-                  View Your Profile
-                </Button>
-              </div>
+            <div className="flex flex-row sm:flex-row sm:items-center justify-center md:justify-start gap-2 sm:gap-4 text-sm text-muted-foreground">
+              <p className="font-medium">
+                Current Ranking: <span className="text-foreground font-semibold">#5</span>
+              </p>
+              <span className="hidden sm:inline text-muted-foreground/40">•</span>
+              <p className="italic opacity-90">Ready to break some records today?</p>
             </div>
           </div>
+
+          {/* RIGHT: CLEAN AVATAR ACTION ELEMENT */}
+          <div className="flex items-center gap-4 bg-background/40 backdrop-blur-xs border border-border/60 p-3 pr-5 rounded-xl shadow-xs">
+            <Avatar className="h-16 w-16 rounded-lg shrink-0">
+              <AvatarImage src={creator?.profile} alt={creator?.name} />
+              <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
+                {creator?.email?.slice(0, 2).toUpperCase() || "AM"}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex flex-col text-left">
+              <p className="font-semibold text-sm truncate max-w-[140px]">
+                {creator?.name || "Account Profile"}
+              </p>
+              <Button
+                variant="link"
+                className="cursor-pointer p-0 h-auto justify-start text-xs text-primary hover:text-primary/80 transition-colors"
+                onClick={() => navigate("account/user-details")}
+              >
+                View Your Profile
+              </Button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

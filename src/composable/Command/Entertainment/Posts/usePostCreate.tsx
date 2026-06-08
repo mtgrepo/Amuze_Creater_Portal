@@ -13,7 +13,7 @@ export const usePostCreate = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["postList"] });
       toast.success("Created post successfully");
-      navigate("/entertainment/posts")
+      navigate(-1)
     },
     onError: (error:any) => {
       toast.error(error?.response?.data?.message || "Failed to create new post");

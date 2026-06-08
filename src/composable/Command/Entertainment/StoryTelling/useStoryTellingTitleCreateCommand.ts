@@ -1,10 +1,11 @@
 import { createStoryTellingTitle } from "@/http/apis/entertainment/storytelling/storyTellingTitleApi";
-import router from "@/router/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useStoryTellingTitleCreateCommand = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const titleMutation = useMutation({
     mutationFn: async (data: FormData) => {
       await createStoryTellingTitle(data);
@@ -12,7 +13,7 @@ export const useStoryTellingTitleCreateCommand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["storyTellingTitleList"] });
       toast.success("Added new storytelling title successfully");
-      router.navigate("/entertainment/storytelling")
+      navigate(-1)
     },
     onError: (error:any) => {
       toast.error(error?.response?.data?.message || "Failed to create new title");

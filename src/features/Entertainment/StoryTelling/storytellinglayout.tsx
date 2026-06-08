@@ -1,122 +1,171 @@
+import * as React from "react";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { StoryTellingTable } from "@/components/Entertainment/StoryTelling/Titles/storytelling_table";
-import { Button } from "@/components/ui/button";
 import { useStoryTellingTitleQuery } from "@/composable/Query/Entertainment/StoryTelling/useStoryTellingTitleQuery";
 import { decryptAuthData } from "@/lib/helper";
-import { CirclePlus, Search } from "lucide-react";
-import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { CirclePlus } from "lucide-react";
+import { useDebounce } from "use-debounce";
+import { useTranslation } from "react-i18next";
+import SearchBox from "../../../components/common/search_box";
+import type { ReportFilters } from "@/types/response/report/authorReportResponse";
+import DateFilter from "@/components/common/date_filter";
+import { useTableParams } from "@/hooks/use-table-params";
 import { useNavigate } from "react-router-dom";
-import { t } from "i18next";
-
 
 export default function StoryTellingLayout() {
-    const [page, setPage] = React.useState(1);
-    const [tab, setTab] = React.useState<"all" | "approved" | "published">("all");
-    const [pageSize, setPageSize] = React.useState(10);
-    const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
-    const creatorId = loginCreator?.creator?.id;
-    const [search, setSearch] = React.useState("");
-    const navigate = useNavigate();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const {
+    page,
+    limit,
+    tab,
+    search,
+    updateParams,
+    handlePaginationChange,
+    handleSearchChange,
+    handleTabChange
+  } = useTableParams({ page: 1, limit: 10, tab: "all" });
 
+  // Safe Creator Data
+  const creatorId = React.useMemo(() => {
+    const rawCreator = localStorage.getItem("creator");
+    if (!rawCreator) return null;
+    const loginCreator = decryptAuthData(rawCreator);
+    return loginCreator?.creator?.id ?? null;
+  }, []);
 
-    const queryParams = React.useMemo(() => {
-        switch (tab) {
-            case "approved":
-                return { approve_status: 1 };
-            case "published":
-                return { approve_status: 1, is_published: true };
-            default:
-                return {};
-        }
-    }, [tab]);
+  const [debounceSearch] = useDebounce(search, 700);
 
-    const {
-        storyTellingTitleList,
-        isLoading,
-        total,
-        totalPages
-    } = useStoryTellingTitleQuery(creatorId!, {
-        page,
-        pageSize,
-        name: search,
-        ...queryParams
-    });
+  const [filters, setFilters] = React.useState<ReportFilters>({
+    startDate: "",
+    endDate: "",
+  });
 
-    const handlePaginationChange = (newPage: number, newPageSize: number) => {
-        setPage(newPage);
-        setPageSize(newPageSize)
+  const queryParams = React.useMemo(() => {
+    switch (tab) {
+      case "pending":
+        return { approve_status: 0 };
+      case "approved":
+        return { approve_status: 1 };
+      case "published":
+        return { approve_status: 1, is_published: true };
+      default:
+        return {};
     }
+  }, [tab]);
 
-    return (
-        <div className="flex flex-1 flex-col gap-4 px-4">
-            <div className="w-full mt-5">
-                <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3">
-                    <div className="relative w-full sm:max-w-sm">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                        <Input
-                            placeholder="Filter name..."
-                            className="pl-10 w-full"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    setSearch(e.currentTarget.value)
-                                }
-                            }}
-                        />
-                        {search && (
-                            <button
-                                type="button"
-                                onClick={() => setSearch("")}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                            >
-                                ✕
-                            </button>
-                        )}
-                    </div>
+  // Fetch data from backend with filter params
+  const {
+    storyTellingTitleList,
+    isLoading,
+    totalPages,
+    total,
+  } = useStoryTellingTitleQuery(creatorId!, {
+    page,
+    pageSize: limit,
+    name: debounceSearch,
+    ...queryParams,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  });
 
-                    <Button size="sm" className="cursor-pointer" onClick={() => navigate('/entertainment/storytelling/title')}>
-                        <CirclePlus className="h-4 w-4" /> {t('story_telling_form.create_button')}
-                    </Button>
-                </div>
-            </div>
+  const handleFiltersChange = (updates: Partial<ReportFilters>) => {
+    setFilters((prev) => ({ ...prev, ...updates }));
+    updateParams({ page: 1 });
+  };
 
-            <div className="border p-3 rounded-lg space-y-3">
-                <Tabs
-                    value={tab}
-                    onValueChange={(val) =>
-                        setTab(val as "all" | "approved" | "published")
-                    }
-                    className="w-full my-5"
-                >
-                    <TabsList className="w-full grid grid-cols-3 border-b" variant={"line"}>
-                        <TabsTrigger value="all" className="w-full text-center">
-                            {t('all')}
-                        </TabsTrigger>
-                        <TabsTrigger value="approved" className="w-full text-center">
-                            {t('approved')}
-                        </TabsTrigger>
-                        <TabsTrigger value="published" className="w-full text-center">
-                            {t('published')}
-                        </TabsTrigger>
-                    </TabsList>
+  return (
+    <SidebarInset>
+      <div className="flex flex-1 flex-col gap-4 px-4">
+        <div className="w-full">
+          <div className="flex flex-col gap-1 mb-8 pb-8">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Storytelling Management
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Manage your stories and create new releases.
+            </p>
+          </div>
 
-                    <TabsContent value="all"></TabsContent>
-                    <TabsContent value="approved" />
-                    <TabsContent value="published" />
-                </Tabs>
-
-                <StoryTellingTable
-                    data={storyTellingTitleList}
-                    total={total}
-                    totalPages={totalPages}
-                    page={page}
-                    pageSize={pageSize}
-                    onPaginationChange={handlePaginationChange}
-                    isFetching={isLoading}
+          {/* Filters */}
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-5 w-full mb-4">
+            {/* Filters Container */}
+            <div className="w-full lg:max-w-3xl">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+                {/* Start Date */}
+                <DateFilter
+                  label={t("start_date")}
+                  placeholder="Select start date"
+                  value={filters.startDate}
+                  onChange={(val) => handleFiltersChange({ startDate: val })}
                 />
+
+                {/* End Date */}
+                <DateFilter
+                  label={t("end_date")}
+                  placeholder="Select end date"
+                  value={filters.endDate}
+                  onChange={(val) => handleFiltersChange({ endDate: val })}
+                />
+
+                {/* Search Input */}
+                <div className="relative w-full sm:col-span-2 md:col-span-1">
+                  <SearchBox search={search} setSearch={handleSearchChange} />
+                </div>
+              </div>
             </div>
+
+            {/* Action Buttons Container */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 w-full lg:w-auto lg:justify-end">
+              <Button
+                size="sm"
+                className="cursor-pointer w-full sm:w-auto justify-center"
+                onClick={() => navigate("/entertainment/storytelling/title", {
+                  state: { fromSearch: window.location.search },
+                })}
+              >
+                <CirclePlus className="w-4 h-4 mr-2 shrink-0" />
+                <span className="truncate">{t("story_telling_form.create_button")}</span>
+              </Button>
+            </div>
+          </div>
+
+          <div className="border border-border p-3 rounded-lg my-3">
+            <Tabs
+              value={tab}
+              onValueChange={handleTabChange}
+              className="w-full my-5"
+            >
+              <TabsList className="w-full grid grid-cols-4" variant={"line"}>
+                <TabsTrigger value="all" className="w-full text-center">
+                  {t("all")}
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="w-full text-center">
+                  {t("pending")}
+                </TabsTrigger>
+                <TabsTrigger value="approved" className="w-full text-center">
+                  {t("approved")}
+                </TabsTrigger>
+                <TabsTrigger value="published" className="w-full text-center">
+                  {t("published")}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <StoryTellingTable
+              data={storyTellingTitleList ?? []}
+              total={total ?? 0}
+              totalPages={totalPages ?? 0}
+              page={page}
+              pageSize={limit}
+              onPaginationChange={handlePaginationChange}
+              isFetching={isLoading}
+            />
+          </div>
         </div>
-    )
+      </div>
+    </SidebarInset>
+  );
 }

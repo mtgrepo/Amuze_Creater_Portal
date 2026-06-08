@@ -6,12 +6,14 @@ export interface StoryTellingTitleParams {
     pageSize: number,
     is_published?:boolean,
     approve_status?: number,
-    name:string
+    name?:string,
+    startDate?: string,
+    endDate?: string
 }
 
 export const useStoryTellingTitleQuery = (creatorId: number, params: StoryTellingTitleParams) => {
     const storyTellingTitleList = useQuery({
-        queryKey: ['storyTitleList', params.page, params.pageSize, params?.is_published, params?.approve_status, params?.name],
+        queryKey: ['storyTellingTitleList', params.page, params.pageSize, params?.is_published, params?.approve_status, params?.name],
         queryFn: () => getAllStoryTellingTitles(creatorId, params),
         enabled: !!creatorId
     });

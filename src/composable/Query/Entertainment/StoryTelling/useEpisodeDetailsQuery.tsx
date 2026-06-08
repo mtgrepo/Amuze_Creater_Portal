@@ -8,7 +8,7 @@ export const useEpisodeDetailQuery = (titleId: number, episodeId:number) => {
             const response = await getStoryTellingEpisodeById(titleId, episodeId);
             return response?.data
         },
-        enabled: !!titleId
+        enabled: !!titleId && !!episodeId
     });
     return{
         storyTellingEpisodeDetails: episodeDetails?.data,

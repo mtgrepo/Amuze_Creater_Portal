@@ -25,6 +25,9 @@ type BreadCrumbLayoutProps = {
 export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
   const location = useLocation();
 
+  // 1. Grab the saved search parameters if they exist in state
+  const preservedSearch = location.state?.fromSearch || "";
+
   const crumbs = useMemo(() => {
     return matches
       .filter((match) => match.handle?.crumb)
@@ -33,13 +36,12 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
 
         const raw = typeof match.handle!.crumb === "function"
           ? match.handle!.crumb({
-            data: match.data,
-            params: match.params,
-            location: location,
-          })
+              data: match.data,
+              params: match.params,
+              location: location,
+            })
           : match.handle!.crumb;
 
-        // Standardize labels into array of objects
         let labelArray: Array<{ label: string; href?: string }> = [];
         if (Array.isArray(raw)) {
           labelArray = raw.map((l) => (typeof l === "string" ? { label: l } : l));
@@ -47,19 +49,30 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
           labelArray = [{ label: String(raw) }];
         }
 
-        return labelArray.map((item, i) => ({
-          label: item.label,
-          href: item.href || match.pathname,
-          isLast: isLastMatch && i === labelArray.length - 1,
-          key: `crumb-${match.pathname}-${index}-${i}-${item.label}`,
-        }));
+        return labelArray.map((item, i) => {
+          const baseHref = item.href || match.pathname;
+
+          const cleanBaseHref = baseHref.replace(/\/$/, "");
+          const cleanLocationPath = location.pathname.replace(/\/$/, "");
+          
+          const dynamicHref = 
+            preservedSearch && !isLastMatch && cleanLocationPath.includes(cleanBaseHref)
+              ? `${baseHref}${preservedSearch}`
+              : baseHref;
+
+          return {
+            label: item.label,
+            href: dynamicHref,
+            isLast: isLastMatch && i === labelArray.length - 1,
+            key: `crumb-${match.pathname}-${index}-${i}-${item.label}`,
+          };
+        });
       });
-  }, [matches, location]);
+  }, [matches, location, preservedSearch]); 
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {/* Static Home Link */}
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link to="/">Amuze</Link>
@@ -76,11 +89,9 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
                     {typeof item.label === "string" ? item.label : "Details"}
                   </span>
                 </BreadcrumbPage>
-
-
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link to={item.href} state={location?.state}>
+                  <Link to={`${item.href}${location.state?.fromSearch ?? ""}`} state={location.state}>
                     <span>{typeof item.label === "string" ? item.label : "Back"}</span>
                   </Link>
                 </BreadcrumbLink>

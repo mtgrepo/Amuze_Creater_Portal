@@ -26,7 +26,7 @@ export default function Comics() {
     updateParams,
     handlePaginationChange,
     handleSearchChange,
-    handleTabChange
+    handleTabChange,
   } = useTableParams({ page: 1, limit: 10, tab: "all" });
 
   // Safe Creator Data
@@ -44,7 +44,6 @@ export default function Comics() {
     endDate: "",
   });
 
-
   const queryParams = React.useMemo(() => {
     switch (tab) {
       case "pending":
@@ -57,7 +56,6 @@ export default function Comics() {
         return {};
     }
   }, [tab]);
-
 
   // Fetch data from backend with filter params
   const {
@@ -73,7 +71,6 @@ export default function Comics() {
     startDate: filters.startDate,
     endDate: filters.endDate,
   });
-
 
   const { excelTitleMutation: exportExcel, isPending: isLoadingExcel } =
     useComicsTitleExportCommand();
@@ -120,6 +117,11 @@ export default function Comics() {
             {/* Filters Container */}
             <div className="w-full lg:max-w-3xl">
               <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+                {/* Search Input */}
+                <div className="relative w-full sm:col-span-2 md:col-span-1">
+                  <SearchBox search={search} setSearch={handleSearchChange} />
+                </div>
+
                 {/* Start Date */}
                 <DateFilter
                   label={t("start_date")}
@@ -135,11 +137,6 @@ export default function Comics() {
                   value={filters.endDate}
                   onChange={(val) => handleFiltersChange({ endDate: val })}
                 />
-
-                {/* Search Input */}
-                <div className="relative w-full sm:col-span-2 md:col-span-1">
-                  <SearchBox search={search} setSearch={handleSearchChange} />
-                </div>
               </div>
             </div>
 

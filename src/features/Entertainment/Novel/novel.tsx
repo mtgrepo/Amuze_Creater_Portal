@@ -24,8 +24,8 @@ export default function Novel() {
     updateParams,
     handlePaginationChange,
     handleSearchChange,
-    handleTabChange
-  } = useTableParams({ page: 1, limit: 10, tab: "all" })
+    handleTabChange,
+  } = useTableParams({ page: 1, limit: 10, tab: "all" });
 
   const loginCreator = decryptAuthData(localStorage.getItem("creator")!);
   const creatorId = loginCreator?.creator?.id;
@@ -48,7 +48,6 @@ export default function Novel() {
         return {};
     }
   }, [tab]);
-
 
   const handleFiltersChange = (updates: Partial<ReportFilters>) => {
     setFilters((prev) => ({ ...prev, ...updates }));
@@ -81,11 +80,16 @@ export default function Novel() {
             novel, Manage your published novels, and create new releases.
           </p>
         </div>
-        
+
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-5 w-full mb-4">
           {/* Filters Container */}
           <div className="w-full lg:max-w-3xl">
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
+              {/* Search Input */}
+              <div className="relative w-full sm:col-span-2 md:col-span-1">
+                <SearchBox search={search} setSearch={handleSearchChange} />
+              </div>
+
               {/* Start Date */}
               <DateFilter
                 label={t("start_date")}
@@ -101,11 +105,6 @@ export default function Novel() {
                 value={filters.endDate}
                 onChange={(val) => handleFiltersChange({ endDate: val })}
               />
-
-              {/* Search Input */}
-              <div className="relative w-full sm:col-span-2 md:col-span-1">
-                <SearchBox search={search} setSearch={handleSearchChange} />
-              </div>
             </div>
           </div>
 

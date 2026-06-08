@@ -30,21 +30,17 @@ import { Card as AppleCard, Carousel } from "../ui/apple-card-carousel";
 // State Management
 import type { RootState } from "@/redux/store/store";
 import { useLoginCreatorQuery } from "@/composable/Query/Auth/useLoginCreatorQuery";
+import { usePopularContentQuery } from "@/composable/Query/PopularContent/usePopularContentQuery";
 
-type CardType = {
-  src: string;
-  title: string;
-  category: string;
-  likes?: number;
-  views?: number;
-  content: React.ReactNode;
-};
-
-export const dummyCards: CardType[] = [
+// Updated Dummy Data Track
+export const dummyCards: any[] = [
   {
     src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    thumbnail:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60",
     title: "Exploring the Coastline",
     category: "Novel",
+    sub_category_id: 1,
     likes: 1240,
     views: 5430,
     content: (
@@ -56,8 +52,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+    thumbnail:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60",
     title: "The Future of Web Development",
     category: "Muze Box",
+    sub_category_id: 2,
     likes: 890,
     views: 3120,
     content: (
@@ -74,8 +73,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
+    thumbnail:
+      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500&auto=format&fit=crop&q=60",
     title: "10-Minute Morning Meditation",
     category: "Comics",
+    sub_category_id: 3,
     likes: 954,
     views: 2110,
     content: (
@@ -87,8 +89,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1541701494587-cb58502866ab",
+    thumbnail:
+      "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=500&auto=format&fit=crop&q=60",
     title: "Chasing Abstract Realities",
     category: "Novel",
+    sub_category_id: 1,
     likes: 430,
     views: 1290,
     content: (
@@ -100,8 +105,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+    thumbnail:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format&fit=crop&q=60",
     title: "The Cyberpunk Syntax Guide",
     category: "Muze Box",
+    sub_category_id: 2,
     likes: 2140,
     views: 8750,
     content: (
@@ -113,8 +121,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+    thumbnail:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500&auto=format&fit=crop&q=60",
     title: "Echoes of Yosemite Valley",
     category: "Comics",
+    sub_category_id: 3,
     likes: 1850,
     views: 4320,
     content: (
@@ -126,8 +137,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94",
+    thumbnail:
+      "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=500&auto=format&fit=crop&q=60",
     title: "The Architecture of Serendipity",
     category: "Novel",
+    sub_category_id: 1,
     likes: 620,
     views: 1980,
     content: (
@@ -139,8 +153,11 @@ export const dummyCards: CardType[] = [
   },
   {
     src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
+    thumbnail:
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&auto=format&fit=crop&q=60",
     title: "Retro Retrofitted Hardware",
     category: "Muze Box",
+    sub_category_id: 2,
     likes: 3110,
     views: 9450,
     content: (
@@ -152,22 +169,13 @@ export const dummyCards: CardType[] = [
   },
 ];
 
-export const chartData = [
-  { category: "novel", visitors: 275, fill: "var(--color-chrome)" },
-  { category: "comics", visitors: 200, fill: "var(--color-safari)" },
-  { category: "gallery", visitors: 187, fill: "var(--color-firefox)" },
-  { category: "storytelling", visitors: 173, fill: "var(--color-edge)" },
-  { category: "muzebox", visitors: 90, fill: "var(--color-other)" },
-  { category: "posts", visitors: 30, fill: "var(--color-primary)" },
-];
-
 export const categories = [
   { key: "novel", value: "Novel" },
-  { key: "comics", value: "Comics" },
+  { key: "comic", value: "Comic" },
   { key: "gallery", value: "Gallery" },
-  { key: "storytelling", value: "Story Telling" },
-  { key: "muzebox", value: "Muze Box" },
-  { key: "post", value: "Post" },
+  { key: "storytelling", value: "StoryTelling" },
+  { key: "muze-box", value: "Muze-Box" },
+  { key: "posts", value: "Posts" },
 ];
 
 export default function DashboardComponent() {
@@ -175,8 +183,17 @@ export default function DashboardComponent() {
   const { creatorData } = useLoginCreatorQuery(creator?.id!);
   const [activeTab, setActiveTab] = useState(categories[0].value);
 
+  const { popularContents, isLoading } = usePopularContentQuery(
+    activeTab.toLowerCase(),
+  );
+
   const cardElements = dummyCards.map((card, index) => (
-    <AppleCard key={card.title} card={card} index={index} layout={true} />
+    <AppleCard
+      key={`weekly-card-${card.title}`}
+      card={card}
+      index={index}
+      layout={true}
+    />
   ));
 
   return (
@@ -199,7 +216,7 @@ export default function DashboardComponent() {
             {/* DASHBOARD BODY */}
             <div className="flex flex-col gap-6 pb-6">
               {/* STATS COUNT GRID */}
-              <div className="px-4 lg:px-6">
+              <div className="px-4 lg:px-6 pb-4">
                 <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @2xl/main:grid-cols-3">
                   <StatCard
                     title="Total Published Contents"
@@ -253,30 +270,35 @@ export default function DashboardComponent() {
               </div>
 
               {/* WEEKLY HOT APPLE CAROUSEL */}
-              <div>
-                <Carousel items={cardElements} header="Weekly HOT" />
+              <div className="bg-card rounded-2xl p-4 m-4">
+                <Carousel
+                  key={`weekly-${cardElements.length}`}
+                  items={dummyCards}
+                  header="Weekly HOT"
+                  layoutScope="weekly-hot"
+                />{" "}
               </div>
 
               {/* CHARTS METRICS DISPLAY */}
               <div className="grid grid-cols-1 gap-6 px-4 lg:px-6 bg-card rounded-2xl m-4 p-4">
-                <div className="flex flex-col xl:flex-row justify-between border-b border-border pb-3">
+                <div className="flex flex-row justify-between border-b border-border pb-3">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-6 w-6 text-orange-500 fill-orange-500 animate-pulse" />
                     <h2 className="text-xl md:text-2xl font-bold">
                       Popular by Category
                     </h2>
                   </div>
-                  <Select defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)}>
+                  <Select
+                    defaultValue={activeTab}
+                    onValueChange={(value) => setActiveTab(value)}
+                  >
                     <SelectTrigger className="w-45">
                       <SelectValue placeholder={activeTab} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {categories?.map((c) => (
-                          <SelectItem
-                          key={c.key}
-                            value={c.value}
-                          >
+                          <SelectItem key={c.key} value={c.value}>
                             {c.value}
                           </SelectItem>
                         ))}
@@ -284,17 +306,43 @@ export default function DashboardComponent() {
                     </SelectContent>
                   </Select>
                 </div>
-                <h1 className="text-xl font-semibold">{activeTab} Performance Analytics</h1>
-              </div>
-
-              {/* TABLE BOUNDARY */}
-              {/* <div className="px-4 lg:px-6">
-                <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                  <div className="text-sm text-muted-foreground">
-                    Data table coming soon...
+                {/* Handled loading state visualization or fallback safely */}
+                {isLoading ? (
+                  <div className="p-8 text-center text-muted-foreground">
+                    Loading contents...
                   </div>
-                </div>
-              </div> */}
+                ) : (
+                  <Carousel
+                    key={`popular-${activeTab}-${popularContents?.length || 0}`}
+                    header={`Hot ${activeTab}`}
+                    layoutScope="popular-category"
+                    // FIX: Map and normalize your API data right here to match the required structure
+                    items={(popularContents || []).map(
+                      (item: any, idx: number) => ({
+                        ...item,
+                        thumbnail:
+                          item.thumbnail ||
+                          item.image ||
+                          item.src ||
+                          item.img ||
+                          "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+                        title:
+                          item.title ||
+                          item.name ||
+                          `Untitled Content ${idx + 1}`,
+                        category: item.category || activeTab,
+                        content: item.content || (
+                          <p>
+                            {item.description ||
+                              "No content preview available."}
+                          </p>
+                        ),
+                        id: item.id || `popular-item-${idx}`,
+                      }),
+                    )}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

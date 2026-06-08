@@ -12,19 +12,25 @@ import { ArrowLeft, ArrowRight, Eye, Flame, Heart, X } from "lucide-react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Badge } from "./badge";
 
+// FIX 1: Change items prop from ReactElement[] to raw data structures
 interface CarouselProps {
-  items: React.ReactElement[];
+  items: CardType[]; 
   initialScroll?: number;
   header?: string;
+  layoutScope?: string;
 }
 
 type CardType = {
   src: string;
   title: string;
   category: string;
+  sub_category_id: number;
+  thumbnail: string;
   likes?: number;
   views?: number;
   content: React.ReactNode;
+  id?: string | number; // Added to support unique keys cleanly
+  name?: string;
 };
 
 const CarouselContext = createContext<{
@@ -35,13 +41,17 @@ const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
-export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) => {
+export const Carousel = ({ 
+  header, 
+  items = [], 
+  initialScroll = 0, 
+  layoutScope = 'default' 
+}: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Define hook-dependent functions before they are consumed in effects
   const checkScrollability = React.useCallback(() => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
@@ -53,9 +63,12 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
   useEffect(() => {
     if (carouselRef.current) {
       carouselRef.current.scrollLeft = initialScroll;
-      checkScrollability();
+      const frameId = requestAnimationFrame(() => {
+        checkScrollability();
+      });
+      return () => cancelAnimationFrame(frameId);
     }
-  }, [initialScroll, checkScrollability]);
+  }, [initialScroll, items, checkScrollability]);
 
   const scrollLeft = () => {
     if (carouselRef.current) {
@@ -71,8 +84,8 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
 
   const handleCardClose = (index: number) => {
     if (carouselRef.current) {
-      const cardWidth = isMobile() ? 200 : 200;
-      const gap = isMobile() ? 4 : 8;
+      const cardWidth = 200;
+      const gap = 8;
       const scrollPosition = (cardWidth + gap) * (index + 1);
       carouselRef.current.scrollTo({
         left: scrollPosition,
@@ -82,18 +95,10 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
     }
   };
 
-  const isMobile = () => {
-    if (typeof window === "undefined") return false;
-    return window.innerWidth < 768;
-  };
-
   return (
-    <CarouselContext.Provider
-      value={{ onCardClose: handleCardClose, currentIndex }}
-    >
+    <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
-        {/* Top Header Section with Flame icon and Buttons */}
-        <div className="mx-auto max-w-7xl px-4 flex items-center justify-between w-full pt-8 md:pt-12">
+        <div className="mx-auto max-w-7xl px-4 flex items-center justify-between w-full">
           {header && (
             <div className="flex items-center gap-2">
               <Flame className="h-6 w-6 text-orange-500 fill-orange-500 animate-pulse" />
@@ -103,17 +108,16 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
             </div>
           )}
           
-          {/* Control Action buttons */}
           <div className="flex gap-2 ml-auto">
             <button
-              className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
               onClick={scrollLeft}
               disabled={!canScrollLeft}
             >
               <ArrowLeft className="h-5 w-5 text-gray-500 dark:text-neutral-400" />
             </button>
             <button
-              className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
               onClick={scrollRight}
               disabled={!canScrollRight}
             >
@@ -122,7 +126,6 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
           </div>
         </div>
 
-        {/* Carousel Tracks Row layout */}
         <div
           className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-6 [scrollbar-width:none] md:py-10"
           ref={carouselRef}
@@ -130,18 +133,24 @@ export const Carousel = ({ header, items, initialScroll = 0 }: CarouselProps) =>
         >
           <div className={cn("absolute right-0 z-[1000] h-auto w-[5%] overflow-hidden bg-gradient-to-l")} />
           <div className={cn("flex flex-row justify-start gap-4 pl-4", "mx-auto max-w-7xl w-full")}>
-            {items.map((item, index) => (
+            {items.map((card, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.5, delay: 0.2 * index, ease: "easeOut" },
+                  transition: { duration: 0.5, delay: 0.1 * index, ease: "easeOut" },
                 }}
-                key={"card" + index}
+                key={`${layoutScope}-motion-item-${card.id || card.title || index}`}
                 className="rounded-3xl last:pr-[5%] md:last:pr-[33%]"
               >
-                {item}
+                {/* FIX 2: Explicitly pass the correct scoped parameters right here */}
+                <Card 
+                  card={card} 
+                  index={index} 
+                  layout={true} 
+                  layoutScope={layoutScope} 
+                />
               </motion.div>
             ))}
           </div>
@@ -155,16 +164,17 @@ export const Card = ({
   card,
   index,
   layout = false,
+  layoutScope = "default",
 }: {
   card: CardType;
   index: number;
   layout?: boolean;
+  layoutScope?: string;
 }) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { onCardClose } = useContext(CarouselContext);
 
-  // Declare handleClose cleanly at the top of the component scope
   const handleClose = React.useCallback(() => {
     setOpen(false);
     onCardClose(index);
@@ -207,7 +217,7 @@ export const Card = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               ref={containerRef}
-              layoutId={layout ? `card-${card.title}` : undefined}
+              layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
               className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
             >
               <button
@@ -217,13 +227,13 @@ export const Card = ({
                 <X className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
               </button>
               <motion.p
-                layoutId={layout ? `category-${card.title}` : undefined}
+                layoutId={layout ? `${layoutScope}-category-${card.title}` : undefined}
                 className="text-base font-medium text-black dark:text-white"
               >
                 {card.category}
               </motion.p>
               <motion.p
-                layoutId={layout ? `title-${card.title}` : undefined}
+                layoutId={layout ? `${layoutScope}-title-${card.title}` : undefined}
                 className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
               >
                 {card.title}
@@ -245,7 +255,7 @@ export const Card = ({
       </AnimatePresence>
 
       <motion.button
-        layoutId={layout ? `card-${card.title}` : undefined}
+        layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
         onClick={() => setOpen(true)}
         className="relative z-10 flex h-80 w-80 flex-col items-start justify-end overflow-hidden rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
       >
@@ -257,14 +267,14 @@ export const Card = ({
         
         <div className="relative z-40 p-6 mt-auto w-full flex flex-col gap-2.5">
           <motion.p
-            layoutId={layout ? `category-${card.category}` : undefined}
+            layoutId={layout ? `${layoutScope}-category-${card.title}` : undefined}
             className="text-left font-sans text-sm font-medium text-white md:text-base"
           >
             <Badge>{card.category}</Badge>
           </motion.p>
           
           <motion.p
-            layoutId={layout ? `title-${card.title}` : undefined}
+            layoutId={layout ? `${layoutScope}-title-${card.title}` : undefined}
             className="text-left font-sans text-xl font-semibold [text-wrap:balance] text-white leading-snug"
           >
             {card.title}
@@ -284,7 +294,7 @@ export const Card = ({
         </div>
 
         <BlurImage
-          src={card.src}
+          src={card.thumbnail}
           alt={card.title}
           height={200}
           width={200}
@@ -296,14 +306,7 @@ export const Card = ({
   );
 };
 
-const BlurImage = ({
-  height,
-  width,
-  src,
-  className,
-  alt,
-  ...rest
-}: any) => {
+const BlurImage = ({ height, width, src, className, alt, ...rest }: any) => {
   const [isLoading, setLoading] = useState(true);
   return (
     <img

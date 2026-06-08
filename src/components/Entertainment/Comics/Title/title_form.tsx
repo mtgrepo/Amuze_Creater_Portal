@@ -168,6 +168,7 @@ export default function ComicTitleForm({
           }
         });
         await titleMutation(formData);
+        navigate(-1)
         form.reset();
       } else {
         if (!defaultValues?.id) throw new Error("ID missing");
@@ -203,7 +204,7 @@ export default function ComicTitleForm({
         };
 
         await updateTitleMutation({ id: defaultValues?.id, data: textPayload });
-        navigate('/entertainment/comics');
+        navigate(-1);
         form.reset(values);
       }
 

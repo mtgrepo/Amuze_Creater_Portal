@@ -5,7 +5,6 @@ export function StatCard({
   title,
   value,
   icon: Icon,
-  sub,
   accent,
   previousValue,
 }: {
@@ -42,22 +41,22 @@ export function StatCard({
           </span>
           <div className="flex flex-col gap-3">
           <p className="text-2xl font-bold tracking-tight">{value}</p>
-          <div className="flex items-center gap-1 text-sm font-medium">
+          <div className="flex gap-1 text-sm font-medium">
             {status === "up" && (
               <span className="text-emerald-500 flex items-center">
-                <ArrowUp className="h-4 w-4 mr-0.5" />
+                <ArrowUp className="h-4 w-4" />
                 {percent.toFixed(1)}%
               </span>
             )}
             {status === "down" && (
               <span className="text-rose-500 flex items-center">
-                <ArrowDown className="h-4 w-4 mr-0.5" />
+                <ArrowDown className="h-4 w-4" />
                 {Math.abs(percent).toFixed(1)}%
               </span>
             )}
             {status === "equal" && (
               <span className="text-muted-foreground flex items-center">
-                <Minus className="h-4 w-4 mr-0.5" />
+                <Minus className="h-4 w-4" />
                 0.0%
               </span>
             )}
@@ -69,7 +68,7 @@ export function StatCard({
         <span className="text-sm font-medium text-muted-foreground">
           {title}
         </span>
-        {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
+        {/* {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>} */}
       </CardContent>
     </Card>
   );

@@ -141,10 +141,10 @@ export default function DashboardComponent() {
               {/* STATS COUNT GRID */}
               <div className="px-4 lg:px-6">
                 <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @2xl/main:grid-cols-3">
-                  <StatCard title="Total Published Contents" value="200" previousValue="100" sub="Current Month" icon={BookOpen} accent="bg-primary text-primary-foreground" />
-                  <StatCard title="Total Revenue" value="200" previousValue="100" sub="Current Month" icon={DollarSign} accent="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300" />
-                  <StatCard title="Total Followers" value="200" previousValue="100" sub="Current Month" icon={Users} accent="bg-primary/30 text-primary-foreground" />
-                  <StatCard title="Total Views" value="46" previousValue="100" sub="Current Month" icon={Eye} accent="bg-primary/30 text-primary-foreground" />
+                  <StatCard title="Total Published Contents" value="200" previousValue="213" sub="Current Month" icon={BookOpen} accent="bg-primary text-primary-foreground" />
+                  <StatCard title="Total Revenue" value="200" previousValue="143" sub="Current Month" icon={DollarSign} accent="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300" />
+                  <StatCard title="Total Followers" value="200" previousValue="147" sub="Current Month" icon={Users} accent="bg-secondary" />
+                  <StatCard title="Total Views" value="46" previousValue="100" sub="Current Month" icon={Eye} accent="bg-secondary" />
                   <StatCard title="Total Likes" value="200" previousValue="135" sub="Current Month" icon={ThumbsUp} accent="bg-primary text-primary-foreground" />
                   <StatCard title="Total Comments" value="100" previousValue="100" sub="Current Month" icon={MessageCircle} accent="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300" />
                 </div>

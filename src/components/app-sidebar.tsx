@@ -39,7 +39,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Author Report",
+          title: "Creator Report",
           url: "/report/author",
           icon: FileChartColumnIncreasing,
         },

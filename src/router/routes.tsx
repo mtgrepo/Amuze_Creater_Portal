@@ -17,7 +17,6 @@ import EditStoryTellingTitlePage from "@/features/Entertainment/StoryTelling/sto
 import NovelCreate from "../features/Entertainment/Novel/novel_create";
 import UpdateNovel from "../features/Entertainment/Novel/novel_update";
 import NovelDetails from "../features/Entertainment/Novel/novel_details";
-import AuthorReport from "../features/Report/author_report";
 import StoryTellingTitleDetails from "@/features/Entertainment/StoryTelling/storytelling_title_details";
 import StoryTellingEpisodeCreate from "@/features/Entertainment/StoryTelling/storytelling_episode_create";
 import StoryTellingEpisodeUpdate from "@/features/Entertainment/StoryTelling/storytelling_episode_update";
@@ -60,6 +59,7 @@ import PurchaseReport from "../features/Report/purchase_report";
 import RequestOTPForm from "@/components/request-otp-form";
 import VerifyOtpPage from "@/components/verify-otp-page";
 import ResetPasswordPage from "@/components/reset-password-page";
+import AuthorReportNew from "@/features/Report/author_report_new";
 
 const router = createBrowserRouter(
   [
@@ -84,7 +84,7 @@ const router = createBrowserRouter(
         // Report
         {
           path: "/report/author",
-          element: <AuthorReport />,
+          element: <AuthorReportNew />,
           handle: {
             crumb: ["Report", "Author Income Report"],
           },

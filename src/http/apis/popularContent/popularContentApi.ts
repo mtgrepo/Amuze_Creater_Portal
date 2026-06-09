@@ -12,7 +12,6 @@ export const getPopularByCategory = async (category: string) => {
             subcategory = 'story'
         }
         const response = await axiosInstance.get(`/${category}/get-popular-${subcategory}`)
-        console.log("POpular response", response?.data);
         return response?.data
     } catch (error) {
         if(error instanceof AxiosError) {

@@ -8,8 +8,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { usePopularContentQuery } from "@/composable/Query/PopularContent/usePopularContentQuery";
 import { useState } from "react";
+
+export const filterTypes = [
+  { key: "Most Views", value: "views" },
+  { key: "Most Likes", value: "likes" },
+  { key: "Most Comments", value: "comments" },
+];
 
 export const dummyCards: any[] = [
   {
@@ -83,17 +88,10 @@ export const dummyCards: any[] = [
   },
 ];
 
-export const filterTypes = [
-  { key: "Most Views", value: "views" },
-  { key: "Most Likes", value: "likes" },
-  { key: "Most Comments", value: "comments" },
-];
-
 export default function TopContent() {
   const [activeTab, setActiveTab] = useState(filterTypes[0].value);
-  const { popularContents, isLoading } = usePopularContentQuery(
-    activeTab.toLowerCase(),
-  );
+  const isLoading = false;
+  // const { topContentList, isLoading } = useTopContentQuery({ authorId: 1, type: activeTab})
   return (
     <div>
       <div className="flex flex-col gap-4 border border-border/50  mx-4 p-4 rounded-2xl">
@@ -125,10 +123,10 @@ export default function TopContent() {
           </div>
         ) : (
           <Carousel
-            key={`top-${activeTab}-contents-${popularContents?.length || 0}`}
+            key={`top-${activeTab}-contents-${dummyCards?.length || 0}`}
             header={``}
             layoutScope="popular-category"
-            items={(popularContents || []).map((item: any, idx: number) => ({
+            items={(dummyCards || []).map((item: any, idx: number) => ({
               ...item,
               thumbnail:
                 item.thumbnail ||

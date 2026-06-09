@@ -1,7 +1,13 @@
 import { AxiosError } from "axios"
 import axiosInstance from "../../httpClient"
 
-export const getAuthorReport = async (params: {authorId: number, startDate: string, endDate: string}) => {
+export interface AuthorReportParams {
+    authorId: number,
+    startDate?: string,
+    endDate?: string
+}
+
+export const getAuthorReport = async (params: AuthorReportParams) => {
     try {
         const response = await axiosInstance.get(`report/get-author-report`, { params })
         return response?.data
@@ -10,5 +16,65 @@ export const getAuthorReport = async (params: {authorId: number, startDate: stri
             throw new Error(`Failed to fetch author report: ${error.message}`)
         }
         throw new Error(`An unexpected error occurred: ${error instanceof Error ? error.message : String(error)}`)
+    }
+}
+
+export const getIncomeReport = async (params: {authorId: number, page: number, limit: number}) => {
+    try {
+        const response = await axiosInstance.get(`report/total-income`, {
+            params
+        })
+        console.log("Total income response", response?.data)
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "API failed!")
+        }
+        throw new Error (error as string || "Something went wrong!")
+    }
+}
+
+export const getTotalFollowers = async (params: {authorId: number, page: number, limit: number}) => {
+    try {
+        const response = await axiosInstance.get(`report/followers`, {
+            params
+        })
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "API Failed!")
+        }
+        throw new Error (error as string || "Something went wrong!")
+    }
+}
+
+export const getTopContent = async (params: {authorId: number, type?: string}) => {
+    try {   
+        const response = await axiosInstance.get(`report/top-content`, {
+            params: {
+                authorId: params?.authorId,
+                type: params?.type
+            }
+        })
+        console.log("Top content", response?.data);
+        return response?.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "API Failed");
+        }
+        throw new Error (error as string || "Something went wrong!")
+    }
+}
+
+export const getStatusCount = async (authorId: number) => {
+    try {
+        const response = await axiosInstance.get(`report/status-count/authorId=${authorId}`, )
+        console.log("Stats response", response?.data)
+        return response?.data
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error (error?.response?.data?.message || "API Failed")
+        }
+        throw new Error (error as string || 'Something went wrong')
     }
 }

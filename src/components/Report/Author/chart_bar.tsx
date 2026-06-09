@@ -44,7 +44,8 @@ const chartData = [
   { date: "2026-06-27", novel: 188, comic: 172, gallery: 292, storytelling: 128, muzebox: 632, post: 810, subscription: 792, free: 166 },
   { date: "2026-06-28", novel: 192, comic: 178, gallery: 298, storytelling: 132, muzebox: 638, post: 820, subscription: 798, free: 169 },
   { date: "2026-06-29", novel: 196, comic: 184, gallery: 304, storytelling: 136, muzebox: 644, post: 830, subscription: 804, free: 172 },
-  { date: "2026-06-30", novel: 200, comic: 190, gallery: 310, storytelling: 140, muzebox: 650, post: 840, subscription: 810, free: 175 }
+  { date: "2026-06-30", novel: 200, comic: 190, gallery: 310, storytelling: 140, muzebox: 650, post: 840, subscription: 810, free: 175 },
+  { date: "2026-07-01", novel: 250, comic: 360, gallery: 355, storytelling: 120, muzebox: 1160, post: 600, subscription: 600, free: 700 }
 ];
 
 const chartConfig = {
@@ -185,8 +186,11 @@ export function ChartLineMultiple() {
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => {
-                const date = parseISO(value);
-                return isValid(date) ? format(date, "MMM d") : value;
+                const date = new Date(value)
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
               }}
               
             />

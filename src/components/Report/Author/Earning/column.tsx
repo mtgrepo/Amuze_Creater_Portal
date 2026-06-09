@@ -88,7 +88,10 @@ export default function TotalEarningColumn() {
     {
       accessorKey: "created_at",
       header: t("date"),
-      cell: ({ row }) => <div>{row.original.created_at || "-"}</div>,
+      cell: ({ row }) => {
+        const val = row.getValue("created_at") as string | null;
+        return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
+      },
     },
   ];
 

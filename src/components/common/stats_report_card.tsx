@@ -8,12 +8,14 @@ import {
 } from "lucide-react";
 import { StatCard } from "../Dashboard/status_card";
 import { EngagementStatCard } from "../engagement_status_card";
-export default function StatsReportCard() {
+import { useStatsCountQuery } from "@/composable/Query/Report/useStatsCountQuery";
+export default function StatsReportCard({authorId}: {authorId: number}) {
+  const { statsCount } = useStatsCountQuery(authorId);
   return (
     <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @4xl/main:grid-cols-4">
       <StatCard
         title="Total Published Contents"
-        value="200"
+        value={statsCount?.content || 200}
         previousValue="213"
         icon={BookOpen}
         accent="bg-primary text-primary-foreground"

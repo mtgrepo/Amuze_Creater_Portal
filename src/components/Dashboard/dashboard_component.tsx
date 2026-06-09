@@ -134,7 +134,7 @@ export default function DashboardComponent() {
 
             {/*  STATS COUNT GRID */}
             <div className="px-4 lg:px-6">
-              <StatsReportCard />
+              <StatsReportCard authorId={creatorData?.id!}/>
             </div>
 
             {/*  WEEKLY HOT CAROUSEL SECTION */}

@@ -20,7 +20,7 @@ export default function TotalFollowersColumn() {
       header: "Profile",
       cell: ({ row }) => {
         return (
-          <Avatar>
+          <Avatar size="lg">
             <AvatarImage src={row.original.profile} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
@@ -30,7 +30,7 @@ export default function TotalFollowersColumn() {
     {
       accessorKey: "name",
       header: t("name"),
-      cell: ({ row }) => <div>{row.original.titleName}</div>,
+      cell: ({ row }) => <div>{row.original.name}</div>,
     },
     {
         accessorKey: 'email',
@@ -64,7 +64,10 @@ export default function TotalFollowersColumn() {
     {
       accessorKey: "created_at",
       header: 'Joined Date',
-      cell: ({ row }) => <div>{row.original.created_at || "-"}</div>,
+      cell: ({ row }) => {
+        const val = row.getValue("created_at") as string | null;
+        return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
+      },
     },
   ];
 

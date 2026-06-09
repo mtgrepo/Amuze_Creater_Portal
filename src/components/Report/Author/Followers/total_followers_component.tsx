@@ -23,40 +23,102 @@ import type { ReportFilters } from "@/types/response/report/authorReportResponse
 import TotalEarningColumn from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
+// import { useFollowersReportQuery } from "@/composable/Query/Report/useFollowersReportQuery";
 
 interface TotalFollowersProps {
-  data: any[];
+  authorId: number | null; 
   filters: ReportFilters;
   onFiltersChange: (updates: Partial<ReportFilters>) => void;
-  isFetching: boolean;
-  total: number;
   page: number;
   limit: number;
   onPaginationChange: (page: number, limit: number) => void;
 }
 
+export const dummyData = [
+  {
+    id: 1,
+    profile: '',
+    name: 'Jenie',
+    phone_no: '09787878787',
+    email: 'test@gmail.com',
+    wallets: {
+      balance: 500
+    },
+    created_at: '2026-06-01T08:00:00Z'
+  },
+  {
+    id: 2,
+    profile: '',
+    name: 'Alex Smith',
+    phone_no: '09765432100',
+    email: 'alex.smith@gmail.com',
+    wallets: {
+      balance: 1250
+    },
+    created_at: '2026-06-03T10:15:00Z'
+  },
+  {
+    id: 3,
+    profile: '',
+    name: 'Sarah Connor',
+    phone_no: '09123456789',
+    email: 's.connor@gmail.com',
+    wallets: {
+      balance: 75
+    },
+    created_at: '2026-06-05T14:30:00Z'
+  },
+  {
+    id: 4,
+    profile: '',
+    name: 'Michael Scott',
+    phone_no: '09988776655',
+    email: 'm.scott@gmail.com',
+    wallets: {
+      balance: 0
+    },
+    created_at: '2026-06-07T11:45:00Z'
+  },
+  {
+    id: 5,
+    profile: '',
+    name: 'Emma Watson',
+    phone_no: '09445566778',
+    email: 'emma.w@gmail.com',
+    wallets: {
+      balance: 3200
+    },
+    created_at: '2026-06-09T09:00:00Z'
+  }
+];
+
 export function TotalFollowersComponent({
-  data,
-  isFetching,
+  authorId,
   page,
   limit,
-  total,
   onPaginationChange,
 }: TotalFollowersProps) {
-  // Table State
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  // const [pagination, setPagination] = React.useState({
-  //   pageIndex: page - 1,
-  //   pageSize: limit,
+
+  // const { followersList, isLoading: isFetching } = useFollowersReportQuery({
+  //   page,
+  //   limit,
+  //   authorId: authorId!,
   // });
 
-  const columns = TotalEarningColumn();
+  console.log(authorId)
+
+  // Safe fallback arrays/metrics
+  const data = dummyData 
+  const total = dummyData?.length ?? 0;
+  const isFetching = false;
+
+  // Table State
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  
+  const columns = TotalEarningColumn(); 
 
   const table = useReactTable({
     data,
@@ -69,7 +131,6 @@ export function TotalFollowersComponent({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    // onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
@@ -80,6 +141,8 @@ export function TotalFollowersComponent({
         pageSize: limit,
       },
     },
+    // pageCount: Math.ceil(total / limit), 
+    // manualPagination: true, 
   });
 
   const totalRows = table.getFilteredRowModel().rows.length;
@@ -87,7 +150,7 @@ export function TotalFollowersComponent({
   return (
     <div className="space-y-6">
       {/* Table */}
-      <div className=" grid grid-cols-1 rounded-md border overflow-hidden">
+      <div className="grid grid-cols-1 rounded-md border overflow-hidden">
         <Table>
           <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((hg) => (
@@ -151,9 +214,9 @@ export function TotalFollowersComponent({
             }
           />
           <Paginator
-            currentPage={table.getState().pagination.pageIndex + 1}
+            currentPage={page}
             totalPages={table.getPageCount()}
-            onPageChange={(p) => table.setPageIndex(p - 1)}
+            onPageChange={(p) => onPaginationChange(p, limit)} // Route pagination changes back up to hook-state
             showPreviousNext
           />
         </div>

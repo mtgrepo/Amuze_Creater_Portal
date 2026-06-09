@@ -492,13 +492,12 @@ const router = createBrowserRouter(
           element: <StoryTellingEpisodeCreate />,
           handle: {
             crumb: ({ location }: any) => {
-              const fromSearch = location?.state?.fromSearch ?? "";
               return [
                 { label: "Entertainment" },
-                { label: "StoryTelling", href: `/entertainment/storytelling${fromSearch}` },
+                { label: "StoryTelling", href: `/entertainment/storytelling` },
                 {
                   label: location?.state?.titleName,
-                  href: `/entertainment/storytelling/details/${location?.state?.titleId}${fromSearch}`,
+                  href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
                 },
                 { label: "Episode Create" },
               ];
@@ -510,13 +509,12 @@ const router = createBrowserRouter(
           element: <StoryTellingEpisodeUpdate />,
           handle: {
             crumb: ({ location }: any) => {
-              const fromSearch = location?.state?.fromSearch ?? "";
               return [
                 { label: "Entertainment" },
-                { label: "StoryTelling", href: `/entertainment/storytelling${fromSearch}` },
+                { label: "StoryTelling", href: `/entertainment/storytelling` },
                 {
                   label: location?.state?.titleName,
-                  href: `/entertainment/storytelling/details/${location?.state?.titleId}${fromSearch}`,
+                  href: `/entertainment/storytelling/details/${location?.state?.titleId}`,
                 },
                 {
                   label: `Edit ${location?.state?.episode?.name}`,

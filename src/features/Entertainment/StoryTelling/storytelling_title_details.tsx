@@ -16,7 +16,7 @@ import {
   ThumbsUp,
   XCircle,
 } from "lucide-react";
-import {useNavigate, useParams } from "react-router-dom";
+import {useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -32,6 +32,8 @@ export default function StoryTellingTitleDetails() {
   const { id } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const preservedSearchFromList = location.state?.fromSearch ?? "";
 
   const {
     storyTellingTitleDetails: story,
@@ -153,7 +155,7 @@ export default function StoryTellingTitleDetails() {
             <Button
               onClick={() =>
                 navigate(`/entertainment/storytelling/${id}/episode/create`, {
-                  state: { titleName: story.name, titleId: story.id, fromSearch:window.location.search },
+                  state: { titleName: story.name, titleId: story.id, fromSearch:preservedSearchFromList },
                 })
               }
             >

@@ -52,17 +52,17 @@ export default function BreadCrumbLayout({ matches }: BreadCrumbLayoutProps) {
         return labelArray.map((item, i) => {
           const baseHref = item.href || match.pathname;
 
-          const cleanBaseHref = baseHref.replace(/\/$/, "");
-          const cleanLocationPath = location.pathname.replace(/\/$/, "");
+          // const cleanBaseHref = baseHref.replace(/\/$/, "");
+          // const cleanLocationPath = location.pathname.replace(/\/$/, "");
           
-          const dynamicHref = 
-            preservedSearch && !isLastMatch && cleanLocationPath.includes(cleanBaseHref)
-              ? `${baseHref}${preservedSearch}`
-              : baseHref;
+          // const dynamicHref = 
+          //   preservedSearch && !isLastMatch && cleanLocationPath.includes(cleanBaseHref)
+          //     ? `${baseHref}${preservedSearch}`
+          //     : baseHref;
 
           return {
             label: item.label,
-            href: dynamicHref,
+            href: baseHref,
             isLast: isLastMatch && i === labelArray.length - 1,
             key: `crumb-${match.pathname}-${index}-${i}-${item.label}`,
           };

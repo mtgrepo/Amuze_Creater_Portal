@@ -1,18 +1,19 @@
 import { updateStoryTellingTitle } from "@/http/apis/entertainment/storytelling/storyTellingTitleApi";
-import router from "@/router/routes";
 import type { UpdateStoryTitlePayload } from "@/types/response/entertainment/storytelling/storytellingResponse";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 export const useStoryTellingTitleUpdateCommand = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const titleMutation = useMutation({
-    mutationKey : ["storyTellingTitle"],
+    mutationKey : ["storyTellingTitleList"],
     mutationFn: async ({id, data} : {id: number, data: UpdateStoryTitlePayload}) => {
       await updateStoryTellingTitle(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["storyTellingTitleList"] });
-      router.navigate('/entertainment/storytelling')
+      navigate(-1)
     },
   });
 

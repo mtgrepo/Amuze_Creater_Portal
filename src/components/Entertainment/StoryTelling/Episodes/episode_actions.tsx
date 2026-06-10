@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ClipboardPenLine, FileMusic, MoreHorizontal } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { AudioView } from "@/components/common/audio_view";
@@ -25,12 +25,14 @@ export default function EpisodeActions({ episode, titleId, titleName }: EpisodeA
   const navigate = useNavigate();
   const [showAudio, setShowAudio] = React.useState(false);
   const {t} = useTranslation();
+  const location = useLocation();
   const handleEditEpisode = () => {
     navigate(`/entertainment/storytelling/${titleId}/episode/edit/${episode?.id}`, {
       state: {
         episode,
         titleId,
-        titleName
+        titleName,
+        fromSearch: location.state?.fromSearch ?? ""
       },
     });
   };

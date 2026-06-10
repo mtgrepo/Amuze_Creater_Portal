@@ -74,7 +74,7 @@ export function StoryTellingTable({
 
             <div className="overflow-hidden rounded-md border grid">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-muted/50">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {

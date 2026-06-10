@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+// import { useIncomeChartQuery } from "@/composable/Query/Report/useIncomeChartQuery";
 
 export const description = "A multiple line chart with a date range filter";
 
@@ -55,8 +56,8 @@ const chartConfig = {
   storytelling: { label: "Storytelling", color: "var(--chart-4)" },
   muzebox: { label: "Muzebox", color: "var(--chart-5)" },
   post: { label: "Post", color: "#ec4899" },
-  subscription: { label: "Subscription", color: "#8b5cf6" },
-  free: { label: "Free", color: "#f59e0b" },
+  // subscription: { label: "Subscription", color: "#8b5cf6" },
+  // free: { label: "Free", color: "#f59e0b" },
 } satisfies ChartConfig;
 
 // Derived list of line data strictly keys off chartConfig for complete type-safety
@@ -70,6 +71,7 @@ const getSafeDate = (dateStr: string): Date | undefined => {
 };
 
 export function ChartLineMultiple() {
+  // const { incomeChartData } = useIncomeChartQuery();
   const now = React.useMemo(() => new Date(), []);
   
   const [startDate, setStartDate] = React.useState<string>(() => 

@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useTopContentQuery } from "@/composable/Query/Report/useTopContentQuery";
 import { useState } from "react";
 
 export const filterTypes = [
@@ -90,8 +91,7 @@ export const dummyCards: any[] = [
 
 export default function TopContent() {
   const [activeTab, setActiveTab] = useState(filterTypes[0].value);
-  const isLoading = false;
-  // const { topContentList, isLoading } = useTopContentQuery({ authorId: 1, type: activeTab})
+  const { topContentList, isLoading } = useTopContentQuery({ type: activeTab})
   return (
     <div>
       <div className="flex flex-col gap-4 border border-border/50  mx-4 p-4 rounded-2xl">
@@ -123,16 +123,15 @@ export default function TopContent() {
           </div>
         ) : (
           <Carousel
-            key={`top-${activeTab}-contents-${dummyCards?.length || 0}`}
+            key={`top-${activeTab}-contents-${topContentList?.length || 0}`}
             header={``}
             layoutScope="popular-category"
-            items={(dummyCards || []).map((item: any, idx: number) => ({
+            items={(topContentList || []).map((item: any, idx: number) => ({
               ...item,
+              likes: item.likes || 0,
+              views: item.views || 0,
               thumbnail:
                 item.thumbnail ||
-                item.image ||
-                item.src ||
-                item.img ||
                 "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
               title: item.title || item.name || `Untitled Content ${idx + 1}`,
               category: item.category || activeTab,

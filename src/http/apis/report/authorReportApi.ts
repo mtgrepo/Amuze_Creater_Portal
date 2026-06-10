@@ -48,15 +48,13 @@ export const getTotalFollowers = async (params: {authorId: number, page: number,
     }
 }
 
-export const getTopContent = async (params: {authorId: number, type?: string}) => {
+export const getTopContent = async (params: {type?: string}) => {
     try {   
-        const response = await axiosInstance.get(`report/top-content`, {
+        const response = await axiosInstance.get(`user/get-top-content`, {
             params: {
-                authorId: params?.authorId,
                 type: params?.type
             }
         })
-        console.log("Top content", response?.data);
         return response?.data;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -66,10 +64,9 @@ export const getTopContent = async (params: {authorId: number, type?: string}) =
     }
 }
 
-export const getStatusCount = async (authorId: number) => {
+export const getStatusCount = async () => {
     try {
-        const response = await axiosInstance.get(`report/status-count/authorId=${authorId}`, )
-        console.log("Stats response", response?.data)
+        const response = await axiosInstance.get(`user/get-author-dashboard-data`, )
         return response?.data
     } catch (error) {
         if (error instanceof AxiosError) {

@@ -24,78 +24,8 @@ import { useLoginCreatorQuery } from "@/composable/Query/Auth/useLoginCreatorQue
 import { usePopularContentQuery } from "@/composable/Query/PopularContent/usePopularContentQuery";
 import { Separator } from "../ui/separator";
 import StatsReportCard from "../common/stats_report_card";
+import { useWeeklyTopContentQuery } from "@/composable/Query/Report/useWeeklyTopQuery";
 
-export const dummyCards: any[] = [
-  {
-    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    thumbnail:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60",
-    title: "Exploring the Coastline",
-    category: "Novel",
-    sub_category_id: 1,
-    likes: 1240,
-    views: 5430,
-    content: (
-      <p>
-        Discover the hidden beaches and breathtaking cliffs along the Pacific
-        Coast Highway.
-      </p>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-    thumbnail:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60",
-    title: "The Future of Web Development",
-    category: "Muze Box",
-    sub_category_id: 2,
-    likes: 890,
-    views: 3120,
-    content: (
-      <div className="flex flex-col gap-2">
-        <p>
-          AI-driven code generation and edge computing are changing the
-          landscape fast.
-        </p>
-        <button className="mt-2 w-fit bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-xl text-sm font-medium">
-          Read Article
-        </button>
-      </div>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
-    thumbnail:
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500&auto=format&fit=crop&q=60",
-    title: "10-Minute Morning Meditation",
-    category: "Comics",
-    sub_category_id: 3,
-    likes: 954,
-    views: 2110,
-    content: (
-      <p>
-        A quick guide to grounding yourself before starting a busy, fast-paced
-        workday.
-      </p>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1541701494587-cb58502866ab",
-    thumbnail:
-      "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=500&auto=format&fit=crop&q=60",
-    title: "Chasing Abstract Realities",
-    category: "Novel",
-    sub_category_id: 1,
-    likes: 430,
-    views: 1290,
-    content: (
-      <p>
-        Dive deep into modern digital expressionism and blending AI with
-        brushstrokes.
-      </p>
-    ),
-  },
-];
 
 export const categories = [
   { key: "novel", value: "Novel" },
@@ -114,6 +44,9 @@ export default function DashboardComponent() {
   const { popularContents, isLoading } = usePopularContentQuery(
     activeTab.toLowerCase(),
   );
+
+  const { weeklyTopContents, isLoading: weeklyLoading } = useWeeklyTopContentQuery();
+  // console.log("weekly", weeklyTopContents)
 
   return (
     <SidebarProvider
@@ -134,17 +67,23 @@ export default function DashboardComponent() {
 
             {/*  STATS COUNT GRID */}
             <div className="px-4 lg:px-6">
-              <StatsReportCard authorId={creatorData?.id!}/>
+              <StatsReportCard />
             </div>
 
             {/*  WEEKLY HOT CAROUSEL SECTION */}
             <div className="border border-border/50 rounded-2xl p-4 mx-4">
+              {weeklyLoading ? (
+                <div className="p-12 text-center text-sm text-muted-foreground w-full">
+                  Loading weekly top contents...
+                </div>
+              ) : (
               <Carousel
-                key={`weekly-${dummyCards.length}`}
-                items={dummyCards}
+                key={`weekly-${weeklyTopContents.length}`}
+                items={weeklyTopContents}
                 header="Weekly HOT"
                 layoutScope="weekly-hot"
               />
+              )}
             </div>
 
             {/*  POPULAR BY CATEGORY SECTION */}

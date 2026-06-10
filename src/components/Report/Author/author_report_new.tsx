@@ -39,7 +39,7 @@ export default function NewAuthorReport() {
   return (
     <div className="flex flex-1 flex-col gap-8 py-4 @container/main">
       {/*  STATS COUNT GRID */}
-      <StatsReportCard authorId={authorId!}/>
+      <StatsReportCard />
       <ChartLineMultiple />
       <div className="bg-card border border-border p-3 rounded-lg">
         <Tabs

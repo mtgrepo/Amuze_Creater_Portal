@@ -1,18 +1,16 @@
-import { getStatusCount } from "@/http/apis/report/authorReport"
-import { useQuery } from "@tanstack/react-query"
+import { getStatusCount } from "@/http/apis/report/authorReportApi";
+import { useQuery } from "@tanstack/react-query";
 
-export const useStatsCountQuery = (authorId: number) => {
-    const statsCount = useQuery({
-        queryKey: ['stats-count', authorId],
-        queryFn: async () => {
-            const result = await getStatusCount(authorId);
-            console.log("Stats count in query", result?.data);
-            return result?.data
-        },
-        enabled: !!authorId
-    })
-    return {
-        statsCount: statsCount?.data,
-        isLoading: statsCount?.isLoading
-    }
-}
+export const useStatsCountQuery = () => {
+  const statsCount = useQuery({
+    queryKey: ["stats-count"],
+    queryFn: async () => {
+      const result = await getStatusCount();
+      return result?.data;
+    },
+  });
+  return {
+    statsCount: statsCount?.data,
+    isLoading: statsCount?.isLoading,
+  };
+};

@@ -1,23 +1,15 @@
+import type { PostParams } from "@/composable/Query/Entertainment/Posts/usePostQuery";
 import axiosInstance from "@/http/httpClient";
 import { AxiosError } from "axios";
 
-export interface PostParams {
-  page: number;
-  pageSize: number;
-  is_banned?: boolean;
-  name?: string,
-  startDate?: string,
-  endDate?: string
-}
+
 
 export const getAllPosts = async (userId: number, params: PostParams) => {
   try {
     const result = await axiosInstance.get(`post/get-all-posts`, {
       params: {
         userId,
-        page: params.page,
-        pageSize: params.pageSize,
-        is_banned: params.is_banned,
+        ...params
       },
     });
     return result.data;

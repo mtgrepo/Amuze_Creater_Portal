@@ -142,24 +142,24 @@ export default function StoryTellingColumns() {
         const published = row.original.is_publish as boolean;
 
         if (approved === 1 && published) {
-          return(
+          return (
             <IconWithTooltip
-            tooltip="Approved & Published"
-            icon={<CircleCheckBig className="text-green-500 w-4 h-4" />}
+              tooltip="Approved & Published"
+              icon={<CircleCheckBig className="text-green-500 w-4 h-4" />}
             />
           )
         } else if (approved === 1 && !published) {
-          return(
-             <IconWithTooltip
-            tooltip="Approved but Not Published"
-            icon={<CircleCheckBig className="text-yellow-500 w-4 h-4" />}
+          return (
+            <IconWithTooltip
+              tooltip="Approved but Not Published"
+              icon={<CircleCheckBig className="text-yellow-500 w-4 h-4" />}
             />
           )
         } else if (approved === 0) {
-          return(
-              <IconWithTooltip
-            tooltip="Not Approved"
-            icon={<XCircle className="text-red-500 w-4 h-4"  />}
+          return (
+            <IconWithTooltip
+              tooltip="Not Approved"
+              icon={<XCircle className="text-red-500 w-4 h-4" />}
             />
           )
         }
@@ -178,13 +178,17 @@ export default function StoryTellingColumns() {
       enableHiding: false,
       cell: ({ row }) => {
         const title = row.original;
+        const currentSearch = window.location.search;
 
         const handleViewDetails = () => {
+
           navigate(`/entertainment/storytelling/details/${title.id}`, {
             state: {
               titleName: title?.name,
               titleId: title?.id,
+              fromSearch: currentSearch
             },
+
           });
         };
         const handleEditTitle = () => {
@@ -192,6 +196,7 @@ export default function StoryTellingColumns() {
             state: {
               titleName: title?.name,
               titleId: title?.id,
+              fromSearch: currentSearch
             },
           });
         };

@@ -79,7 +79,6 @@ export default function StoryTellingEpisodeForm({
   const creatorId = loginCreator?.creator?.id || "";
   const resetToken = useRef(defaultValues?.id);
   const navigate = useNavigate();
-
   const {t} = useTranslation();
 
   const formSchema = createFormSchema(mode);
@@ -352,7 +351,7 @@ export default function StoryTellingEpisodeForm({
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                navigate(`/entertainment/storytelling/details/${titleId}`)
+                navigate(-1)
               }}
             >
               {t('cancel')}

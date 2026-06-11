@@ -5,6 +5,9 @@ export interface PostParams {
   page: number;
   pageSize: number;
   is_banned?: boolean;
+  name?: string,
+  startDate?: string,
+  endDate?: string
 }
 
 export const getAllPosts = async (userId: number, params: PostParams) => {

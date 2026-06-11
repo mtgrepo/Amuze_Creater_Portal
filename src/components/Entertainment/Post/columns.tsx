@@ -126,6 +126,14 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
           },
         ]
       : []),
+      {
+ accessorKey: "created_at",
+      header: t("date"),
+      cell: ({ row }) => {
+        const val = row.getValue("created_at") as string | null;
+        return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
+      },
+      },
 
     {
       id: "actions",
@@ -145,7 +153,12 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
 
               <DropdownMenuItem
                 onClick={() =>
-                  navigate(`/entertainment/posts/details/${post.id}`)
+                  navigate(`/entertainment/posts/details/${post.id}`,{
+                    state: {
+                      postId: post.id,
+                      fromSearch: window.location.search
+                    }
+                  })
                 }
               >
                 <Info />
@@ -153,7 +166,12 @@ export default function PostColumns({ is_banned }: { is_banned: boolean }) {
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() => navigate(`/entertainment/posts/edit/${post.id}`)}
+                onClick={() => navigate(`/entertainment/posts/edit/${post.id}`, {
+                  state: {
+                    postId: post.id,
+                      fromSearch: window.location.search
+                  }
+                })}
               >
                 <ClipboardPenLine /> {t("actions.edit")}
               </DropdownMenuItem>

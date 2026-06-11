@@ -44,7 +44,7 @@ const PostsDetailPage: React.FC = () => {
 
         <Button
           variant="ghost"
-          onClick={() => navigate("/entertainment/posts")}
+          onClick={() => navigate(-1)}
           className="cursor-pointer"
         >
           <ChevronLeft size={18} />

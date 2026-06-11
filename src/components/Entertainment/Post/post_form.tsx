@@ -357,7 +357,7 @@ export default function PostForm({
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                navigate("/entertainment/posts");
+                navigate(-1);
               }}
             >
               {t("cancel")}

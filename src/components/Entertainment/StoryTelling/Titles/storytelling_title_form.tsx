@@ -68,7 +68,6 @@ export default function StoryTellingTitleForm({
   defaultValues,
   onSuccess,
 }: TitleFormProps) {
-  const navigate = useNavigate();
     const resetToken = useRef(defaultValues?.id);
     const storedData = localStorage.getItem("creator");
   const loginCreator = storedData ? decryptAuthData(storedData) : null;
@@ -76,6 +75,7 @@ export default function StoryTellingTitleForm({
   const formSchema = createFormSchema(mode);
   const subcategory_id = 3;
   const [confirmDialog, setConfirmDialog] = useState(false);
+  const navigate = useNavigate();
 
   const { genresList } = useGenresBySubCategoryQuery(subcategory_id);
   const { createTitleMutation, isStoryCreatePending } =
@@ -369,7 +369,7 @@ export default function StoryTellingTitleForm({
               className="flex-1 text-muted-foreground hover:text-destructive"
               onClick={() => {
                 form.reset();
-                navigate("/entertainment/storytelling")
+                navigate(-1)
               }}
             >
               {t('cancel')}

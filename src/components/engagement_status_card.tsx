@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, TrendingUp } from "lucide-react";
+import {  TrendingUp, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import React from "react";
 
 interface MetricItem {
@@ -12,24 +12,19 @@ interface EngagementProps {
   value: number; 
   previousValue: number;
   metrics: MetricItem[]; 
+  percentage: number
 }
 
-export function EngagementStatCard({ title, value, previousValue, metrics }: EngagementProps) {
-  
-  // Calculate the percentage change dynamically
-  const calculatePercentage = () => {
-    if (!previousValue || previousValue === 0) return { percent: "0.0%", isPositive: true };
-    
-    const change = ((value - previousValue) / previousValue) * 100;
-    const isPositive = change >= 0;
-    
-    return {
-      percent: `${Math.abs(change).toFixed(1)}%`,
-      isPositive
-    };
-  };
+export function EngagementStatCard({ title, value, metrics, percentage }: EngagementProps) {
 
-  const { percent, isPositive } = calculatePercentage();
+  let status: "up" | "down" | "equal" = "equal";
+  if (percentage > 0) {
+    status = "up";
+  } else if (percentage < 0) {
+    status = "down";
+  } else if (percentage == 0) {
+    status = "equal"
+  }
 
   return (
     <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 flex flex-col justify-between">
@@ -49,12 +44,21 @@ export function EngagementStatCard({ title, value, previousValue, metrics }: Eng
         
         {/* Percentage badge changes color dynamically */}
         <div className={`flex items-center text-xs font-medium gap-0.5 px-2 py-0.5 rounded-full ${
-          isPositive 
-            ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30" 
-            : "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/30"
+          status === "up" && "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30"
+        } ${
+          status === "down" && "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/30"
+        } ${
+          status === "equal" && "text-muted-foreground bg-muted"
         }`}>
-          {isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-          <span>{isPositive ? "+" : "-"}{percent}</span>
+          {status === "up" && <ArrowUp className="h-3 w-3" />}
+          {status === "down" && <ArrowDown className="h-3 w-3" />}
+          {status === "equal" && <Minus className="h-3 w-3" />}
+          
+          <span>
+            {status === "up" && `+${Number(percentage).toFixed(1)}%`}
+            {status === "down" && `-${Math.abs(Number(percentage))}%`}
+            {status === "equal" && "0.0%"}
+          </span>
         </div>
       </div>
 

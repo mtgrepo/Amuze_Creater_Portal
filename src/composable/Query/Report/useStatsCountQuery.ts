@@ -1,8 +1,8 @@
-import { getStatusCount } from "@/http/apis/report/authorReportApi";
+import { getStatusCount, type StatsCountResponse } from "@/http/apis/report/authorReportApi";
 import { useQuery } from "@tanstack/react-query";
 
 export const useStatsCountQuery = () => {
-  const statsCount = useQuery({
+  const statsCount = useQuery<StatsCountResponse>({
     queryKey: ["stats-count"],
     queryFn: async () => {
       const result = await getStatusCount();
@@ -10,7 +10,7 @@ export const useStatsCountQuery = () => {
     },
   });
   return {
-    statsCount: statsCount?.data,
+    statsCount: statsCount.data,
     isLoading: statsCount?.isLoading,
   };
 };

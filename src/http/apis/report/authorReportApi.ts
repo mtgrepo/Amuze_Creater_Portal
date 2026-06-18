@@ -81,7 +81,7 @@ export const getTotalFollowers = async (params: {
   limit: number;
 }) => {
   try {
-    const response = await axiosInstance.get(`report/followers`, {
+    const response = await axiosInstance.get(`follower/get-followers-list`, {
       params,
     });
     return response?.data;

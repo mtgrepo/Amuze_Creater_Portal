@@ -23,6 +23,7 @@ import type { ReportFilters } from "@/types/response/report/authorReportResponse
 import TotalEarningColumn from "./column";
 import { PageSizeComponent } from "@/components/common/Pagination/page-number";
 import Paginator from "@/components/common/Pagination/paginator";
+import { useFollowersReportQuery } from "@/composable/Query/Report/useFollowersReportQuery";
 // import { useFollowersReportQuery } from "@/composable/Query/Report/useFollowersReportQuery";
 
 interface TotalFollowersProps {
@@ -99,18 +100,17 @@ export function TotalFollowersComponent({
   onPaginationChange,
 }: TotalFollowersProps) {
 
-  // const { followersList, isLoading: isFetching } = useFollowersReportQuery({
-  //   page,
-  //   limit,
-  //   authorId: authorId!,
-  // });
+  const { followersList, isLoading: isFetching } = useFollowersReportQuery({
+    page,
+    limit,
+    authorId: authorId!,
+  });
 
-  console.log(authorId)
+  // console.log(authorId)
 
   // Safe fallback arrays/metrics
-  const data = dummyData 
-  const total = dummyData?.length ?? 0;
-  const isFetching = false;
+  const data = followersList ?? dummyData 
+  const total = dummyData.length ?? 0;
 
   // Table State
   const [sorting, setSorting] = React.useState<SortingState>([]);

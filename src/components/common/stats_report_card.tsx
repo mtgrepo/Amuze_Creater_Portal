@@ -11,7 +11,6 @@ import { EngagementStatCard } from "../engagement_status_card";
 import { useStatsCountQuery } from "@/composable/Query/Report/useStatsCountQuery";
 export default function StatsReportCard() {
   const { statsCount } = useStatsCountQuery();
-  console.log("data in component", statsCount)
   return (
     <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @4xl/main:grid-cols-4">
       <StatCard

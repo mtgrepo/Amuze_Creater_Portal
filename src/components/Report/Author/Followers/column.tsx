@@ -22,15 +22,15 @@ export default function TotalFollowersColumn() {
         return (
           <Avatar size="lg">
             <AvatarImage src={row.original.profile} />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>{'CN'}</AvatarFallback>
           </Avatar>
         );
       },
     },
     {
-      accessorKey: "name",
+      accessorKey: "follower_name",
       header: t("name"),
-      cell: ({ row }) => <div>{row.original.name}</div>,
+      cell: ({ row }) => <div>{row.original.follower_name}</div>,
     },
     {
         accessorKey: 'email',
@@ -46,29 +46,29 @@ export default function TotalFollowersColumn() {
         header: "Phone",
         cell: ({row}) => {
             return (
-                <div>{row.original.phone_no}</div>
+                <div>{row.original.phone_no ?? 'N/A'}</div>
             )
         }
     },
-    {
-        accessorFn: (row) => row.original.wallets,
-        header: "Wallets",
-        cell: ({row}) => {
-            const balance = row.original.balance;
-            return (
-                <div>{balance}</div>
-            )
-        }
+    // {
+    //     accessorFn: (row) => row.original.wallets,
+    //     header: "Wallets",
+    //     cell: ({row}) => {
+    //         const balance = row.original.balance;
+    //         return (
+    //             <div>{balance}</div>
+    //         )
+    //     }
 
-    },
-    {
-      accessorKey: "created_at",
-      header: 'Joined Date',
-      cell: ({ row }) => {
-        const val = row.getValue("created_at") as string | null;
-        return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
-      },
-    },
+    // },
+    // {
+    //   accessorKey: "created_at",
+    //   header: 'Joined Date',
+    //   cell: ({ row }) => {
+    //     const val = row.getValue("created_at") as string | null;
+    //     return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
+    //   },
+    // },
   ];
 
   return columns;

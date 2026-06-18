@@ -8,14 +8,14 @@ import { decryptAuthData } from "@/lib/helper";
 import TopContent from "./top_content";
 import { TotalEarningComponent } from "./Earning/total_earning_component";
 import { TotalFollowersComponent } from "./Followers/total_followers_component";
+import { useAuthorReportQuery } from "@/composable/Query/Report/useAuthorReportQuery";
 
 export default function NewAuthorReport() {
-  const {
-    page,
-    limit,
-    updateParams,
-    handlePaginationChange,
-  } = useTableParams({ page: 1, limit: 5, tab: "earning" });
+  const { page, limit, updateParams, handlePaginationChange } = useTableParams({
+    page: 1,
+    limit: 5,
+    tab: "earning",
+  });
   const [filters, setFilters] = useState<ReportFilters>({
     category: "All",
     startDate: "",
@@ -30,6 +30,41 @@ export default function NewAuthorReport() {
 
   const [activeTab, setActiveTab] = useState("earning");
 
+  const { authorReportList, isLoading } = useAuthorReportQuery({
+    authorId: authorId!,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  });
+  // Flatten Table Data
+  const tableData = useMemo(() => {
+    const reports = authorReportList?.data?.reports;
+    if (!reports) return [];
+
+    if (filters.category === "All") {
+      return Object.values(reports).flat();
+    }
+
+    const selectedCategory = filters?.category?.toLowerCase();
+    const categoryMapping: Record<string, string[]> = {
+      magazine: ["magazine", "journal"],
+      journal: ["journal", "magazine"],
+      novel: ["novel"],
+      gallery: ["gallery"],
+    };
+
+    const keysToCheck = categoryMapping[selectedCategory!] || [
+      selectedCategory,
+    ];
+    const apiKeys = Object.keys(reports);
+
+    for (const target of keysToCheck) {
+      const foundKey = apiKeys.find((k) => k.toLowerCase() === target);
+      if (foundKey && reports[foundKey].length > 0) {
+        return reports[foundKey];
+      }
+    }
+    return [];
+  }, [authorReportList, filters.category]);
 
   const handleFiltersChange = (updates: Partial<ReportFilters>) => {
     setFilters((prev) => ({ ...prev, ...updates }));
@@ -60,12 +95,11 @@ export default function NewAuthorReport() {
           </TabsList>
           <TabsContent key={"earning"} value={"earning"}>
             <TotalEarningComponent
-              authorId={authorId!}
+              data={tableData}
               filters={filters}
               onFiltersChange={handleFiltersChange}
-              onPaginationChange={handlePaginationChange}
-              page={page}
-              limit={limit}
+              isFetching={isLoading}
+              total={tableData.length}
             />
           </TabsContent>
           <TabsContent key={"followers"} value="followers">

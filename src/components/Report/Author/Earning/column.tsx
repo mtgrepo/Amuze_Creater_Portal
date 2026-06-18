@@ -1,99 +1,68 @@
+import type { AuthorReportResponseDetails } from "@/types/response/report/authorReportResponse";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 
 
+export default function AuthorReportColumn() {
+    const { t } = useTranslation();
 
-export default function TotalEarningColumn() {
-  const { t } = useTranslation();
-
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<AuthorReportResponseDetails>[] = [
     {
-      header: t("no"),
-      cell: ({ row, table }) => {
-        const pageIndex = table.getState().pagination?.pageIndex || 0;
-        const pageSize = table.getState().pagination?.pageSize || 10;
-
-        return <div>{pageIndex * pageSize + row.index + 1}</div>;
-      },
-    },
-
-    {
-      accessorKey: "titleName",
-      header: t("title"),
-      cell: ({ row }) => <div>{row.original.titleName}</div>,
+        header: t('no'),
+        cell: ({ row, table }) => {
+            const pageIndex = table.getState()?.pagination?.pageIndex || 0;
+            const pageSize = table.getState()?.pagination?.pageSize || 10;
+            return <div>{pageIndex * pageSize + row.index + 1}</div>;
+        },
     },
     {
-      id: "productDetails",
-      header: t("product_details"),
-      cell: ({ row }) => {
-        const data = row.original;
-
-        const episodeName = "episodeName" in data ? data.episodeName : undefined;
-
-        const magazineEpisodeName = "magazineEpisodeName" in data ? data.magazineEpisodeName : undefined;
-
-        const magazineSeasonName = "magazineSeasonName" in data ? data.magazineSeasonName : undefined;
-
-        return (
-          <div className="max-w-75 whitespace-normal wrap-break-word">
-            <div className="font-medium">{data.titleName}</div>
-
-            {episodeName && (
-              <div className="text-xs text-muted-foreground">
-                Episode: {episodeName}
-              </div>
-            )}
-
-            {magazineSeasonName && (
-              <div className="text-xs text-muted-foreground">
-                Season: {magazineSeasonName}
-              </div>
-            )}
-
-            {magazineEpisodeName && (
-              <div className="text-xs text-muted-foreground">
-                Episode: {magazineEpisodeName}
-              </div>
-            )}
-          </div>
-        );
-      },
+        // Matches API: "catetoryName"
+        accessorKey: "catetoryName",
+        header: t('category'),
+        cell: ({ row }) => <div>{row.getValue("catetoryName") || "-"}</div>,
     },
     {
-      accessorKey: "buyerName",
-      header: t("buyer"),
-      cell: ({ row }) => <div>{row.original.buyerName}</div>,
+        accessorKey: "buyerName",
+        header: t('buyer'),
+        cell: ({ row }) => <div>{row.getValue("buyerName")}</div>,
     },
     {
-      accessorKey: "price",
-      header: t("price"),
-      cell: ({ row }) => (
-        <div>{row.original.price?.toLocaleString?.() ?? 0}</div>
-      ),
+        id: "productDetails",
+        header: t('product_details'),
+        cell: ({ row }) => {
+            // Matches API: "productDetail" (singular)
+            const product = row.original.productDetail;
+            if (!product) return "-";
+            return (
+                <div className="max-w-75 whitespace-normal warp-break-word">
+                    <span className="font-medium text-foreground">
+                        {product.productTitleName}
+                    </span>
+                    {product.productSeasonName && (
+                        <span className="text-muted-foreground text-xs block">
+                            {product.productSeasonName} - {product.productEpisodeName}
+                        </span>
+                    )}
+                </div>
+            );
+        },
     },
     {
-      accessorKey: "buyingWithWallet",
-      header: "Pay(Wallet)",
-      cell: ({ row }) => (
-        <div>{row.original.buyingWithWallet?.toLocaleString?.() ?? 0}</div>
-      ),
+        accessorKey: "authorIncome",
+        header: t('income'),
+        cell: ({ row }) => {
+            const income = row.getValue("authorIncome") as number;
+            return <div>{income?.toLocaleString() ?? "0"}</div>;
+        },
     },
     {
-      accessorKey: "buyingWithBonus",
-      header: "Pay(Bonus)",
-      cell: ({ row }) => (
-        <div>{row.original.buyingWithBonus?.toLocaleString?.() ?? 0}</div>
-      ),
+        accessorKey: "purchaseDate",
+        header: t('date'),
+        cell: ({ row }) => {
+            const val = row.getValue("purchaseDate") as string;
+            return <div>{val || "-"}</div>;
+        },
     },
-    {
-      accessorKey: "created_at",
-      header: t("date"),
-      cell: ({ row }) => {
-        const val = row.getValue("created_at") as string | null;
-        return <div>{val ? new Date(val).toLocaleDateString() : "-"}</div>;
-      },
-    },
-  ];
-
-  return columns;
+];
+return columns
 }

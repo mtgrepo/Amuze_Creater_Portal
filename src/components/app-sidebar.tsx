@@ -1,21 +1,33 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import * as React from "react";
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
+import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import {  Layers, BellRing,  FileChartColumnIncreasing, BookOpen, BookText, BookImage, BookHeadphones, Image, TvMinimalPlay, SquareParking } from "lucide-react"
-import { useSelector } from "react-redux"
-import type { RootState } from "../redux/store/store"
-import { useLoginCreatorQuery } from "../composable/Query/Auth/useLoginCreatorQuery"
+} from "@/components/ui/sidebar";
+import {
+  Layers,
+  BellRing,
+  FileChartColumnIncreasing,
+  BookOpen,
+  BookText,
+  BookImage,
+  BookHeadphones,
+  Image,
+  TvMinimalPlay,
+  SquareParking,
+  CreditCard,
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store/store";
+import { useLoginCreatorQuery } from "../composable/Query/Auth/useLoginCreatorQuery";
 
 // This is sample data.
 const data = {
@@ -43,59 +55,59 @@ const data = {
           url: "/report/author",
           icon: FileChartColumnIncreasing,
         },
-        // {
-        //   title: "Purchase",
-        //   url: "/report/purchase",
-        //   icon: CreditCard,
-        // },
+        {
+          title: "Purchase",
+          url: "/report/purchase",
+          icon: CreditCard,
+        },
       ],
     },
     {
-        title: "Content",
-        url: "#",
-        icon: BookOpen,
-        items: [
-            {
-                title: "Novel",
-                url: "/entertainment/novel",
-                icon: BookText
-            }, 
-            {
-              title: "Comics",
-              url: "/entertainment/comics",
-              icon: BookImage
-            },
-            {
-              title: "Story Telling",
-              url: "/entertainment/storytelling",
-              icon: BookHeadphones
-            },
-            {
-              title: "Gallery",
-              url: "/entertainment/gallery",
-              icon: Image
-            },
-            {
-              title: "Muze Box",
-              url: "/entertainment/muze-box",
-              icon: TvMinimalPlay
-            }, 
-            // {
-            //   title: "Education",
-            //   url: "/entertainment/education",
-            //   icon: GraduationCap
-            // },
-            // {
-            //   title: "Museum",
-            //   url: "/entertainment/museum",
-            //   icon: Landmark
-            // },
-            {
-              title: "Posts",
-              url: "/entertainment/posts",
-              icon: SquareParking
-            }
-        ]
+      title: "Content",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Novel",
+          url: "/entertainment/novel",
+          icon: BookText,
+        },
+        {
+          title: "Comics",
+          url: "/entertainment/comics",
+          icon: BookImage,
+        },
+        {
+          title: "Story Telling",
+          url: "/entertainment/storytelling",
+          icon: BookHeadphones,
+        },
+        {
+          title: "Gallery",
+          url: "/entertainment/gallery",
+          icon: Image,
+        },
+        {
+          title: "Muze Box",
+          url: "/entertainment/muze-box",
+          icon: TvMinimalPlay,
+        },
+        // {
+        //   title: "Education",
+        //   url: "/entertainment/education",
+        //   icon: GraduationCap
+        // },
+        // {
+        //   title: "Museum",
+        //   url: "/entertainment/museum",
+        //   icon: Landmark
+        // },
+        {
+          title: "Posts",
+          url: "/entertainment/posts",
+          icon: SquareParking,
+        },
+      ],
     },
   ],
   projects: [
@@ -105,11 +117,11 @@ const data = {
       icon: BellRing,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const creator = useSelector((state: RootState) => state.auth.creator);
-  const { creatorData } = useLoginCreatorQuery(creator?.id!); 
+  const { creatorData } = useLoginCreatorQuery(creator?.id!);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -120,9 +132,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        { creator && <NavUser creator={creatorData || creator} /> }
+        {creator && <NavUser creator={creatorData || creator} />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

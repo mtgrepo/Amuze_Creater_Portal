@@ -1,3 +1,28 @@
+interface PaymentInfo {
+  id: number;
+  account_id: number;
+  payment_type_id: number;
+  account_no: string;
+  account_holder_name: string;
+  created_at: Date;
+  updated_at: Date;
+  payment_type: {
+    id: number;
+    name: string;
+    is_active: boolean;
+    created_at: Date;
+    created_by: number;
+    updated_at: Date;
+    updated_by: number;
+  };
+}
+
+interface ProfitPercents {
+  id: number;
+  account_id: number;
+  sub_category_id: number;
+  percentage: number;
+}
 export interface LoginCreatorResponse {
   id: number;
   uuid: string;
@@ -41,39 +66,17 @@ export interface LoginCreatorResponse {
     updated_at: Date;
     verified_at: Date;
     verified_by: number;
-  };
-  payment_info: {
-    id: number;
-    account_id: number;
-    payment_type_id: number;
-    account_no: string;
-    account_holder_name: string;
-    created_at: Date;
-    updated_at: Date;
-    payment_type: {
-      id: number;
-      name: string;
-      is_active: boolean;
-      created_at: Date;
-      created_by: number;
-      updated_at: Date;
-      updated_by: number;
-    };
-  };
-  profit_percents: {
-    id: number;
-    account_id: number;
-    sub_category_id: number;
-    percentage: number;
+    payment_info: PaymentInfo;
+    profit_percents: ProfitPercents[];
   }[];
+  payment_info: PaymentInfo;
+  profit_percents: ProfitPercents[];
   followercount: number;
 }
 
 export interface ProfileHistory {
-  
-    id: number;
-    user_id: number;
-    profile: string;
-    created_at: Date;
- 
+  id: number;
+  user_id: number;
+  profile: string;
+  created_at: Date;
 }

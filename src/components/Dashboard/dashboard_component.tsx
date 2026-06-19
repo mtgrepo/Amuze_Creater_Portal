@@ -26,7 +26,6 @@ import { Separator } from "../ui/separator";
 import StatsReportCard from "../common/stats_report_card";
 import { useWeeklyTopContentQuery } from "@/composable/Query/Report/useWeeklyTopQuery";
 
-
 export const categories = [
   { key: "novel", value: "Novel" },
   { key: "comic", value: "Comic" },
@@ -45,7 +44,8 @@ export default function DashboardComponent() {
     activeTab.toLowerCase(),
   );
 
-  const { weeklyTopContents, isLoading: weeklyLoading } = useWeeklyTopContentQuery();
+  const { weeklyTopContents, isLoading: weeklyLoading } =
+    useWeeklyTopContentQuery();
   // console.log("weekly", weeklyTopContents)
 
   return (
@@ -72,17 +72,25 @@ export default function DashboardComponent() {
 
             {/*  WEEKLY HOT CAROUSEL SECTION */}
             <div className="border border-border/50 rounded-2xl p-4 mx-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-orange-500 fill-orange-500" />
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                  Weekly Hot Contents
+                  {weeklyTopContents?.length ? `(${weeklyTopContents.length})` : ""}
+                </h2>
+              </div>
+              <Separator className="my-3"/>
               {weeklyLoading ? (
                 <div className="p-12 text-center text-sm text-muted-foreground w-full">
                   Loading weekly top contents...
                 </div>
               ) : (
-              <Carousel
-                key={`weekly-${weeklyTopContents.length}`}
-                items={weeklyTopContents}
-                header="Weekly HOT"
-                layoutScope="weekly-hot"
-              />
+                <Carousel
+                  key={`weekly-${weeklyTopContents.length}`}
+                  items={weeklyTopContents}
+                  header=""
+                  layoutScope="weekly-hot"
+                />
               )}
             </div>
 

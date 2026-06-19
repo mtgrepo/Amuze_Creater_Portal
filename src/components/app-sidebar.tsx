@@ -23,7 +23,6 @@ import {
   Image,
   TvMinimalPlay,
   SquareParking,
-  CreditCard,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store/store";
@@ -55,11 +54,11 @@ const data = {
           url: "/report/author",
           icon: FileChartColumnIncreasing,
         },
-        {
-          title: "Purchase",
-          url: "/report/purchase",
-          icon: CreditCard,
-        },
+        // {
+        //   title: "Purchase",
+        //   url: "/report/purchase",
+        //   icon: CreditCard,
+        // },
       ],
     },
     {

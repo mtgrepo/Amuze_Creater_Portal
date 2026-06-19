@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useTopContentQuery } from "@/composable/Query/Report/useTopContentQuery";
+import { TrendingUp } from "lucide-react";
 import { useState } from "react";
 
 export const filterTypes = [
@@ -17,86 +18,20 @@ export const filterTypes = [
   { key: "Most Comments", value: "comments" },
 ];
 
-export const dummyCards: any[] = [
-  {
-    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    thumbnail:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60",
-    title: "Exploring the Coastline",
-    category: "Novel",
-    sub_category_id: 1,
-    likes: 1240,
-    views: 5430,
-    content: (
-      <p>
-        Discover the hidden beaches and breathtaking cliffs along the Pacific
-        Coast Highway.
-      </p>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-    thumbnail:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60",
-    title: "The Future of Web Development",
-    category: "Muze Box",
-    sub_category_id: 2,
-    likes: 890,
-    views: 3120,
-    content: (
-      <div className="flex flex-col gap-2">
-        <p>
-          AI-driven code generation and edge computing are changing the
-          landscape fast.
-        </p>
-        <button className="mt-2 w-fit bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-xl text-sm font-medium">
-          Read Article
-        </button>
-      </div>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
-    thumbnail:
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500&auto=format&fit=crop&q=60",
-    title: "10-Minute Morning Meditation",
-    category: "Comics",
-    sub_category_id: 3,
-    likes: 954,
-    views: 2110,
-    content: (
-      <p>
-        A quick guide to grounding yourself before starting a busy, fast-paced
-        workday.
-      </p>
-    ),
-  },
-  {
-    src: "https://images.unsplash.com/photo-1541701494587-cb58502866ab",
-    thumbnail:
-      "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=500&auto=format&fit=crop&q=60",
-    title: "Chasing Abstract Realities",
-    category: "Novel",
-    sub_category_id: 1,
-    likes: 430,
-    views: 1290,
-    content: (
-      <p>
-        Dive deep into modern digital expressionism and blending AI with
-        brushstrokes.
-      </p>
-    ),
-  },
-];
-
 export default function TopContent() {
   const [activeTab, setActiveTab] = useState(filterTypes[0].value);
-  const { topContentList, isLoading } = useTopContentQuery({ type: activeTab})
+  const { topContentList, isLoading } = useTopContentQuery({ type: activeTab });
   return (
     <div>
       <div className="flex flex-col gap-4 border border-border/50  mx-4 p-4 rounded-2xl">
-        {/* Refactored Section Header Layout */}
-        <div className="flex items-center justify-end px-4 lg:px-6">
+        <div className="flex items-center justify-between px-4 lg:px-6">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-orange-500 fill-orange-500" />
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+              Top Contents by {activeTab}{" "}
+              {topContentList?.length ? `(${topContentList.length})` : ""}
+            </h2>
+          </div>
           <Select
             defaultValue={activeTab}
             onValueChange={(value) => setActiveTab(value)}

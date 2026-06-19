@@ -45,7 +45,7 @@ export default function ProfileInfoComponent({ account, data }: ProfileInfoProps
     );
   }
 
-
+  const userInfo = account[0];
   return (
     <>
       <div className="flex items-center justify-end mb-3">
@@ -62,17 +62,17 @@ export default function ProfileInfoComponent({ account, data }: ProfileInfoProps
             <Card title="Contact Details">
               <Info
                 label="Name"
-                value={account.name}
+                value={data?.name}
                 icon={<CaseUpper className="w-4 h-4" />}
               />
               <Info
                 label="Email"
-                value={data?.email || account.email}
+                value={data?.email}
                 icon={<Mail className="w-4 h-4" />}
               />
               <Info
                 label="Phone Number"
-                value={account.phone_no}
+                value={data?.phone_no}
                 icon={<Phone className="w-4 h-4" />}
               />
               <Info 
@@ -86,7 +86,7 @@ export default function ProfileInfoComponent({ account, data }: ProfileInfoProps
               />
               <Info
                 label="Job Role"
-                value={account.job}
+                value={userInfo?.job}
                 icon={<Building2 className="w-4 h-4" />}
               />
             </Card>
@@ -95,17 +95,17 @@ export default function ProfileInfoComponent({ account, data }: ProfileInfoProps
             <Card title="Address Information">
               <Info
                 label="Address"
-                value={account.address}
+                value={userInfo.address}
                 icon={<HomeIcon className="w-4 h-4" />}
               />
               <Info
                 label="Education"
-                value={account.education}
+                value={userInfo.education}
                 icon={<GraduationCap className="w-4 h-4" />}
               />
               <Info
                 label="Bio"
-                value={data?.bio || account?.bio || "N/A"}
+                value={data?.bio || userInfo?.bio || "N/A"}
                 icon={<CaseUpper className="w-4 h-4" />}
               />
             </Card>
@@ -118,20 +118,20 @@ export default function ProfileInfoComponent({ account, data }: ProfileInfoProps
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6">
                 <Info
                   label="NRC Number"
-                  value={account.nrc}
+                  value={userInfo.nrc}
                   icon={<CreditCard className="w-4 h-4" />}
                 />
                 <Info
                   label="Verification Status"
-                  value={account.confirm_status}
+                  value={userInfo.confirm_status}
                   icon={<CheckCircle className="w-4 h-4" />}
-                  className={`${account.confirm_status ? "text-green-500" : "text-red-500"}`}
+                  className={`${userInfo.confirm_status ? "text-green-500" : "text-red-500"}`}
                 />
                 <Info
                   label="Member Since"
                   value={
-                    account.created_at
-                      ? new Date(account.created_at).toLocaleDateString()
+                    userInfo.created_at
+                      ? new Date(userInfo.created_at).toLocaleDateString()
                       : "N/A"
                   }
                   icon={<Calendar className="w-4 h-4" />}

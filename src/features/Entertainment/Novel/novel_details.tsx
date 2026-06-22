@@ -25,6 +25,7 @@ import CommentsSection from "@/components/common/comment_component";
 import Stat from "@/components/common/details_stat";
 import { useTheme } from "@/components/common/Themes/theme-provider";
 import { useTranslation } from "react-i18next";
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.js?url';
 
 export default function NovelDetails() {
   const { id } = useParams();
@@ -86,9 +87,7 @@ export default function NovelDetails() {
           />
 
           {/* Dark Gradient Overlay - Vital for text contrast */}
-          <div
-            className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
-          />
+          <div className="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent" />
 
           {/* Content Wrapper - items-center fixes the vertical alignment */}
           <div className="relative flex flex-col lg:flex-row gap-8 p-8 md:p-10 h-full items-center lg:items-start min-w-0">
@@ -104,17 +103,14 @@ export default function NovelDetails() {
             {/* Info Section */}
             <div className="flex-1 space-y-6 text-center lg:text-left min-w-0 w-full">
               <div className="space-y-4">
-                <h1 className="text-2xl lg:text-3xl max-w-xl mx-auto lg:mx-0 font-black tracking-tight uppercase text-wrap break-words leading-tight drop-shadow-md">
+                <h1 className="text-2xl lg:text-3xl max-w-xl mx-auto lg:mx-0 font-black tracking-tight uppercase text-wrap wrap-break-word leading-tight drop-shadow-md">
                   {novelDetails.name || `Novel ${id}`}
                 </h1>
 
                 {/* Genre Tags */}
                 <div className="flex flex-wrap justify-center lg:justify-start gap-2 py-2">
                   {novelDetails?.generes?.map((genre: any) => (
-                    <Badge
-                      key={genre?.id}
-                      className="bg-primary text-xs"
-                    >
+                    <Badge key={genre?.id} className="bg-primary text-xs">
                       {genre.name}
                     </Badge>
                   ))}
@@ -165,7 +161,7 @@ export default function NovelDetails() {
                     </div>
                     <div className="flex-1 w-full bg-zinc-100 overflow-hidden">
                       {pdfUrl ? (
-                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                        <Worker workerUrl={pdfWorkerUrl}>
                           <Viewer
                             fileUrl={pdfUrl}
                             plugins={[defaultLayoutPluginInstance]}
@@ -249,4 +245,3 @@ export default function NovelDetails() {
     </div>
   );
 }
-

@@ -6,7 +6,7 @@ export function StatCard({
   value,
   icon: Icon,
   accent,
-  previousValue,
+  percent
 }: {
   title: string;
   value: string | number;
@@ -14,22 +14,16 @@ export function StatCard({
   icon: React.ElementType;
   accent: string;
   previousValue?: string | number;
+  percent: number
 }) {
-  const current = Number(value) || 0;
-  const previous = Number(previousValue) || 0;
 
   let status: "up" | "down" | "equal" = "equal";
-  if (current > previous) {
+  if (percent > 0) {
     status = "up";
-  } else if (current < previous) {
+  } else if (percent < 0) {
     status = "down";
-  }
-
-  let percent = 0;
-  if (previous !== 0) {
-    percent = ((current - previous) / previous) * 100;
-  } else if (current > 0) {
-    percent = 100; 
+  } else if (percent == 0) {
+    status = "equal"
   }
 
   return (

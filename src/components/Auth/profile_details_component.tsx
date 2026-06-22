@@ -6,12 +6,18 @@ import type {
   LoginCreatorResponse,
   ProfileHistory,
 } from "@/types/response/auth/loginCreatorResponse";
-import {  Mail, Phone, Tag, Lock } from "lucide-react";
+import { Mail, Phone, Tag, Lock } from "lucide-react";
 import ProfileInfoComponent from "./profile_info_component";
 import ProfileWalletComponent from "./income_component";
 import ProfileHistoryComponent from "./profile_history_component";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import PasswordForm from "./profile_security_component";
 import ImageUpload from "../common/image_upload";
 import { toast } from "sonner";
@@ -52,7 +58,8 @@ export default function ProfileDetailsComponent({
   }, []);
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
+    useState(false);
 
   const [profileImage, setProfileImage] = useState<File | string | null>(
     info?.profile || null,
@@ -93,14 +100,16 @@ export default function ProfileDetailsComponent({
         isRegister: false,
         otp_type: "phone",
       });
-      toast.success(isResend ? "OTP resent successfully" : "OTP sent successfully");
+      toast.success(
+        isResend ? "OTP resent successfully" : "OTP sent successfully",
+      );
       setOtp("");
       setOtpSent(true);
       setCount(60);
     } finally {
       setIsSendingOtp(false);
     }
-  }
+  };
 
   const handleVerifyOTP = () => {
     if (!otp) {
@@ -108,7 +117,7 @@ export default function ProfileDetailsComponent({
       return;
     }
     setIsResetPasswordModalOpen(true);
-  }
+  };
 
   useEffect(() => {
     if (!otpSent) return;
@@ -120,19 +129,6 @@ export default function ProfileDetailsComponent({
 
     return () => clearTimeout(timer);
   }, [count, otpSent]);
-
-  //  useEffect(() => {
-  //   if (count === 0) {
-  //     return;
-  //   }
-
-  //   const timer = setTimeout(() => {
-  //     setCount((prev) => prev - 1);
-  //   }, 1000);
-
-  //   return () => clearTimeout(timer);
-  // }, [count]);
-
 
   return (
     <div className="">
@@ -186,7 +182,13 @@ export default function ProfileDetailsComponent({
                   <span className="text-sm">{info?.phone_no}</span>
                 </div>
               </div>
-
+              {/* <div className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  Total Followers :
+                  <span className="text-sm">{info?.followercount}</span>
+                </div>
+              </div> */}
               <div className="mt-8 relative">
                 <div className="absolute -top-3 left-4 px-2 bg-white dark:bg-[#1a1a1a] text-[10px] font-bold uppercase tracking-widest text-slate-400">
                   Biography
@@ -211,7 +213,10 @@ export default function ProfileDetailsComponent({
           </TabsContent>
 
           <TabsContent value="wallet" className="mt-6">
-            <ProfileWalletComponent data={info?.acount} />
+            <ProfileWalletComponent
+              data={info?.acount}
+              wallet={info?.wallets}
+            />
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
@@ -267,9 +272,7 @@ export default function ProfileDetailsComponent({
                           onChange={(e) => setOtp(e.target.value)}
                         />
                         <div className="flex gap-2">
-                          <Button onClick={handleVerifyOTP}>
-                            Verify OTP
-                          </Button>
+                          <Button onClick={handleVerifyOTP}>Verify OTP</Button>
                           <Button
                             type="button"
                             variant="link"
@@ -289,8 +292,11 @@ export default function ProfileDetailsComponent({
         </Tabs>
 
         {/* Password Update Modal */}
-        <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
-          <DialogContent >
+        <Dialog
+          open={isPasswordModalOpen}
+          onOpenChange={setIsPasswordModalOpen}
+        >
+          <DialogContent>
             <DialogHeader className="border-b dark:border-[#252525] pb-4">
               <DialogTitle className="text-2xl font-bold flex items-center gap-2">
                 <Lock className="w-6 h-6 text-blue-500" />
@@ -308,7 +314,10 @@ export default function ProfileDetailsComponent({
         </Dialog>
 
         {/* reset password modal */}
-        <Dialog open={isResetPasswordModalOpen} onOpenChange={setIsResetPasswordModalOpen}>
+        <Dialog
+          open={isResetPasswordModalOpen}
+          onOpenChange={setIsResetPasswordModalOpen}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Reset Password</DialogTitle>
@@ -321,20 +330,17 @@ export default function ProfileDetailsComponent({
               otp={otp}
               onSuccess={(type) => {
                 if (type === "success") {
-                  setIsResetPasswordModalOpen(false)
-                  navigate("/")
+                  setIsResetPasswordModalOpen(false);
+                  navigate("/");
                 }
 
                 if (type === "otp_error") {
                   setIsResetPasswordModalOpen(false);
                 }
-
-              }
-              }
+              }}
             />
           </DialogContent>
         </Dialog>
-
       </div>
     </div>
   );

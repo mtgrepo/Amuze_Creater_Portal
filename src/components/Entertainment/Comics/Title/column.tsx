@@ -61,14 +61,14 @@ export default function Comicscolumn() {
         );
       },
     },
-    {
-      accessorKey: "price",
-      header: t("price"),
-      cell: ({ row }) => {
-        const price = row.getValue("price") as number;
-        return <div>{price ? price.toLocaleString() : "0"}</div>;
-      },
-    },
+    // {
+    //   accessorKey: "price",
+    //   header: t("price"),
+    //   cell: ({ row }) => {
+    //     const price = row.getValue("price") as number;
+    //     return <div>{price ? price.toLocaleString() : "0"}</div>;
+    //   },
+    // },
     {
       accessorFn: (row) => row?.generes,
       id: "generes",

@@ -102,7 +102,7 @@ export function ChartLineMultiple() {
   const parsedEnd = getSafeDate(endDate);
 
   return (
-    <Card>
+    <Card className="bg-background shadow-xl">
       <CardHeader>
         <CardTitle className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <span className="text-xl font-bold">Performance - Analytics</span>
@@ -111,7 +111,7 @@ export function ChartLineMultiple() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Start Date Picker */}
               <div className="relative">
-                <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">
+                <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground">
                   Start Date
                 </label>
                 <Popover>
@@ -139,7 +139,7 @@ export function ChartLineMultiple() {
 
               {/* End Date Picker */}
               <div className="relative">
-                <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground z-10">
+                <label className="absolute -top-2 left-3 px-1 bg-card text-xs font-medium text-muted-foreground">
                   End Date
                 </label>
                 <Popover>
@@ -175,7 +175,7 @@ export function ChartLineMultiple() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="aspect-auto h-70 w-full">
+        <ChartContainer config={chartConfig} className="aspect-auto h-full min-h-[350px] w-full">
           <LineChart
             accessibilityLayer
             data={filteredChartData}

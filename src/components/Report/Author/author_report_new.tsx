@@ -9,6 +9,7 @@ import TopContent from "./top_content";
 import { TotalEarningComponent } from "./Earning/total_earning_component";
 import { TotalFollowersComponent } from "./Followers/total_followers_component";
 import { useAuthorReportQuery } from "@/composable/Query/Report/useAuthorReportQuery";
+import { ChartPieLegend } from "./chart_pie";
 
 export default function NewAuthorReport() {
   const { page, limit, updateParams, handlePaginationChange } = useTableParams({
@@ -73,10 +74,21 @@ export default function NewAuthorReport() {
 
   return (
     <div className="flex flex-1 flex-col gap-8 py-4 @container/main">
-      {/*  STATS COUNT GRID */}
+      {/* STATS COUNT GRID */}
       <StatsReportCard />
-      <ChartLineMultiple />
-      <div className="bg-card border border-border p-3 rounded-lg">
+
+      <div className="grid grid-cols-3 max-xl:grid-cols-1 gap-3 items-stretch min-h-100">
+        <div className="col-span-2 flex flex-col h-full">
+          {" "}
+          {/* Fixed typo: flex flex-col */}
+          <ChartLineMultiple />
+        </div>
+        <div className="flex flex-col h-full">
+          <ChartPieLegend />
+        </div>
+      </div>
+
+      <div className="bg-background border border-border shadow-xl p-3 rounded-lg">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}

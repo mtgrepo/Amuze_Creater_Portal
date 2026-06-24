@@ -27,7 +27,7 @@ export function StatCard({
   }
 
   return (
-    <Card className="p-6 flex flex-col justify-between h-full min-h-40">
+    <Card className="p-6 flex flex-col bg-background shadow-xl justify-between h-full min-h-40">
       {/* Top Row: Title on Left, Icon on Right */}
       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
         <span className="text-sm font-medium tracking-tight text-muted-foreground">

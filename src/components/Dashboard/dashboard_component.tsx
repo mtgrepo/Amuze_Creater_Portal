@@ -2,18 +2,9 @@
 
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { TrendingUp } from "lucide-react";
 
 // Layout Wrappers
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 // Custom Page Components
 import WelcomeBanner from "./welcome_banner";
 import { Carousel } from "../ui/apple-card-carousel";
@@ -22,9 +13,9 @@ import { Carousel } from "../ui/apple-card-carousel";
 import type { RootState } from "@/redux/store/store";
 import { useLoginCreatorQuery } from "@/composable/Query/Auth/useLoginCreatorQuery";
 import { usePopularContentQuery } from "@/composable/Query/PopularContent/usePopularContentQuery";
-import { Separator } from "../ui/separator";
 import StatsReportCard from "../common/stats_report_card";
 import { useWeeklyTopContentQuery } from "@/composable/Query/Report/useWeeklyTopQuery";
+import BentoGridSecondDemo from "../bento-grid-demo-2";
 
 export const categories = [
   { key: "novel", value: "Novel" },
@@ -71,62 +62,19 @@ export default function DashboardComponent() {
             </div>
 
             {/*  WEEKLY HOT CAROUSEL SECTION */}
-            <div className="border border-border/50 rounded-2xl p-4 mx-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-orange-500 fill-orange-500" />
-                <h2 className="text-xl md:text-2xl font-bold tracking-tight">
-                  Weekly Hot Contents
-                  {weeklyTopContents?.length ? `(${weeklyTopContents.length})` : ""}
-                </h2>
-              </div>
-              <Separator className="my-3"/>
-              {weeklyLoading ? (
+            <div className="px-4 lg:px-6">
+            {/* <BentoGridSecondDemo /> */}
+            {weeklyLoading ? (
                 <div className="p-12 text-center text-sm text-muted-foreground w-full">
                   Loading weekly top contents...
                 </div>
               ) : (
-                <Carousel
-                  key={`weekly-${weeklyTopContents.length}`}
-                  items={weeklyTopContents}
-                  header=""
-                  layoutScope="weekly-hot"
-                />
+                <BentoGridSecondDemo items={weeklyTopContents ?? []}/>
               )}
             </div>
 
             {/*  POPULAR BY CATEGORY SECTION */}
-            <div className="flex flex-col gap-4 border border-border/50  mx-4 p-4 rounded-2xl">
-              {/* Refactored Section Header Layout */}
-              <div className="flex items-center justify-between px-4 lg:px-6">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-orange-500 fill-orange-500" />
-                  <h2 className="text-xl md:text-2xl font-bold tracking-tight">
-                    Popular {activeTab}{" "}
-                    {popularContents?.length
-                      ? `(${popularContents.length})`
-                      : ""}
-                  </h2>
-                </div>
-
-                <Select
-                  defaultValue={activeTab}
-                  onValueChange={(value) => setActiveTab(value)}
-                >
-                  <SelectTrigger className="w-40 bg-card">
-                    <SelectValue placeholder={activeTab} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {categories?.map((c) => (
-                        <SelectItem key={c.key} value={c.value}>
-                          {c.value}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Separator />
+            <div className="flex flex-col gap-4 px-4 lg:px-6 rounded-2xl">
               {/* Carousel Content Container */}
               {isLoading ? (
                 <div className="p-12 text-center text-sm text-muted-foreground w-full">
@@ -135,8 +83,12 @@ export default function DashboardComponent() {
               ) : (
                 <Carousel
                   key={`popular-${activeTab}-${popularContents?.length || 0}`}
-                  header={``}
+                  header={`Popular Contents`}
                   layoutScope="popular-category"
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  type="popular"
+                  filters={categories}
                   items={(popularContents || []).map(
                     (item: any, idx: number) => ({
                       ...item,

@@ -11,13 +11,22 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight, Eye, Flame, Heart, X } from "lucide-react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Badge } from "./badge";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./select";
 
-// FIX 1: Change items prop from ReactElement[] to raw data structures
+// Change items prop from ReactElement[] to raw data structures
+interface Filters {
+  key: string,
+  value: string
+}
 interface CarouselProps {
   items: CardType[]; 
   initialScroll?: number;
   header?: string;
   layoutScope?: string;
+  type?: string,
+  filters?: Filters[],
+  activeTab?: string,
+setActiveTab: (tab: string) => void; // Correct: A function that takes a string and returns nothing
 }
 
 type CardType = {
@@ -42,11 +51,16 @@ const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
+
+
 export const Carousel = ({ 
   header, 
   items = [], 
   initialScroll = 0, 
-  layoutScope = 'default' 
+  layoutScope = 'default' ,
+  filters,
+  activeTab,
+  setActiveTab
 }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
@@ -99,7 +113,7 @@ export const Carousel = ({
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
-        <div className="mx-auto max-w-7xl px-4 flex items-center justify-between w-full">
+        <div className="mx-auto max-w-7xl flex items-center justify-between w-full">
           {header && (
             <div className="flex items-center gap-2">
               <Flame className="h-6 w-6 text-orange-500 fill-orange-500 animate-pulse" />
@@ -109,7 +123,7 @@ export const Carousel = ({
             </div>
           )}
           
-          <div className="flex gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto">
             <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
               onClick={scrollLeft}
@@ -124,6 +138,25 @@ export const Carousel = ({
             >
               <ArrowRight className="h-5 w-5 text-gray-500 dark:text-neutral-400" />
             </button>
+        
+                  <Select
+                  defaultValue={activeTab}
+                  onValueChange={(value) => setActiveTab(value)}
+                >
+                  <SelectTrigger className=" bg-card">
+                    <SelectValue placeholder={activeTab} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {filters?.map((c) => (
+                        <SelectItem key={c.key} value={c.value}>
+                          {c.value}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                
           </div>
         </div>
 
@@ -133,7 +166,7 @@ export const Carousel = ({
           onScroll={checkScrollability}
         >
           <div className={cn("absolute right-0 z-[1000] h-auto w-[5%] overflow-hidden bg-gradient-to-l")} />
-          <div className={cn("flex flex-row justify-start gap-4 pl-4", "mx-auto max-w-7xl w-full")}>
+          <div className={cn("flex flex-row justify-start gap-4", "mx-auto max-w-7xl w-full")}>
             {items.map((card, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -143,7 +176,7 @@ export const Carousel = ({
                   transition: { duration: 0.5, delay: 0.1 * index, ease: "easeOut" },
                 }}
                 key={`${layoutScope}-motion-item-${card.id || card.title || index}`}
-                className="rounded-3xl last:pr-[5%] md:last:pr-[33%]"
+                className="rounded-xl last:pr-[5%] md:last:pr-[33%]"
               >
                 {/* FIX 2: Explicitly pass the correct scoped parameters right here */}
                 <Card 
@@ -219,7 +252,7 @@ export const Card = ({
               exit={{ opacity: 0 }}
               ref={containerRef}
               layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
-              className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
+              className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
             >
               <button
                 className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black dark:bg-white"
@@ -259,7 +292,7 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
         // onClick={() => setOpen(true)}
-        className="relative z-10 flex h-80 w-80 flex-col items-start justify-end overflow-hidden rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
+        className="relative z-10 flex h-80 w-80 flex-col items-start justify-end overflow-hidden rounded-xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
       >
         <div className="absolute top-6 left-6 z-40 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-sans text-xs md:text-sm font-semibold selection:bg-transparent">
           {displayIndex}

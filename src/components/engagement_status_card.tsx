@@ -27,7 +27,7 @@ export function EngagementStatCard({ title, value, metrics, percentage }: Engage
   }
 
   return (
-    <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 flex flex-col justify-between">
+    <div className="rounded-xl  bg-background border border-border text-card-foreground shadow-xl p-6 flex flex-col justify-between">
       {/* Header section */}
       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
         <span className="text-sm font-medium tracking-tight text-muted-foreground">{title}</span>

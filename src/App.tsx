@@ -35,7 +35,7 @@ function App() {
 
       <SidebarInset className="relative flex flex-col min-h-screen min-w-0">
         {/* HEADER CONTAINER */}
-        <header className="sticky top-0 z-[30000]! flex h-14 shrink-0 items-center justify-between gap-3 border-b bg-white dark:bg-zinc-950 px-4">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between gap-3 border-b bg-white dark:bg-zinc-950 px-4">
           {" "}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <SidebarTrigger className="shrink-0" />
@@ -76,7 +76,7 @@ function App() {
 
         {/* RESPONSIVE FLOATING DRAWER */}
         {isMenuOpen && (
-          <div className="absolute top-14 left-0 right-0 z-20 border-b bg-background/95 backdrop-blur-sm p-4 shadow-md lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute z-1000 top-14 left-0 right-0  border-b bg-background/95 backdrop-blur-sm p-4 shadow-md lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center justify-center gap-8">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">

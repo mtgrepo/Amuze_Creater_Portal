@@ -140,15 +140,16 @@ export const Carousel = ({
           )}
 
           <div className="flex items-center gap-2 ml-auto">
+            
             <button
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
+              className="relative hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
               onClick={scrollLeft}
               disabled={!canScrollLeft}
             >
               <ArrowLeft className="h-5 w-5 text-gray-500 dark:text-neutral-400" />
             </button>
             <button
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
+              className="relative hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 disabled:opacity-50 transition-opacity"
               onClick={scrollRight}
               disabled={!canScrollRight}
             >
@@ -413,7 +414,7 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `${layoutScope}-card-${card.title}` : undefined}
         onClick={() => setOpen(true)}
-        className="relative z-10 flex h-80 w-80 flex-col items-start justify-end overflow-hidden rounded-xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
+        className="relative z-10 flex h-60 w-80 flex-col items-start justify-end overflow-hidden rounded-xl bg-gray-100 dark:bg-neutral-900 shadow-md group"
       >
         <div className="absolute top-6 left-6 z-40 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-sans text-xs md:text-sm font-semibold selection:bg-transparent">
           {displayIndex}

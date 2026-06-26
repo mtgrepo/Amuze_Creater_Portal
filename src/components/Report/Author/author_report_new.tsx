@@ -78,13 +78,13 @@ export default function NewAuthorReport() {
       <StatsReportCard />
 
       <div className="grid grid-cols-3 max-xl:grid-cols-1 gap-3 items-stretch min-h-100">
+        <div className="flex flex-col h-full">
+          <ChartPieLegend />
+        </div>
         <div className="col-span-2 flex flex-col h-full">
           {" "}
           {/* Fixed typo: flex flex-col */}
           <ChartLineMultiple />
-        </div>
-        <div className="flex flex-col h-full">
-          <ChartPieLegend />
         </div>
       </div>
 

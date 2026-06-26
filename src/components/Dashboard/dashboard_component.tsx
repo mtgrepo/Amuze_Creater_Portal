@@ -38,7 +38,7 @@ export default function DashboardComponent() {
   const { weeklyTopContents, isLoading: weeklyLoading } =
     useWeeklyTopContentQuery();
   // console.log("weekly", weeklyTopContents)
-
+console.log("popular content", popularContents)
   return (
     <SidebarProvider
       style={

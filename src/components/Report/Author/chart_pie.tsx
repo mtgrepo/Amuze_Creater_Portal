@@ -103,7 +103,7 @@ export function ChartPieLegend() {
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Pie data={chartData} dataKey="visitors" />
+            <Pie data={chartData} dataKey="visitors" innerRadius={70}/>
             <ChartLegend
               content={<ChartLegendContent nameKey="browser" />}
               className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"

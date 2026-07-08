@@ -14,6 +14,7 @@ import { ModeToggle } from "./components/common/Themes/mode-toggle";
 import BreadCrumbLayout from "./components/common/Layouts/bread_crumb_layout";
 import { LanguageToggle } from "./components/common/Language/language-toggle";
 import CreatorNotificationToggle from "./components/common/Notification/notification-toggle";
+import PWABadge from "./PWABadge";
 
 type MatchType = {
   pathname: string;
@@ -99,6 +100,8 @@ function App() {
           <Outlet />
         </main>
       </SidebarInset>
+            <PWABadge />
+
     </SidebarProvider>
   );
 }

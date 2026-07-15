@@ -60,6 +60,7 @@ import RequestOTPForm from "@/components/request-otp-form";
 import VerifyOtpPage from "@/components/verify-otp-page";
 import ResetPasswordPage from "@/components/reset-password-page";
 import AuthorReportNew from "@/features/Report/author_report_new";
+import LiveGiftReportPage from "@/features/Report/LiveGiftReportPage";
 
 const router = createBrowserRouter(
   [
@@ -87,6 +88,13 @@ const router = createBrowserRouter(
           element: <AuthorReportNew />,
           handle: {
             crumb: ["Report", "Author Income Report"],
+          },
+        },
+        {
+          path: "/report/live-gift",
+          element: <LiveGiftReportPage />,
+          handle: {
+            crumb: ["Report", "Live Gift Report"],
           },
         },
         {

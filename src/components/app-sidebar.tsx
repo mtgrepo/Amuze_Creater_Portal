@@ -23,6 +23,7 @@ import {
   Image,
   TvMinimalPlay,
   SquareParking,
+  Gift,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store/store";
@@ -54,6 +55,11 @@ const data = {
           url: "/report/author",
           icon: FileChartColumnIncreasing,
         },
+         {
+          title: "Live Gift Report",
+          url: "/report/live-gift",
+          icon: Gift,
+        }
         // {
         //   title: "Purchase",
         //   url: "/report/purchase",
